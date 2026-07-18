@@ -1,0 +1,582 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Journal Metrics Plugin 1.0.0.0\n"
+"POT-Creation-Date: 2026-07-17\n"
+"PO-Revision-Date: 2026-07-17\n"
+"Last-Translator: ojs-services.com\n"
+"Language-Team: TR\n"
+"Language: tr_TR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# ---------------------------------------------------------------- Genel
+
+msgid "plugins.generic.journalMetrics.displayName"
+msgstr "Dergi Metrikleri"
+
+msgid "plugins.generic.journalMetrics.description"
+msgstr "Eksiksiz dergi metrikleri paketi: editoryal istatistikler, süreç süreleri, kullanım, topluluk ve yayın çıktısı — gece hesaplanan snapshot önbelleği, metrik bazlı görünürlük kontrolü, manuel (editör beyanı) metrikler, yönetici panosu, kamu sayfası, kenar çubuğu bloğu ve {journal_metric} şablon fonksiyonu ile."
+
+msgid "plugins.generic.journalMetrics.menuTitle"
+msgstr "Dergi Metrikleri"
+
+msgid "plugins.generic.journalMetrics.dashboard"
+msgstr "Metrikleri Görüntüle"
+
+msgid "plugins.generic.journalMetrics.navMenuItem.title"
+msgstr "Dergi Metrikleri"
+
+msgid "plugins.generic.journalMetrics.navMenuItem.description"
+msgstr "Kamuya açık dergi metrikleri sayfasına bağlantı verir (yalnızca kamu sayfası etkinken görünür)."
+
+msgid "plugins.generic.journalMetrics.task.name"
+msgstr "Dergi Metrikleri snapshot hesaplaması"
+
+# ---------------------------------------------------------------- Gruplar
+
+msgid "plugins.generic.journalMetrics.group.editorial"
+msgstr "Editoryal Etkinlik"
+
+msgid "plugins.generic.journalMetrics.group.times"
+msgstr "Süreç Süreleri"
+
+msgid "plugins.generic.journalMetrics.group.usage"
+msgstr "Kullanım"
+
+msgid "plugins.generic.journalMetrics.group.community"
+msgstr "Topluluk"
+
+msgid "plugins.generic.journalMetrics.group.output"
+msgstr "Yayın Çıktısı"
+
+msgid "plugins.generic.journalMetrics.group.manual"
+msgstr "Editör Beyanı Metrikler"
+
+# ---------------------------------------------------------------- Metrikler
+
+msgid "plugins.generic.journalMetrics.metric.submissionsReceived"
+msgstr "Alınan"
+
+msgid "plugins.generic.journalMetrics.metric.submissionsAccepted"
+msgstr "Kabul edilen"
+
+msgid "plugins.generic.journalMetrics.metric.submissionsDeclined"
+msgstr "Reddedilen"
+
+msgid "plugins.generic.journalMetrics.metric.acceptanceRate"
+msgstr "Kabul oranı"
+
+msgid "plugins.generic.journalMetrics.metric.declineRate"
+msgstr "Ret oranı"
+
+msgid "plugins.generic.journalMetrics.metric.submissionsPublished"
+msgstr "Yayınlanan"
+
+msgid "plugins.generic.journalMetrics.metric.firstDecisionDays"
+msgstr "İlk karar süresi (gün)"
+
+msgid "plugins.generic.journalMetrics.metric.submissionToAcceptDays"
+msgstr "Kabul süresi (gün)"
+
+msgid "plugins.generic.journalMetrics.metric.submissionToRejectDays"
+msgstr "Ret süresi (gün)"
+
+msgid "plugins.generic.journalMetrics.metric.reviewReportDays"
+msgstr "Ortalama hakemlik süresi"
+
+msgid "plugins.generic.journalMetrics.metric.acceptToPublishDays"
+msgstr "Kabulden yayına süre"
+
+msgid "plugins.generic.journalMetrics.metric.submissionToPublishDays"
+msgstr "Gönderiden yayına süre"
+
+msgid "plugins.generic.journalMetrics.metric.totalAbstractViews"
+msgstr "Toplam özet görüntüleme"
+
+msgid "plugins.generic.journalMetrics.metric.totalGalleyDownloads"
+msgstr "Toplam indirme"
+
+msgid "plugins.generic.journalMetrics.metric.currentYearUsage"
+msgstr "Bu yıl görüntüleme / indirme"
+
+msgid "plugins.generic.journalMetrics.metric.avgDownloadsPerArticle"
+msgstr "Makale başına ortalama indirme"
+
+msgid "plugins.generic.journalMetrics.metric.topArticles"
+msgstr "En çok okunan makaleler"
+
+msgid "plugins.generic.journalMetrics.metric.usageTrend"
+msgstr "Kullanım eğilimi (24 ay)"
+
+msgid "plugins.generic.journalMetrics.metric.accessCountryCount"
+msgstr "Erişilen ülke sayısı"
+
+msgid "plugins.generic.journalMetrics.metric.uniqueAuthors"
+msgstr "Benzersiz yazar"
+
+msgid "plugins.generic.journalMetrics.metric.reviewerCount"
+msgstr "Hakem sayısı"
+
+msgid "plugins.generic.journalMetrics.metric.memberCount"
+msgstr "Kayıtlı kullanıcı"
+
+msgid "plugins.generic.journalMetrics.metric.authorCountries"
+msgstr "Coğrafi dağılım (yazar ülkeleri)"
+
+msgid "plugins.generic.journalMetrics.metric.completedReviews"
+msgstr "Tamamlanan hakemlik"
+
+msgid "plugins.generic.journalMetrics.metric.articlesPerYear"
+msgstr "Yıllık makale sayısı"
+
+msgid "plugins.generic.journalMetrics.metric.issuesPerYear"
+msgstr "Yıllık sayı (issue) adedi"
+
+msgid "plugins.generic.journalMetrics.metric.archiveDepth"
+msgstr "Arşiv derinliği (yıl)"
+
+msgid "plugins.generic.journalMetrics.metric.manualMetrics"
+msgstr "Editör beyanı metrikler"
+
+# ---------------------------------------------------------------- Metodoloji ipuçları
+
+msgid "plugins.generic.journalMetrics.tooltip.acceptanceRate"
+msgstr "Kabul edilen gönderilerin alınan gönderilere oranıdır; OJS çekirdek istatistik motoruyla hesaplanır. Tarih aralığında yalnızca o aralıkta gönderilmiş VE nihai karar almış gönderiler sayılır."
+
+msgid "plugins.generic.journalMetrics.tooltip.declineRate"
+msgstr "Reddedilen gönderilerin (masa + hakem sonrası) alınan gönderilere oranıdır; OJS çekirdek istatistik motoruyla hesaplanır. Tarih aralığında yalnızca o aralıkta gönderilmiş VE nihai karar almış gönderiler sayılır."
+
+msgid "plugins.generic.journalMetrics.tooltip.firstDecisionDays"
+msgstr "Gönderiden herhangi bir ilk editoryal karara kadar geçen ortalama gün. Tamamlanmamış ve içe aktarılmış gönderiler hariçtir."
+
+msgid "plugins.generic.journalMetrics.tooltip.submissionToAcceptDays"
+msgstr "Gönderiden ilk kabul kararına kadar geçen ortalama gün. Yanında medyan ve %80 dilimi (makalelerin %80'inin altında kaldığı değer) gösterilir; n ölçülen makale sayısıdır."
+
+msgid "plugins.generic.journalMetrics.tooltip.submissionToRejectDays"
+msgstr "Yalnızca reddedilen gönderiler üzerinden, gönderiden ilk ret kararına kadar geçen ortalama gün."
+
+msgid "plugins.generic.journalMetrics.tooltip.reviewReportDays"
+msgstr "Hakem davetinden tamamlanan rapora kadar geçen ortalama gün. Reddedilen ve iptal edilen hakemlik atamaları hariçtir."
+
+msgid "plugins.generic.journalMetrics.tooltip.acceptToPublishDays"
+msgstr "Kabul kararından makalenin ilk yayın tarihine kadar geçen ortalama gün."
+
+msgid "plugins.generic.journalMetrics.tooltip.submissionToPublishDays"
+msgstr "Gönderiden makalenin ilk yayın tarihine kadar geçen ortalama gün (toplam editoryal + üretim süresi)."
+
+# ---------------------------------------------------------------- Arayüz metinleri
+
+msgid "plugins.generic.journalMetrics.ui.days"
+msgstr "gün"
+
+msgid "plugins.generic.journalMetrics.ui.median"
+msgstr "medyan"
+
+msgid "plugins.generic.journalMetrics.ui.p80"
+msgstr "%80 dilimi"
+
+msgid "plugins.generic.journalMetrics.ui.n"
+msgstr "n"
+
+msgid "plugins.generic.journalMetrics.ui.views"
+msgstr "görüntüleme"
+
+msgid "plugins.generic.journalMetrics.ui.downloads"
+msgstr "indirme"
+
+msgid "plugins.generic.journalMetrics.ui.articles"
+msgstr "makale"
+
+msgid "plugins.generic.journalMetrics.ui.issues"
+msgstr "sayı"
+
+msgid "plugins.generic.journalMetrics.ui.year"
+msgstr "Yıl"
+
+msgid "plugins.generic.journalMetrics.ui.allTime"
+msgstr "Tüm zamanlar"
+
+msgid "plugins.generic.journalMetrics.ui.insufficient"
+msgstr "Veri yetersiz"
+
+msgid "plugins.generic.journalMetrics.ui.publicBadge"
+msgstr "Kamuya açık"
+
+msgid "plugins.generic.journalMetrics.ui.topArticlesTitle"
+msgstr "En çok okunan makaleler (ilk 10)"
+
+msgid "plugins.generic.journalMetrics.ui.trendTitle"
+msgstr "Aylık görüntüleme ve indirme (son 24 ay)"
+
+msgid "plugins.generic.journalMetrics.ui.completedReviewsTitle"
+msgstr "Yıllara göre tamamlanan hakemlik"
+
+msgid "plugins.generic.journalMetrics.ui.byYearTitle"
+msgstr "Yıllara göre"
+
+msgid "plugins.generic.journalMetrics.ui.articlesPerYearTitle"
+msgstr "Yıllara göre yayınlanan makale"
+
+msgid "plugins.generic.journalMetrics.ui.issuesPerYearTitle"
+msgstr "Yıllara göre yayınlanan sayı"
+
+msgid "plugins.generic.journalMetrics.ui.since"
+msgstr "başlangıç:"
+
+msgid "plugins.generic.journalMetrics.ui.totalIssues"
+msgstr "sayı"
+
+msgid "plugins.generic.journalMetrics.ui.avgPerArticle"
+msgstr "makale başına ort."
+
+msgid "plugins.generic.journalMetrics.ui.deskReject"
+msgstr "masa reddi"
+
+msgid "plugins.generic.journalMetrics.ui.postReview"
+msgstr "hakem sonrası"
+
+msgid "plugins.generic.journalMetrics.ui.authorsDetail"
+msgstr "yazar"
+
+msgid "plugins.generic.journalMetrics.ui.readersDetail"
+msgstr "okuyucu"
+
+msgid "plugins.generic.journalMetrics.ui.noResults"
+msgstr "Sonuç yok"
+
+msgid "plugins.generic.journalMetrics.ui.source"
+msgstr "Kaynak"
+
+msgid "plugins.generic.journalMetrics.ui.lastUpdated"
+msgstr "Güncelleme"
+
+msgid "plugins.generic.journalMetrics.ui.metricsUpdated"
+msgstr "Metriklerin son güncellenmesi"
+
+msgid "plugins.generic.journalMetrics.ui.usagePending"
+msgstr "Kullanım istatistikleri hesaplanıyor — bir sonraki zamanlanmış çalıştırmadan sonra görünecek."
+
+msgid "plugins.generic.journalMetrics.ui.countrySectionTitle"
+msgstr "Coğrafi Dağılım"
+
+msgid "plugins.generic.journalMetrics.ui.searchCountry"
+msgstr "Ülke ara…"
+
+msgid "plugins.generic.journalMetrics.ui.country"
+msgstr "Ülke"
+
+msgid "plugins.generic.journalMetrics.ui.authors"
+msgstr "Yazar"
+
+msgid "plugins.generic.journalMetrics.ui.share"
+msgstr "Pay"
+
+msgid "plugins.generic.journalMetrics.ui.distribution"
+msgstr "Dağılım"
+
+msgid "plugins.generic.journalMetrics.ui.authorsByCountry"
+msgstr "Ülkelere Göre Yazarlar"
+
+msgid "plugins.generic.journalMetrics.ui.articlesByCountry"
+msgstr "Ülkelere Göre Makaleler"
+
+msgid "plugins.generic.journalMetrics.ui.topCountries"
+msgstr "Önde Gelen Ülkeler"
+
+msgid "plugins.generic.journalMetrics.ui.authorDistribution"
+msgstr "Yazar Dağılımı"
+
+msgid "plugins.generic.journalMetrics.ui.countriesWord"
+msgstr "ülke"
+
+msgid "plugins.generic.journalMetrics.ui.other"
+msgstr "Diğer"
+
+msgid "plugins.generic.journalMetrics.ui.rank"
+msgstr "#"
+
+msgid "plugins.generic.journalMetrics.ui.yearTableNote"
+msgstr "Not: \"Alınan\" gönderileri gönderi tarihine göre; \"Kabul edilen\", \"Reddedilen\" ve oranlar karar tarihine göre; \"Yayınlanan\" ilk yayın tarihine göre sayar. Bir yıl içinde alınan gönderi, kararını veya yayınını başka bir yılda alabilir."
+
+# ---------------------------------------------------------------- Pano
+
+msgid "plugins.generic.journalMetrics.dashboard.title"
+msgstr "Dergi Metrikleri"
+
+msgid "plugins.generic.journalMetrics.dashboard.neverComputed"
+msgstr "Metrik snapshot'ı henüz hesaplanmadı."
+
+msgid "plugins.generic.journalMetrics.dashboard.recompute"
+msgstr "Şimdi yeniden hesapla"
+
+msgid "plugins.generic.journalMetrics.dashboard.settings"
+msgstr "Ayarlar"
+
+msgid "plugins.generic.journalMetrics.settings.pageTitle"
+msgstr "Dergi Metrikleri — Ayarlar"
+
+msgid "plugins.generic.journalMetrics.settings.pageSubtitle"
+msgstr "Görünürlük, editör beyanı metrikler, benzersizleştirme, eşikler ve kamu sayfası — eklentinin tüm ayarları bu sayfadadır."
+
+msgid "plugins.generic.journalMetrics.settings.saved"
+msgstr "Ayarlar kaydedildi."
+
+# ---------------------------------------------------------------- Filtreler
+
+msgid "plugins.generic.journalMetrics.filter.allTime"
+msgstr "Tüm zamanlar"
+
+msgid "plugins.generic.journalMetrics.filter.last12"
+msgstr "Son 12 ay"
+
+msgid "plugins.generic.journalMetrics.filter.last24"
+msgstr "Son 24 ay"
+
+msgid "plugins.generic.journalMetrics.filter.uniqueBy"
+msgstr "Benzersizlik ölçütü"
+
+msgid "plugins.generic.journalMetrics.filter.orcid"
+msgstr "ORCID"
+
+msgid "plugins.generic.journalMetrics.filter.email"
+msgstr "E-posta"
+
+msgid "plugins.generic.journalMetrics.filter.fullName"
+msgstr "Ad soyad"
+
+# ---------------------------------------------------------------- Notlar
+
+msgid "plugins.generic.journalMetrics.note.snapshot"
+msgstr "Değerler gece hesaplanan snapshot'tan gelir; güncel rakamlar için \"Şimdi yeniden hesapla\"yı kullanın."
+
+msgid "plugins.generic.journalMetrics.note.coreConsistency"
+msgstr "Editoryal sayaçlar ve oranlar OJS çekirdek İstatistikler ekranıyla birebir aynıdır."
+
+msgid "plugins.generic.journalMetrics.note.uniqueBy"
+msgstr "Yazarlar {$strategy} ölçütüyle benzersizleştirildi."
+
+# ---------------------------------------------------------------- Kamu sayfası
+
+msgid "plugins.generic.journalMetrics.public.subtitle"
+msgstr "Derginin editoryal performansına ve erişimine dair şeffaf, güncel göstergeler."
+
+msgid "plugins.generic.journalMetrics.public.noMetrics"
+msgstr "Metrikler hazırlanıyor. Lütfen daha sonra tekrar deneyin."
+
+msgid "plugins.generic.journalMetrics.public.autoNote"
+msgstr "Otomatik metrik değerleri doğrudan dergi verisinden hesaplanır ve elle değiştirilemez."
+
+msgid "plugins.generic.journalMetrics.public.manualNote"
+msgstr "Editör beyanı metrikler, kaynağı ve tarihiyle birlikte editör ekibi tarafından girilir."
+
+# ---------------------------------------------------------------- Blok
+
+msgid "plugins.generic.journalMetrics.block.displayName"
+msgstr "Dergi Metrikleri Bloğu"
+
+msgid "plugins.generic.journalMetrics.block.description"
+msgstr "Seçili kamuya açık dergi metriklerini kenar çubuğunda gösterir."
+
+msgid "plugins.generic.journalMetrics.block.title"
+msgstr "Dergi Metrikleri"
+
+msgid "plugins.generic.journalMetrics.block.more"
+msgstr "Tüm metrikler"
+
+# ---------------------------------------------------------------- Ayarlar
+
+msgid "plugins.generic.journalMetrics.settings.visibility"
+msgstr "Metrik Görünürlüğü"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.desc"
+msgstr "Her metriğin nerede görüneceğini seçin. \"Gizli\" metriği her yerden kaldırır, \"Pano\" yalnızca dergi yöneticilerine gösterir, \"Kamuya açık\" ayrıca kamu sayfasında, kenar çubuğu bloğunda ve {journal_metric} şablon fonksiyonunda gösterir. Varsayılan \"Pano\"dur — metrikleri kamuya bilinçli olarak açın."
+
+msgid "plugins.generic.journalMetrics.settings.visibility.group"
+msgstr "Grup"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.metric"
+msgstr "Metrik"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.level"
+msgstr "Görünürlük"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.hidden"
+msgstr "Gizli"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.admin"
+msgstr "Pano"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.public"
+msgstr "Kamuya açık"
+
+msgid "plugins.generic.journalMetrics.settings.manual"
+msgstr "Editör Beyanı Metrikler"
+
+msgid "plugins.generic.journalMetrics.settings.manual.desc"
+msgstr "Değeri OJS'den gelmeyen en fazla 5 metrik (ör. CiteScore, dizin kapsamı). \"Editör beyanı\" rozetiyle kart olarak gösterilir, asla grafiklenmez. Bir satır değiştiğinde güncelleme tarihi otomatik damgalanır."
+
+msgid "plugins.generic.journalMetrics.settings.manual.title"
+msgstr "Başlık"
+
+msgid "plugins.generic.journalMetrics.settings.manual.value"
+msgstr "Değer"
+
+msgid "plugins.generic.journalMetrics.settings.manual.source"
+msgstr "Kaynak"
+
+msgid "plugins.generic.journalMetrics.settings.manual.description"
+msgstr "Açıklama"
+
+msgid "plugins.generic.journalMetrics.settings.manual.lastUpdated"
+msgstr "Güncelleme"
+
+msgid "plugins.generic.journalMetrics.settings.manual.addRow"
+msgstr "Metrik ekle"
+
+msgid "plugins.generic.journalMetrics.settings.scope"
+msgstr "Yazar Benzersizleştirme"
+
+msgid "plugins.generic.journalMetrics.settings.uniqueStrategy"
+msgstr "Benzersiz yazar tespiti"
+
+msgid "plugins.generic.journalMetrics.settings.uniqueStrategy.desc"
+msgstr "Yazar ve yazar ülkesi sayımlarında benzersiz yazarların nasıl belirleneceği."
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback"
+msgstr "ORCID yedek ölçütü"
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.desc"
+msgstr "Yazarın ORCID'i yoksa kullanılır."
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.emailName"
+msgstr "E-posta, sonra ad soyad"
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.email"
+msgstr "Yalnızca e-posta"
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.name"
+msgstr "Yalnızca ad soyad"
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.none"
+msgstr "Yedek yok (yalnızca ORCID)"
+
+msgid "plugins.generic.journalMetrics.settings.appearance"
+msgstr "Görünüm ve Eşikler"
+
+msgid "plugins.generic.journalMetrics.settings.countryDisplay"
+msgstr "Ülke gösterimi"
+
+msgid "plugins.generic.journalMetrics.settings.countryDisplay.both"
+msgstr "Kod — Ad"
+
+msgid "plugins.generic.journalMetrics.settings.countryDisplay.code"
+msgstr "Yalnızca kod"
+
+msgid "plugins.generic.journalMetrics.settings.countryDisplay.name"
+msgstr "Yalnızca ad"
+
+msgid "plugins.generic.journalMetrics.settings.sortOrder"
+msgstr "Tablo sıralaması"
+
+msgid "plugins.generic.journalMetrics.settings.sortOrder.countDesc"
+msgstr "Sayı (azalan)"
+
+msgid "plugins.generic.journalMetrics.settings.sortOrder.nameAsc"
+msgstr "Ülke adı (A–Z)"
+
+msgid "plugins.generic.journalMetrics.settings.minThreshold"
+msgstr "En az ülke sayısı"
+
+msgid "plugins.generic.journalMetrics.settings.minThreshold.desc"
+msgstr "Bu değerden az yazar/makaleye sahip ülkeler ülke tablolarında gizlenir."
+
+msgid "plugins.generic.journalMetrics.settings.rateNThreshold"
+msgstr "Küçük örneklem bastırma (n)"
+
+msgid "plugins.generic.journalMetrics.settings.rateNThreshold.desc"
+msgstr "Bu değerden az kayıtla hesaplanan oran ve süre metrikleri kamu sayfalarında bastırılır, panoda soluk gösterilir (varsayılan 10)."
+
+msgid "plugins.generic.journalMetrics.settings.includeUnknown"
+msgstr "Ülkesi olmayan kayıtları dahil et"
+
+msgid "plugins.generic.journalMetrics.settings.showAuthorsTab"
+msgstr "\"Ülkelere Göre Yazarlar\" tablosunu göster"
+
+msgid "plugins.generic.journalMetrics.settings.showArticlesTab"
+msgstr "\"Ülkelere Göre Makaleler\" tablosunu göster"
+
+msgid "plugins.generic.journalMetrics.settings.block"
+msgstr "Kenar Çubuğu Bloğu"
+
+msgid "plugins.generic.journalMetrics.settings.block.statusActive"
+msgstr "Kenar çubuğu bloğu: şu an etkin"
+
+msgid "plugins.generic.journalMetrics.settings.block.statusPassive"
+msgstr "Kenar çubuğu bloğu: kenar çubuğuna ekli değil (pasif)"
+
+msgid "plugins.generic.journalMetrics.settings.block.manage"
+msgstr "Kenar çubuğunu yönet"
+
+msgid "plugins.generic.journalMetrics.settings.block.themeNote"
+msgstr "Blok, Ayarlar → Web Sitesi → Görünüm → Kenar Çubuğu üzerinden yerleştirilir; tek doğruluk kaynağı OJS'nin kendi kenar çubuğu yönetimidir. Kullandığınız temada kenar çubuğu alanı yoksa blok görüntülenmez."
+
+msgid "plugins.generic.journalMetrics.settings.block.metrics"
+msgstr "Blokta gösterilecek metrikler"
+
+msgid "plugins.generic.journalMetrics.settings.block.metricsDesc"
+msgstr "Seçilen metrikler yine görünürlük ve küçük örneklem filtrelerinden geçer: \"Kamuya açık\" olmayan bir metrik blokta asla görünmez. Hiç seçim yoksa blok hiçbir şey göstermez."
+
+msgid "plugins.generic.journalMetrics.settings.publicPage"
+msgstr "Kamu Sayfası"
+
+msgid "plugins.generic.journalMetrics.settings.enablePublicPage"
+msgstr "Kamuya açık metrik sayfasını etkinleştir"
+
+msgid "plugins.generic.journalMetrics.settings.enablePublicPage.desc"
+msgstr "Etkinleştirildiğinde aşağıdaki sayfa tüm ziyaretçilere açılır ve gezinme menüsü öğe türü kullanılabilir olur. Yalnızca \"Kamuya açık\" olarak işaretlenen metrikler gösterilir."
+
+msgid "plugins.generic.journalMetrics.settings.publicPageTitle"
+msgstr "Kamu sayfası başlığı"
+
+msgid "plugins.generic.journalMetrics.settings.publicPageUrl"
+msgstr "Kamu sayfası adresi"
+
+msgid "plugins.generic.journalMetrics.settings.publicPageUrl.desc"
+msgstr "Bu adresi bir gezinme menüsüne ekleyin veya \"Dergi Metrikleri\" menü öğesi türünü kullanın."
+
+msgid "plugins.generic.journalMetrics.settings.recompute"
+msgstr "Yeniden Hesaplama"
+
+msgid "plugins.generic.journalMetrics.settings.recompute.desc"
+msgstr "Hızlı metrik gruplarını hemen yeniden hesaplar. Kullanım istatistikleri (ağır tarama) kuyruğa alınır ve bir sonraki zamanlanmış çalıştırmada yenilenir."
+
+msgid "plugins.generic.journalMetrics.settings.recompute.done"
+msgstr "Tamamlandı — kullanım istatistikleri bir sonraki zamanlanmış çalıştırma için kuyruğa alındı."
+
+msgid "plugins.generic.journalMetrics.settings.recompute.failed"
+msgstr "Yeniden hesaplama başarısız oldu. Lütfen tekrar deneyin."
+
+msgid "plugins.generic.journalMetrics.settings.coverage"
+msgstr "Editoryal istatistik kapsamı"
+
+msgid "plugins.generic.journalMetrics.settings.coverage.desc"
+msgstr "İsteğe bağlı. Bir başlangıç yılı ayarlandığında editoryal iş akışı istatistikleri (başvurular, kararlar, süreç süreleri, tamamlanan hakem değerlendirmeleri) o yıldan itibaren hesaplanır — ve bu kapsam panoda ve kamuya açık sayfada her zaman açıkça beyan edilir. Tüm arşivi kapsamak için boş bırakın. Kullanım istatistikleri, yayın çıktısı ve topluluk sayıları her zaman tüm arşivi kapsar."
+
+msgid "plugins.generic.journalMetrics.settings.coverage.year"
+msgstr "Başlangıç yılı"
+
+msgid "plugins.generic.journalMetrics.settings.coverage.placeholder"
+msgstr "örn. 2024"
+
+msgid "plugins.generic.journalMetrics.ui.coverageLine"
+msgstr "Editoryal istatistikler {$year}–günümüz dönemini kapsar."
+
+msgid "plugins.generic.journalMetrics.ui.coverageNote"
+msgstr "{$year}–günümüz dönemini kapsar."
+
+msgid "plugins.generic.journalMetrics.settings.showDeveloperCredit"
+msgstr "Kamu sayfasında 'ojs-services.com tarafından geliştirilmiştir' bağlantısını göster"
+
+msgid "plugins.generic.journalMetrics.settings.showDeveloperCredit.desc"
+msgstr "Ücretsiz eklentinin geliştirilmesini destekler; dilerseniz kapatabilirsiniz."

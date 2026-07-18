@@ -1,0 +1,582 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Journal Metrics Plugin 1.0.0.0\n"
+"POT-Creation-Date: 2026-07-17\n"
+"PO-Revision-Date: 2026-07-17\n"
+"Last-Translator: ojs-services.com\n"
+"Language-Team: EN\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# ---------------------------------------------------------------- General
+
+msgid "plugins.generic.journalMetrics.displayName"
+msgstr "Journal Metrics"
+
+msgid "plugins.generic.journalMetrics.description"
+msgstr "A complete journal metrics suite: editorial statistics, turnaround times, usage, community and publication output — with a nightly snapshot cache, per-metric visibility control, manual (editor-declared) metrics, an admin dashboard, a public page, a sidebar block and a {journal_metric} template function."
+
+msgid "plugins.generic.journalMetrics.menuTitle"
+msgstr "Journal Metrics"
+
+msgid "plugins.generic.journalMetrics.dashboard"
+msgstr "View Metrics"
+
+msgid "plugins.generic.journalMetrics.navMenuItem.title"
+msgstr "Journal Metrics"
+
+msgid "plugins.generic.journalMetrics.navMenuItem.description"
+msgstr "Links to the public journal metrics page (shown only when the public page is enabled)."
+
+msgid "plugins.generic.journalMetrics.task.name"
+msgstr "Journal Metrics snapshot computation"
+
+# ---------------------------------------------------------------- Groups
+
+msgid "plugins.generic.journalMetrics.group.editorial"
+msgstr "Editorial Activity"
+
+msgid "plugins.generic.journalMetrics.group.times"
+msgstr "Turnaround Times"
+
+msgid "plugins.generic.journalMetrics.group.usage"
+msgstr "Usage"
+
+msgid "plugins.generic.journalMetrics.group.community"
+msgstr "Community"
+
+msgid "plugins.generic.journalMetrics.group.output"
+msgstr "Publication Output"
+
+msgid "plugins.generic.journalMetrics.group.manual"
+msgstr "Editor-Declared Metrics"
+
+# ---------------------------------------------------------------- Metrics
+
+msgid "plugins.generic.journalMetrics.metric.submissionsReceived"
+msgstr "Received"
+
+msgid "plugins.generic.journalMetrics.metric.submissionsAccepted"
+msgstr "Accepted"
+
+msgid "plugins.generic.journalMetrics.metric.submissionsDeclined"
+msgstr "Declined"
+
+msgid "plugins.generic.journalMetrics.metric.acceptanceRate"
+msgstr "Acceptance rate"
+
+msgid "plugins.generic.journalMetrics.metric.declineRate"
+msgstr "Rejection rate"
+
+msgid "plugins.generic.journalMetrics.metric.submissionsPublished"
+msgstr "Published"
+
+msgid "plugins.generic.journalMetrics.metric.firstDecisionDays"
+msgstr "Days to first decision"
+
+msgid "plugins.generic.journalMetrics.metric.submissionToAcceptDays"
+msgstr "Days to acceptance"
+
+msgid "plugins.generic.journalMetrics.metric.submissionToRejectDays"
+msgstr "Days to rejection"
+
+msgid "plugins.generic.journalMetrics.metric.reviewReportDays"
+msgstr "Average review time"
+
+msgid "plugins.generic.journalMetrics.metric.acceptToPublishDays"
+msgstr "Acceptance to publication"
+
+msgid "plugins.generic.journalMetrics.metric.submissionToPublishDays"
+msgstr "Submission to publication"
+
+msgid "plugins.generic.journalMetrics.metric.totalAbstractViews"
+msgstr "Total abstract views"
+
+msgid "plugins.generic.journalMetrics.metric.totalGalleyDownloads"
+msgstr "Total downloads"
+
+msgid "plugins.generic.journalMetrics.metric.currentYearUsage"
+msgstr "This year's views / downloads"
+
+msgid "plugins.generic.journalMetrics.metric.avgDownloadsPerArticle"
+msgstr "Average downloads per article"
+
+msgid "plugins.generic.journalMetrics.metric.topArticles"
+msgstr "Most read articles"
+
+msgid "plugins.generic.journalMetrics.metric.usageTrend"
+msgstr "Usage trend (24 months)"
+
+msgid "plugins.generic.journalMetrics.metric.accessCountryCount"
+msgstr "Countries reached (access)"
+
+msgid "plugins.generic.journalMetrics.metric.uniqueAuthors"
+msgstr "Unique authors"
+
+msgid "plugins.generic.journalMetrics.metric.reviewerCount"
+msgstr "Reviewers"
+
+msgid "plugins.generic.journalMetrics.metric.memberCount"
+msgstr "Registered users"
+
+msgid "plugins.generic.journalMetrics.metric.authorCountries"
+msgstr "Geographic distribution (author countries)"
+
+msgid "plugins.generic.journalMetrics.metric.completedReviews"
+msgstr "Completed reviews"
+
+msgid "plugins.generic.journalMetrics.metric.articlesPerYear"
+msgstr "Articles per year"
+
+msgid "plugins.generic.journalMetrics.metric.issuesPerYear"
+msgstr "Issues per year"
+
+msgid "plugins.generic.journalMetrics.metric.archiveDepth"
+msgstr "Archive depth (years)"
+
+msgid "plugins.generic.journalMetrics.metric.manualMetrics"
+msgstr "Editor-declared metrics"
+
+# ---------------------------------------------------------------- Tooltips (methodology)
+
+msgid "plugins.generic.journalMetrics.tooltip.acceptanceRate"
+msgstr "Accepted submissions divided by submissions received, computed by the OJS core statistics engine. Within a date range, only submissions received in that range that have reached a final decision are counted."
+
+msgid "plugins.generic.journalMetrics.tooltip.declineRate"
+msgstr "Declined submissions (desk + post-review) divided by submissions received, computed by the OJS core statistics engine. Within a date range, only submissions received in that range that have reached a final decision are counted."
+
+msgid "plugins.generic.journalMetrics.tooltip.firstDecisionDays"
+msgstr "Average days from submission to the first editorial decision of any kind. Incomplete and imported submissions are excluded."
+
+msgid "plugins.generic.journalMetrics.tooltip.submissionToAcceptDays"
+msgstr "Average days from submission to the first acceptance decision. Median and the 80th percentile (the value 80% of articles stay under) are shown alongside; n is the number of articles measured."
+
+msgid "plugins.generic.journalMetrics.tooltip.submissionToRejectDays"
+msgstr "Average days from submission to the first rejection decision, over declined submissions only."
+
+msgid "plugins.generic.journalMetrics.tooltip.reviewReportDays"
+msgstr "Average days between the review invitation and the completed review report. Declined and cancelled review assignments are excluded."
+
+msgid "plugins.generic.journalMetrics.tooltip.acceptToPublishDays"
+msgstr "Average days from the acceptance decision to the article's first publication date."
+
+msgid "plugins.generic.journalMetrics.tooltip.submissionToPublishDays"
+msgstr "Average days from submission to the article's first publication date (total editorial + production time)."
+
+# ---------------------------------------------------------------- UI strings
+
+msgid "plugins.generic.journalMetrics.ui.days"
+msgstr "days"
+
+msgid "plugins.generic.journalMetrics.ui.median"
+msgstr "median"
+
+msgid "plugins.generic.journalMetrics.ui.p80"
+msgstr "80th pct."
+
+msgid "plugins.generic.journalMetrics.ui.n"
+msgstr "n"
+
+msgid "plugins.generic.journalMetrics.ui.views"
+msgstr "views"
+
+msgid "plugins.generic.journalMetrics.ui.downloads"
+msgstr "downloads"
+
+msgid "plugins.generic.journalMetrics.ui.articles"
+msgstr "articles"
+
+msgid "plugins.generic.journalMetrics.ui.issues"
+msgstr "issues"
+
+msgid "plugins.generic.journalMetrics.ui.year"
+msgstr "Year"
+
+msgid "plugins.generic.journalMetrics.ui.allTime"
+msgstr "All time"
+
+msgid "plugins.generic.journalMetrics.ui.insufficient"
+msgstr "Insufficient data"
+
+msgid "plugins.generic.journalMetrics.ui.publicBadge"
+msgstr "Public"
+
+msgid "plugins.generic.journalMetrics.ui.topArticlesTitle"
+msgstr "Most read articles (top 10)"
+
+msgid "plugins.generic.journalMetrics.ui.trendTitle"
+msgstr "Monthly views & downloads (last 24 months)"
+
+msgid "plugins.generic.journalMetrics.ui.completedReviewsTitle"
+msgstr "Completed reviews per year"
+
+msgid "plugins.generic.journalMetrics.ui.byYearTitle"
+msgstr "By year"
+
+msgid "plugins.generic.journalMetrics.ui.articlesPerYearTitle"
+msgstr "Articles published per year"
+
+msgid "plugins.generic.journalMetrics.ui.issuesPerYearTitle"
+msgstr "Issues published per year"
+
+msgid "plugins.generic.journalMetrics.ui.since"
+msgstr "since"
+
+msgid "plugins.generic.journalMetrics.ui.totalIssues"
+msgstr "issues"
+
+msgid "plugins.generic.journalMetrics.ui.avgPerArticle"
+msgstr "avg. per article"
+
+msgid "plugins.generic.journalMetrics.ui.deskReject"
+msgstr "desk"
+
+msgid "plugins.generic.journalMetrics.ui.postReview"
+msgstr "post-review"
+
+msgid "plugins.generic.journalMetrics.ui.authorsDetail"
+msgstr "authors"
+
+msgid "plugins.generic.journalMetrics.ui.readersDetail"
+msgstr "readers"
+
+msgid "plugins.generic.journalMetrics.ui.noResults"
+msgstr "No results"
+
+msgid "plugins.generic.journalMetrics.ui.source"
+msgstr "Source"
+
+msgid "plugins.generic.journalMetrics.ui.lastUpdated"
+msgstr "Updated"
+
+msgid "plugins.generic.journalMetrics.ui.metricsUpdated"
+msgstr "Metrics last updated"
+
+msgid "plugins.generic.journalMetrics.ui.usagePending"
+msgstr "Usage statistics are being computed — they will appear after the next scheduled run."
+
+msgid "plugins.generic.journalMetrics.ui.countrySectionTitle"
+msgstr "Geographic Distribution"
+
+msgid "plugins.generic.journalMetrics.ui.searchCountry"
+msgstr "Search country…"
+
+msgid "plugins.generic.journalMetrics.ui.country"
+msgstr "Country"
+
+msgid "plugins.generic.journalMetrics.ui.authors"
+msgstr "Authors"
+
+msgid "plugins.generic.journalMetrics.ui.share"
+msgstr "Share"
+
+msgid "plugins.generic.journalMetrics.ui.distribution"
+msgstr "Distribution"
+
+msgid "plugins.generic.journalMetrics.ui.authorsByCountry"
+msgstr "Authors by Country"
+
+msgid "plugins.generic.journalMetrics.ui.articlesByCountry"
+msgstr "Articles by Country"
+
+msgid "plugins.generic.journalMetrics.ui.topCountries"
+msgstr "Top Countries"
+
+msgid "plugins.generic.journalMetrics.ui.authorDistribution"
+msgstr "Author Distribution"
+
+msgid "plugins.generic.journalMetrics.ui.countriesWord"
+msgstr "countries"
+
+msgid "plugins.generic.journalMetrics.ui.other"
+msgstr "Other"
+
+msgid "plugins.generic.journalMetrics.ui.rank"
+msgstr "#"
+
+msgid "plugins.generic.journalMetrics.ui.yearTableNote"
+msgstr "Note: \"Received\" counts submissions by their submission date; \"Accepted\", \"Declined\" and the rates follow the decision date; \"Published\" follows the first publication date. A submission received in one year may therefore be decided or published in another."
+
+# ---------------------------------------------------------------- Dashboard
+
+msgid "plugins.generic.journalMetrics.dashboard.title"
+msgstr "Journal Metrics"
+
+msgid "plugins.generic.journalMetrics.dashboard.neverComputed"
+msgstr "The metrics snapshot has not been computed yet."
+
+msgid "plugins.generic.journalMetrics.dashboard.recompute"
+msgstr "Recompute now"
+
+msgid "plugins.generic.journalMetrics.dashboard.settings"
+msgstr "Settings"
+
+msgid "plugins.generic.journalMetrics.settings.pageTitle"
+msgstr "Journal Metrics — Settings"
+
+msgid "plugins.generic.journalMetrics.settings.pageSubtitle"
+msgstr "Visibility, editor-declared metrics, deduplication, thresholds and the public page — all plugin settings live on this page."
+
+msgid "plugins.generic.journalMetrics.settings.saved"
+msgstr "Settings saved."
+
+# ---------------------------------------------------------------- Filters
+
+msgid "plugins.generic.journalMetrics.filter.allTime"
+msgstr "All time"
+
+msgid "plugins.generic.journalMetrics.filter.last12"
+msgstr "Last 12 months"
+
+msgid "plugins.generic.journalMetrics.filter.last24"
+msgstr "Last 24 months"
+
+msgid "plugins.generic.journalMetrics.filter.uniqueBy"
+msgstr "Unique by"
+
+msgid "plugins.generic.journalMetrics.filter.orcid"
+msgstr "ORCID"
+
+msgid "plugins.generic.journalMetrics.filter.email"
+msgstr "E-mail"
+
+msgid "plugins.generic.journalMetrics.filter.fullName"
+msgstr "Full name"
+
+# ---------------------------------------------------------------- Notes
+
+msgid "plugins.generic.journalMetrics.note.snapshot"
+msgstr "Values come from a nightly snapshot; use \"Recompute now\" for fresh figures."
+
+msgid "plugins.generic.journalMetrics.note.coreConsistency"
+msgstr "Editorial counters and rates match the OJS core Statistics screen exactly."
+
+msgid "plugins.generic.journalMetrics.note.uniqueBy"
+msgstr "Authors deduplicated by {$strategy}."
+
+# ---------------------------------------------------------------- Public page
+
+msgid "plugins.generic.journalMetrics.public.subtitle"
+msgstr "Transparent, up-to-date indicators of this journal's editorial performance and reach."
+
+msgid "plugins.generic.journalMetrics.public.noMetrics"
+msgstr "Metrics are being prepared. Please check back soon."
+
+msgid "plugins.generic.journalMetrics.public.autoNote"
+msgstr "Automatic metric values are computed directly from journal data and cannot be edited."
+
+msgid "plugins.generic.journalMetrics.public.manualNote"
+msgstr "Editor-declared metrics are provided by the editorial team with their source and date."
+
+# ---------------------------------------------------------------- Block
+
+msgid "plugins.generic.journalMetrics.block.displayName"
+msgstr "Journal Metrics Block"
+
+msgid "plugins.generic.journalMetrics.block.description"
+msgstr "Shows selected public journal metrics in the sidebar."
+
+msgid "plugins.generic.journalMetrics.block.title"
+msgstr "Journal Metrics"
+
+msgid "plugins.generic.journalMetrics.block.more"
+msgstr "All metrics"
+
+# ---------------------------------------------------------------- Settings
+
+msgid "plugins.generic.journalMetrics.settings.visibility"
+msgstr "Metric Visibility"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.desc"
+msgstr "Choose where each metric appears. \"Hidden\" removes it everywhere, \"Dashboard\" shows it to journal managers only, \"Public\" also shows it on the public page, in the sidebar block and via the {journal_metric} template function. Everything defaults to \"Dashboard\" — open metrics to the public deliberately."
+
+msgid "plugins.generic.journalMetrics.settings.visibility.group"
+msgstr "Group"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.metric"
+msgstr "Metric"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.level"
+msgstr "Visibility"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.hidden"
+msgstr "Hidden"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.admin"
+msgstr "Dashboard"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.public"
+msgstr "Public"
+
+msgid "plugins.generic.journalMetrics.settings.manual"
+msgstr "Editor-Declared Metrics"
+
+msgid "plugins.generic.journalMetrics.settings.manual.desc"
+msgstr "Up to 5 metrics whose values do not come from OJS (e.g. CiteScore, indexing coverage). They are shown as cards with an \"Editor-declared\" badge and are never charted. The update date is stamped automatically when a row changes."
+
+msgid "plugins.generic.journalMetrics.settings.manual.title"
+msgstr "Title"
+
+msgid "plugins.generic.journalMetrics.settings.manual.value"
+msgstr "Value"
+
+msgid "plugins.generic.journalMetrics.settings.manual.source"
+msgstr "Source"
+
+msgid "plugins.generic.journalMetrics.settings.manual.description"
+msgstr "Description"
+
+msgid "plugins.generic.journalMetrics.settings.manual.lastUpdated"
+msgstr "Updated"
+
+msgid "plugins.generic.journalMetrics.settings.manual.addRow"
+msgstr "Add metric"
+
+msgid "plugins.generic.journalMetrics.settings.scope"
+msgstr "Author Deduplication"
+
+msgid "plugins.generic.journalMetrics.settings.uniqueStrategy"
+msgstr "Unique author identification"
+
+msgid "plugins.generic.journalMetrics.settings.uniqueStrategy.desc"
+msgstr "How unique authors are identified when counting authors and their countries."
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback"
+msgstr "ORCID fallback"
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.desc"
+msgstr "Used when an author has no ORCID."
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.emailName"
+msgstr "E-mail, then full name"
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.email"
+msgstr "E-mail only"
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.name"
+msgstr "Full name only"
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.none"
+msgstr "No fallback (ORCID only)"
+
+msgid "plugins.generic.journalMetrics.settings.appearance"
+msgstr "Appearance & Thresholds"
+
+msgid "plugins.generic.journalMetrics.settings.countryDisplay"
+msgstr "Country display"
+
+msgid "plugins.generic.journalMetrics.settings.countryDisplay.both"
+msgstr "Code — Name"
+
+msgid "plugins.generic.journalMetrics.settings.countryDisplay.code"
+msgstr "Code only"
+
+msgid "plugins.generic.journalMetrics.settings.countryDisplay.name"
+msgstr "Name only"
+
+msgid "plugins.generic.journalMetrics.settings.sortOrder"
+msgstr "Table sort order"
+
+msgid "plugins.generic.journalMetrics.settings.sortOrder.countDesc"
+msgstr "Count (descending)"
+
+msgid "plugins.generic.journalMetrics.settings.sortOrder.nameAsc"
+msgstr "Country name (A–Z)"
+
+msgid "plugins.generic.journalMetrics.settings.minThreshold"
+msgstr "Minimum country count"
+
+msgid "plugins.generic.journalMetrics.settings.minThreshold.desc"
+msgstr "Countries with fewer authors/articles than this are hidden from country tables."
+
+msgid "plugins.generic.journalMetrics.settings.rateNThreshold"
+msgstr "Small-sample suppression (n)"
+
+msgid "plugins.generic.journalMetrics.settings.rateNThreshold.desc"
+msgstr "Rate and time metrics computed from fewer records than this are suppressed on public pages and dimmed on the dashboard (default 10)."
+
+msgid "plugins.generic.journalMetrics.settings.includeUnknown"
+msgstr "Include entries without a country"
+
+msgid "plugins.generic.journalMetrics.settings.showAuthorsTab"
+msgstr "Show \"Authors by Country\" table"
+
+msgid "plugins.generic.journalMetrics.settings.showArticlesTab"
+msgstr "Show \"Articles by Country\" table"
+
+msgid "plugins.generic.journalMetrics.settings.block"
+msgstr "Sidebar Block"
+
+msgid "plugins.generic.journalMetrics.settings.block.statusActive"
+msgstr "Sidebar block: currently active"
+
+msgid "plugins.generic.journalMetrics.settings.block.statusPassive"
+msgstr "Sidebar block: not in the sidebar"
+
+msgid "plugins.generic.journalMetrics.settings.block.manage"
+msgstr "Manage sidebar"
+
+msgid "plugins.generic.journalMetrics.settings.block.themeNote"
+msgstr "The block is placed via Settings → Website → Appearance → Sidebar; OJS's own sidebar management is the single source of truth. If your theme has no sidebar area, the block will not be displayed."
+
+msgid "plugins.generic.journalMetrics.settings.block.metrics"
+msgstr "Metrics shown in the block"
+
+msgid "plugins.generic.journalMetrics.settings.block.metricsDesc"
+msgstr "Selected metrics still pass the visibility and small-sample filters: a metric that is not \"Public\" never appears in the block. With no selection the block renders nothing."
+
+msgid "plugins.generic.journalMetrics.settings.publicPage"
+msgstr "Public Page"
+
+msgid "plugins.generic.journalMetrics.settings.enablePublicPage"
+msgstr "Enable the public metrics page"
+
+msgid "plugins.generic.journalMetrics.settings.enablePublicPage.desc"
+msgstr "When enabled, the page below becomes reachable by all visitors and the navigation menu item type becomes available. Only metrics set to \"Public\" are shown."
+
+msgid "plugins.generic.journalMetrics.settings.publicPageTitle"
+msgstr "Public page title"
+
+msgid "plugins.generic.journalMetrics.settings.publicPageUrl"
+msgstr "Public page address"
+
+msgid "plugins.generic.journalMetrics.settings.publicPageUrl.desc"
+msgstr "Add this address to a navigation menu, or use the \"Journal Metrics\" menu item type."
+
+msgid "plugins.generic.journalMetrics.settings.recompute"
+msgstr "Recompute"
+
+msgid "plugins.generic.journalMetrics.settings.recompute.desc"
+msgstr "Recomputes the fast metric groups immediately. Usage statistics (a heavy scan) are queued and refreshed by the next scheduled run."
+
+msgid "plugins.generic.journalMetrics.settings.recompute.done"
+msgstr "Done — usage statistics queued for the next scheduled run."
+
+msgid "plugins.generic.journalMetrics.settings.recompute.failed"
+msgstr "Recompute failed. Please try again."
+
+msgid "plugins.generic.journalMetrics.settings.coverage"
+msgstr "Editorial statistics coverage"
+
+msgid "plugins.generic.journalMetrics.settings.coverage.desc"
+msgstr "Optional. When a start year is set, editorial workflow statistics (submissions, decisions, turnaround times, completed reviews) cover that year onward — and this coverage is always openly declared on the dashboard and the public page. Leave empty to cover the whole archive. Usage statistics, publication output and community figures always cover the whole archive."
+
+msgid "plugins.generic.journalMetrics.settings.coverage.year"
+msgstr "Start year"
+
+msgid "plugins.generic.journalMetrics.settings.coverage.placeholder"
+msgstr "e.g. 2024"
+
+msgid "plugins.generic.journalMetrics.ui.coverageLine"
+msgstr "Editorial statistics cover {$year}–present."
+
+msgid "plugins.generic.journalMetrics.ui.coverageNote"
+msgstr "Covers {$year}–present."
+
+msgid "plugins.generic.journalMetrics.settings.showDeveloperCredit"
+msgstr "Show 'Developed by ojs-services.com' link on the public page"
+
+msgid "plugins.generic.journalMetrics.settings.showDeveloperCredit.desc"
+msgstr "Supports the development of this free plugin; you can turn it off if you prefer."

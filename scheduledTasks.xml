@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE scheduled_tasks SYSTEM "../../../lib/pkp/dtd/scheduledTasks.dtd">
+
+<!--
+  * plugins/generic/journalMetrics/scheduledTasks.xml
+  *
+  * Copyright (c) 2026 ojs-services.com
+  * Distributed under the GNU GPL v3.
+  *
+  * Journal Metrics scheduled task registry: the chunked snapshot
+  * computation. <frequency minute="0"/> = at most once per hour; the task
+  * resumes an unfinished cycle on each run and starts a NEW full cycle
+  * only when the last completed cycle is older than ~20 hours, so a full
+  * recomputation still happens once per day while unfinished cycles can
+  * progress hourly (R4).
+  -->
+
+<scheduled_tasks>
+	<task class="plugins.generic.journalMetrics.classes.JournalMetricsSnapshotTask">
+		<descr>Compute the nightly Journal Metrics snapshot (chunked).</descr>
+		<frequency minute="0"/>
+	</task>
+</scheduled_tasks>
