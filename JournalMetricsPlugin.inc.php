@@ -173,10 +173,12 @@ class JournalMetricsPlugin extends GenericPlugin {
 	}
 
 	/**
-	 * Register the plugin stylesheet for the frontend when the sidebar
-	 * block is active, so the block looks the same on EVERY page —
-	 * not only on the public metrics page (whose own template also links
-	 * the same file; the browser fetches it once either way).
+	 * Register the sidebar block's OWN small stylesheet
+	 * (css/journalMetricsBlock.css) for the frontend, so the block looks
+	 * the same on every page of the site. Registered from the display
+	 * hook — not from BlockPlugin::getContents() — because the sidebar
+	 * renders after the <head> (and its stylesheet list) is already
+	 * printed. The full dashboard stylesheet is never loaded site-wide.
 	 */
 	private function _registerBlockStyles($templateMgr) {
 		static $registered = false;
@@ -186,8 +188,11 @@ class JournalMetricsPlugin extends GenericPlugin {
 		$context = $request->getContext();
 		if (!$context) return;
 
+		// Only when the block can actually render: placed in the sidebar
+		// AND the editor's metric selection is not deliberately empty.
 		$sidebarBlocks = (array) $context->getData('sidebar');
 		if (!in_array('journalmetricsblockplugin', $sidebarBlocks, true)) return;
+		if (!count($this->getBlockMetrics($context->getId()))) return;
 
 		import('lib.pkp.classes.site.VersionCheck');
 		$release = '1.0.0.0';
@@ -196,7 +201,7 @@ class JournalMetricsPlugin extends GenericPlugin {
 
 		$templateMgr->addStyleSheet(
 			'journalMetricsBlock',
-			$request->getBaseUrl() . '/' . $this->getPluginPath() . '/css/journalMetrics.css?v=' . $release,
+			$request->getBaseUrl() . '/' . $this->getPluginPath() . '/css/journalMetricsBlock.css?v=' . $release,
 			array('contexts' => 'frontend')
 		);
 		$registered = true;

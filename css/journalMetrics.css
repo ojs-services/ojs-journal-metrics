@@ -402,23 +402,9 @@
 .jmx-public-subtitle { color: #64748b; font-size: 14px; margin: 0; }
 
 /* ------------------------------------------------------------------ */
-/*  Sidebar block                                                      */
+/*  Sidebar block: styles live in css/journalMetricsBlock.css, which   */
+/*  the block plugin registers on any frontend page where it renders.  */
 /* ------------------------------------------------------------------ */
-
-.jmx-block { font-size: 13px; }
-.jmx-block-list { list-style: none; margin: 0; padding: 0; }
-.jmx-block-item {
-	display: flex;
-	justify-content: space-between;
-	align-items: baseline;
-	gap: 10px;
-	padding: 5px 0;
-	border-bottom: 1px dashed #e2e8f0;
-}
-.jmx-block-item:last-child { border-bottom: none; }
-.jmx-block-label { color: #475569; }
-.jmx-block-value { font-weight: 700; white-space: nowrap; }
-.jmx-block-more { display: inline-block; margin-top: 8px; font-size: 12px; }
 
 /* ------------------------------------------------------------------ */
 /*  Settings page                                                      */
