@@ -134,8 +134,9 @@ class JournalMetricsHandler extends Handler {
 		$matrix = array();
 		foreach ($plugin->getMetricCatalog() as $key => $meta) {
 			$matrix[$key] = array(
-				'label' => __($base . 'metric.' . $key),
-				'group' => __($base . 'group.' . $meta['group']),
+				'label'    => __($base . 'metric.' . $key),
+				'group'    => __($base . 'group.' . $meta['group']),
+				'groupKey' => $meta['group'],
 			);
 		}
 

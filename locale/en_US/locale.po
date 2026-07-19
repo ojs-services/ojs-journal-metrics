@@ -580,3 +580,12 @@ msgstr "Show 'Developed by ojs-services.com' link on the public page"
 
 msgid "plugins.generic.journalMetrics.settings.showDeveloperCredit.desc"
 msgstr "Supports the development of this free plugin; you can turn it off if you prefer."
+
+msgid "plugins.generic.journalMetrics.settings.bulk.hidden"
+msgstr "Set all to Hidden"
+
+msgid "plugins.generic.journalMetrics.settings.bulk.admin"
+msgstr "Set all to Dashboard"
+
+msgid "plugins.generic.journalMetrics.settings.bulk.public"
+msgstr "Set all to Public"

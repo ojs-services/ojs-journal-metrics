@@ -580,3 +580,12 @@ msgstr "Kamu sayfasında 'ojs-services.com tarafından geliştirilmiştir' bağl
 
 msgid "plugins.generic.journalMetrics.settings.showDeveloperCredit.desc"
 msgstr "Ücretsiz eklentinin geliştirilmesini destekler; dilerseniz kapatabilirsiniz."
+
+msgid "plugins.generic.journalMetrics.settings.bulk.hidden"
+msgstr "Tümünü Gizli yap"
+
+msgid "plugins.generic.journalMetrics.settings.bulk.admin"
+msgstr "Tümünü Pano yap"
+
+msgid "plugins.generic.journalMetrics.settings.bulk.public"
+msgstr "Tümünü Public yap"

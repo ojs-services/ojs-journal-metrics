@@ -685,3 +685,16 @@ div.jmx-coverage-line { margin-left: 0; }
 @media print {
 	.jmx-top-link { text-decoration: none !important; color: inherit !important; }
 }
+
+/* Visibility matrix bulk helpers */
+.jmx-vis-bulkbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
+.jmx-btn-sm { padding: 5px 12px; font-size: 12.5px; }
+.jmx-btn-xs { padding: 2px 9px; font-size: 11.5px; border-radius: 6px; }
+.jmx-vis-grouprow td {
+	background: #f1f5f9;
+	border-top: 2px solid #e2e8f0;
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+.jmx-vis-groupbtns { text-align: right; }
+.jmx-vis-groupbtns .jmx-btn-xs { margin-left: 4px; }

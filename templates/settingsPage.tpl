@@ -106,6 +106,14 @@
 		<div class="jmx-section">
 			<div class="jmx-section-header"><h2>{translate key="plugins.generic.journalMetrics.settings.visibility"}</h2></div>
 			<p class="jmx-settings-hint">{translate key="plugins.generic.journalMetrics.settings.visibility.desc"}</p>
+			{* Bulk helpers: only set the <select> values in the form below —
+			   nothing is saved until the user presses Save (server-side
+			   whitelist validation is untouched). *}
+			<div class="jmx-vis-bulkbar">
+				<button type="button" class="jmx-btn jmx-btn-sm" data-jmx-bulk="hidden">{translate key="plugins.generic.journalMetrics.settings.bulk.hidden"}</button>
+				<button type="button" class="jmx-btn jmx-btn-sm" data-jmx-bulk="admin">{translate key="plugins.generic.journalMetrics.settings.bulk.admin"}</button>
+				<button type="button" class="jmx-btn jmx-btn-sm" data-jmx-bulk="public">{translate key="plugins.generic.journalMetrics.settings.bulk.public"}</button>
+			</div>
 			<div class="jmx-table-wrap">
 				<table class="jmx-settings-table">
 					<thead>
@@ -116,12 +124,24 @@
 						</tr>
 					</thead>
 					<tbody>
+						{assign var=jmxPrevGroup value=''}
 						{foreach from=$metricMatrix key=metricKey item=meta}
+						{if $meta.groupKey != $jmxPrevGroup}
+						{assign var=jmxPrevGroup value=$meta.groupKey}
+						<tr class="jmx-vis-grouprow">
+							<td><strong>{$meta.group|escape}</strong></td>
+							<td colspan="2" class="jmx-vis-groupbtns">
+								{foreach from=$visibilityOptions key=optValue item=optLabel}
+								<button type="button" class="jmx-btn jmx-btn-xs" data-jmx-bulk="{$optValue|escape}" data-jmx-group="{$meta.groupKey|escape}" aria-label="{$meta.group|escape}: {$optLabel|escape}">{$optLabel|escape}</button>
+								{/foreach}
+							</td>
+						</tr>
+						{/if}
 						<tr>
-							<td class="jmx-muted">{$meta.group|escape}</td>
+							<td class="jmx-muted"></td>
 							<td>{$meta.label|escape}</td>
 							<td>
-								<select name="visibility[{$metricKey|escape}]" class="jmx-vis-select jmx-filter-select">
+								<select name="visibility[{$metricKey|escape}]" class="jmx-vis-select jmx-filter-select" data-jmx-group="{$meta.groupKey|escape}">
 									{foreach from=$visibilityOptions key=optValue item=optLabel}
 									<option value="{$optValue|escape}" {if $visibility.$metricKey == $optValue}selected{/if}>{$optLabel|escape}</option>
 									{/foreach}
@@ -316,6 +336,21 @@
 
 		document.addEventListener('click', function(e) {ldelim}
 			var target = e.target;
+
+			// ---- Visibility bulk helpers: set the <select> values only;
+			// nothing is saved until the user presses Save.
+			var bulkBtn = target.closest && target.closest('[data-jmx-bulk]');
+			if (bulkBtn) {ldelim}
+				var bulkValue = bulkBtn.getAttribute('data-jmx-bulk');
+				var bulkGroup = bulkBtn.getAttribute('data-jmx-group');
+				var selects = document.querySelectorAll('.jmx-vis-select');
+				for (var bi = 0; bi < selects.length; bi++) {ldelim}
+					if (!bulkGroup || selects[bi].getAttribute('data-jmx-group') === bulkGroup) {ldelim}
+						selects[bi].value = bulkValue;
+					{rdelim}
+				{rdelim}
+				return;
+			{rdelim}
 
 			// ---- Add a manual metric row
 			if (target.closest && target.closest('#jmxManualAdd')) {ldelim}
