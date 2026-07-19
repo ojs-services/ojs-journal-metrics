@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.0.3.0 — 2026-07-19
+
+### Added
+- **Clickable most-read articles**: titles in the "Most read articles"
+  table now link to the article page, on both the dashboard and the
+  public page. Links print cleanly (no underline or link color on paper).
+- **Bulk visibility actions**: the Metric Visibility matrix gained
+  "Set all to Hidden / Dashboard / Public" buttons, plus the same trio on
+  every group header to change a single group at once. The buttons only
+  fill in the form — nothing changes until you press Save.
+
+### Fixed
+- The sidebar block now looks the same on every page of the site. Its
+  styles moved into a small dedicated stylesheet that loads exactly when
+  the block is shown — pages without the block load nothing extra.
+
 ## 1.0.2.0 — 2026-07-19
 
 ### Added

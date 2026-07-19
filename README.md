@@ -103,7 +103,7 @@ stamped with its last update date.
 ## Installation
 
 1. Website Settings → Plugins → **Upload A New Plugin** and select
-   `journalMetrics-1_0_2_0.tar.gz`.
+   `journalMetrics-1_0_3_0.tar.gz`.
 2. Enable **Journal Metrics** under Generic Plugins.
 3. Open **Journal Metrics** from the left management menu; the fast metric
    groups are computed on first visit.
@@ -148,7 +148,7 @@ output and community figures keep counting the whole archive.
 | Database | MySQL / MariaDB (standard OJS setups) |
 | Journals | single- and multi-journal installations |
 | Themes | works on any OJS 3.3 theme — default or custom; see our themes: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Plugin version | 1.0.2.0 |
+| Plugin version | 1.0.3.0 |
 
 ## License & support
 
