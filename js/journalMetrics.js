@@ -294,7 +294,15 @@
         '<div class="jmx-table-wrap"><table class="jmx-table"><thead><tr><th style="width:40px">' + escHtml(t('rank')) + '</th><th>' + escHtml(t('articles')) + '</th><th style="width:110px">' + escHtml(t('views')) + '</th></tr></thead><tbody>';
       var max = group.topArticles[0].views || 1;
       group.topArticles.forEach(function (article, i) {
-        html += '<tr><td class="jmx-muted">' + (i + 1) + '</td><td>' + escHtml(article.title || ('#' + article.submissionId)) + '</td>' +
+        var titleText = article.title || ('#' + article.submissionId);
+        var titleHtml = escHtml(titleText);
+        if (C.articleUrlBase && article.submissionId) {
+          // Stale-snapshot edge case: an article removed since the last
+          // snapshot may 404 until the next refresh — accepted as-is.
+          var href = C.articleUrlBase + '/' + encodeURIComponent(String(article.submissionId));
+          titleHtml = '<a class="jmx-top-link" href="' + escHtml(href) + '" rel="noopener">' + escHtml(titleText) + '</a>';
+        }
+        html += '<tr><td class="jmx-muted">' + (i + 1) + '</td><td>' + titleHtml + '</td>' +
           '<td><span class="jmx-count-bold">' + fmt(article.views) + '</span>' +
           '<div class="jmx-mini-bar-bg"><div class="jmx-mini-bar-fill" style="width:' + (article.views / max * 100) + '%"></div></div></td></tr>';
       });

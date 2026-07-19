@@ -107,6 +107,7 @@ class JournalMetricsHandler extends Handler {
 			'generatedAt'  => $viewModel['generatedAt'],
 			'usagePending' => $viewModel['usagePending'],
 			'coverageYear' => $viewModel['coverageYear'],
+			'articleUrlBase' => $request->getDispatcher()->url($request, ROUTE_PAGE, null, 'article', 'view'),
 			'csrfToken'    => $request->getSession()->getCSRFToken(),
 		));
 
@@ -495,6 +496,7 @@ class JournalMetricsHandler extends Handler {
 			'isAdmin'      => false,
 			'generatedAt'  => $viewModel['generatedAt'],
 			'coverageYear' => $viewModel['coverageYear'],
+			'articleUrlBase' => $request->getDispatcher()->url($request, ROUTE_PAGE, null, 'article', 'view'),
 			'showDeveloperCredit' => (bool) $settings['showDeveloperCredit'],
 			'pageTitle'    => $plugin->localize($settings['publicPageTitle'], $context) ?: 'Journal Metrics',
 		));

@@ -151,6 +151,7 @@
 		isAdmin:   true,
 		csrfToken: '{$csrfToken|escape:"javascript"}',
 		fetchUrl:  '{url page="journalmetrics" op="fetchData" escape=false}',
+		articleUrlBase: '{$articleUrlBase|escape:"javascript"}',
 		countryDisplay: '{$jmxSettings.countryDisplay|escape:"javascript"}',
 		sortOrder: '{$jmxSettings.sortOrder|escape:"javascript"}',
 		minThreshold: {$jmxSettings.minThreshold|intval},

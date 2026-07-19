@@ -136,6 +136,7 @@
 	window.journalMetricsConfig = {ldelim}
 		isAdmin: false,
 		fetchUrl: null,
+		articleUrlBase: '{$articleUrlBase|escape:"javascript"}',
 		countryDisplay: '{$jmxSettings.countryDisplay|escape:"javascript"}',
 		sortOrder: '{$jmxSettings.sortOrder|escape:"javascript"}',
 		minThreshold: {$jmxSettings.minThreshold|intval},
