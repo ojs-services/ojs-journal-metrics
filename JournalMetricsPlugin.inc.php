@@ -216,6 +216,16 @@ class JournalMetricsPlugin extends GenericPlugin {
 		$context = $request->getContext();
 		if (!$context) return;
 
+		// Journal managers and site admins only. Reviewers/authors also
+		// have a backend (the menu state exists for them too), but the
+		// metrics dashboard is not part of their interface — the handler
+		// would deny the page anyway; the link must not appear either.
+		$user = $request->getUser();
+		if (!$user) return;
+		import('lib.pkp.classes.security.Validation');
+		if (!$user->hasRole(array(ROLE_ID_MANAGER), $context->getId())
+				&& !Validation::isSiteAdmin()) return;
+
 		$router = $request->getRouter();
 		if (strpos(get_class($router), 'PageRouter') === false) return;
 
