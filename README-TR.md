@@ -51,10 +51,11 @@ editoryal şeffaflık göstermek için kullanır.
 
 **Editoryal etkinlik** — alınan, kabul edilen, reddedilen gönderiler
 (masa/hakem sonrası kırılımıyla), yayınlanan makaleler, kabul ve ret oranları.
-Sayaçlar ve oranlar OJS'nin kendi editoryal istatistik motoruyla hesaplanır;
-bu yüzden yerleşik İstatistik ekranlarıyla her zaman aynıdır.
-*Kabul oranı* = nihai karar almış gönderiler içinde kabul edilenlerin payı —
-OJS'nin kendi kullandığı metodolojinin birebir aynısı.
+Sayaçlar OJS'nin kendi editoryal istatistik motorundan gelir; bu yüzden
+yerleşik İstatistik ekranlarıyla her zaman aynıdır.
+*Kabul oranı* = kabul ÷ (kabul + ret): nihai karar almış gönderiler içinde
+kabul edilenlerin payı. İncelemesi süren gönderiler sayılmaz; oranın altındaki
+"n" paydasıdır.
 
 **Süreç süreleri** — ilk karara, kabule, redde kadar geçen gün; ortalama
 hakemlik süresi; kabulden yayına ve gönderiden yayına geçen süre. Her süre
@@ -105,7 +106,7 @@ metriklerden ayrı gösterilir ve her biri son güncelleme tarihiyle damgalanır
 ## Kurulum
 
 1. Web Sitesi Ayarları → Eklentiler → **Yeni Eklenti Yükle** ile
-   `journalMetrics-1_0_3_0.tar.gz` dosyasını seçin.
+   `journalMetrics-ojs3.3-1.0.3.1.tar.gz` dosyasını seçin.
 2. Generic Eklentiler altında **Journal Metrics**'i etkinleştirin.
 3. Sol yönetim menüsünden **Dergi Metrikleri**'ni açın; hızlı metrik grupları
    ilk ziyarette hesaplanır.
@@ -151,7 +152,7 @@ devam eder.
 | Veritabanı | MySQL / MariaDB (standart OJS kurulumları) |
 | Dergiler | tek ve çok dergili kurulumlar |
 | Temalar | her OJS 3.3 temasıyla çalışır — varsayılan veya özel; temalarımız: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Eklenti sürümü | 1.0.3.0 |
+| Eklenti sürümü | 1.0.3.1 |
 
 ## Lisans ve destek
 

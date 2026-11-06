@@ -1,5 +1,53 @@
 # Changelog
 
+## 1.0.3.1 — 2026-11-06 · OJS 3.3
+
+### Fixed
+- Acceptance and rejection rates are now calculated over decided
+  submissions only: accepted ÷ (accepted + declined) and
+  declined ÷ (accepted + declined). Submissions still under review no
+  longer lower the rates, the two rates add up to 100%, and the "n" shown
+  under a rate is exactly its denominator. Rates are shown with one
+  decimal: 66.7% in English, %66,7 in Turkish.
+- The same definition applies to the per-year table, the sidebar block
+  and the `{journal_metric}` template function. Per-year rates used to
+  follow a different group of submissions than the counts in the same
+  row; they now match the row's accepted and declined counts. A year
+  without any decision shows "—" instead of 0%.
+- `{journal_metric key="acceptanceRate"}` (and `declineRate`) now returns
+  the formatted percentage in the interface language (66.7% / %66,7)
+  instead of a fraction (0.65). Other values are returned unchanged.
+- Numbers on the dashboard, the public page and the sidebar block follow
+  the interface language (Turkish 2.825 · 192,6 · %66,7; English 2,825 ·
+  192.6 · 66.7%). The dashboard and public page used to follow the
+  visitor's browser language, and the sidebar block always used English.
+- The editorial statistics coverage year no longer changes how rates are
+  calculated; it still sets the first year that is counted.
+- Metrics already stored show the corrected rates right after the update;
+  no recomputation is needed.
+
+### Düzeltildi (TR)
+- Kabul ve ret oranları artık yalnız karar verilmiş gönderiler üzerinden
+  hesaplanıyor: kabul ÷ (kabul + ret) ve ret ÷ (kabul + ret). İncelemesi
+  süren gönderiler oranları düşürmüyor, iki oranın toplamı %100 ediyor ve
+  oranın altındaki "n" tam olarak paydası. Oranlar bir ondalıkla
+  gösteriliyor: Türkçede %66,7, İngilizcede 66.7%.
+- Aynı tanım yıllık tabloda, kenar bloğunda ve `{journal_metric}` şablon
+  işlevinde de geçerli. Yıllık oranlar önceden aynı satırdaki sayılardan
+  farklı bir gönderi grubuna dayanıyordu; artık satırın kabul ve ret
+  sayılarıyla uyumlu. Hiç karar olmayan yıl %0 yerine "—" gösteriyor.
+- `{journal_metric key="acceptanceRate"}` (ve `declineRate`) artık oranı
+  kesir (0.65) yerine arayüz dilinde biçimlenmiş yüzde olarak (%66,7 /
+  66.7%) döndürüyor. Diğer değerler değişmeden döner.
+- Panodaki, kamu sayfasındaki ve kenar bloğundaki sayılar arayüz dilini
+  izliyor (Türkçe 2.825 · 192,6 · %66,7; İngilizce 2,825 · 192.6 ·
+  66.7%). Önceden pano ve kamu sayfası ziyaretçinin tarayıcı dilini,
+  kenar bloğu ise her zaman İngilizce biçimi kullanıyordu.
+- Kapsam başlangıç yılı artık oran hesabını değiştirmiyor; yalnız hangi
+  yıldan itibaren sayılacağını belirliyor.
+- Kayıtlı metrikler güncellemeden hemen sonra düzeltilmiş oranları
+  gösteriyor; yeniden hesaplama gerekmiyor.
+
 ## 1.0.3.0 — 2026-07-19
 
 ### Added

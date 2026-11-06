@@ -49,10 +49,11 @@ times, and to demonstrate editorial transparency to readers and institutions.
 
 **Editorial activity** — submissions received, accepted, declined (with
 desk/post-review split), articles published, acceptance and rejection rates.
-Counters and rates are computed by OJS's own editorial statistics engine, so
-they always match the built-in Statistics screens.
-*Acceptance rate* = among submissions that reached a final decision, the share
-that were accepted — the same methodology OJS itself uses.
+Counters come from OJS's own editorial statistics engine, so they always
+match the built-in Statistics screens.
+*Acceptance rate* = accepted ÷ (accepted + declined): among submissions that
+reached a final decision, the share that were accepted. Submissions still
+under review are not counted, and the "n" under the rate is its denominator.
 
 **Turnaround times** — days to first decision, to acceptance, to rejection,
 average review time, acceptance-to-publication and submission-to-publication.
@@ -103,7 +104,7 @@ stamped with its last update date.
 ## Installation
 
 1. Website Settings → Plugins → **Upload A New Plugin** and select
-   `journalMetrics-1_0_3_0.tar.gz`.
+   `journalMetrics-ojs3.3-1.0.3.1.tar.gz`.
 2. Enable **Journal Metrics** under Generic Plugins.
 3. Open **Journal Metrics** from the left management menu; the fast metric
    groups are computed on first visit.
@@ -148,7 +149,7 @@ output and community figures keep counting the whole archive.
 | Database | MySQL / MariaDB (standard OJS setups) |
 | Journals | single- and multi-journal installations |
 | Themes | works on any OJS 3.3 theme — default or custom; see our themes: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Plugin version | 1.0.3.0 |
+| Plugin version | 1.0.3.1 |
 
 ## License & support
 
