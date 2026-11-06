@@ -6,11 +6,11 @@
  * Distributed under the GNU GPL v3.
  *
  * @class JournalMetricsCommunityProvider
- * @brief G4 community metrics: unique authors, role counts, author
+ * @brief Community metrics: unique authors, role counts, author
  *  countries, completed reviews per year.
  *
- * Role counts use the ROLE_ID constants verified in the Phase 0 report
- * (D12): REVIEWER=4096, AUTHOR=65536, READER=1048576. Disabled users are
+ * Role counts use the OJS 3.3 ROLE_ID constants: REVIEWER=4096,
+ * AUTHOR=65536, READER=1048576. Disabled users are
  * excluded everywhere. The unique-author deduplication is delegated to
  * JournalMetricsCountryDAO (ported verbatim from countryStats), honouring
  * the configured strategy (ORCID -> email -> name by default).
@@ -20,7 +20,7 @@
  * authors, role counts and author countries always cover the whole
  * archive — the archive enriches them by design.
  *
- * BINDING RULE (architecture decision 4): "completed review" =
+ * BINDING RULE: "completed review" =
  * date_completed IS NOT NULL AND declined = 0 AND cancelled = 0 AND
  * date_notified IS NOT NULL — identical filter in yearly and total counts.
  */
@@ -47,7 +47,7 @@ class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 		$covClause = $coverageYear > 0 ? " AND ra.date_notified >= ?" : "";
 		$covParams = $coverageYear > 0 ? array($coverageYear . '-01-01') : array();
 
-		// Unique authors + country distribution (countryStats dedup, D13)
+		// Unique authors + country distribution (countryStats deduplication)
 		$totals = $dao->getTotals($contextId, $settings['uniqueStrategy'], $settings['orcidFallback']);
 		$authorsByCountry = $dao->getAuthorsByCountry($contextId, $settings['uniqueStrategy'], $settings['orcidFallback']);
 		$articlesByCountry = $dao->getArticlesByCountry($contextId);
@@ -66,7 +66,7 @@ class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 		$authorsEnriched = $this->_plugin->enrichCountryData($authorsByCountry, 'author_count');
 		$articlesEnriched = $this->_plugin->enrichCountryData($articlesByCountry, 'article_count');
 
-		// Role-based counts (report D12), active (disabled = 0) users only
+		// Role-based counts, active (disabled = 0) users only
 		$roleCounts = $this->_roleCounts($contextId);
 
 		// Total distinct active users holding any role in this journal
@@ -80,7 +80,7 @@ class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 			array($contextId)
 		);
 
-		// Completed reviews per year + per-article average (report B7)
+		// Completed reviews per year + per-article average
 		$completedByYear = array();
 		$rows = $this->selectRows(
 			"SELECT YEAR(ra.date_notified) AS yr,
@@ -134,7 +134,7 @@ class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 
 	/**
 	 * Active user counts per role (ROLE_ID constants from
-	 * lib/pkp/classes/security/Role.inc.php, verified in Phase 0 D12).
+	 * lib/pkp/classes/security/Role.inc.php).
 	 */
 	private function _roleCounts($contextId) {
 		$rows = $this->selectRows(

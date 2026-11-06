@@ -12,7 +12,7 @@
   * resumes an unfinished cycle on each run and starts a NEW full cycle
   * only when the last completed cycle is older than ~20 hours, so a full
   * recomputation still happens once per day while unfinished cycles can
-  * progress hourly (R4).
+  * progress hourly.
   -->
 
 <scheduled_tasks>

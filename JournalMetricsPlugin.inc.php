@@ -439,21 +439,21 @@ class JournalMetricsPlugin extends GenericPlugin {
 	 */
 	public function getMetricCatalog() {
 		return array(
-			// G1 — Editorial
+			// Editorial
 			'submissionsReceived'      => array('group' => 'editorial'),
 			'submissionsAccepted'      => array('group' => 'editorial'),
 			'submissionsDeclined'      => array('group' => 'editorial'),
 			'acceptanceRate'           => array('group' => 'editorial'),
 			'declineRate'              => array('group' => 'editorial'),
 			'submissionsPublished'     => array('group' => 'editorial'),
-			// G2 — Turnaround times
+			// Turnaround times
 			'firstDecisionDays'        => array('group' => 'times'),
 			'submissionToAcceptDays'   => array('group' => 'times'),
 			'submissionToRejectDays'   => array('group' => 'times'),
 			'reviewReportDays'         => array('group' => 'times'),
 			'acceptToPublishDays'      => array('group' => 'times'),
 			'submissionToPublishDays'  => array('group' => 'times'),
-			// G3 — Usage
+			// Usage
 			'totalAbstractViews'       => array('group' => 'usage'),
 			'totalGalleyDownloads'     => array('group' => 'usage'),
 			'currentYearUsage'         => array('group' => 'usage'),
@@ -461,17 +461,17 @@ class JournalMetricsPlugin extends GenericPlugin {
 			'topArticles'              => array('group' => 'usage'),
 			'usageTrend'               => array('group' => 'usage'),
 			'accessCountryCount'       => array('group' => 'usage'),
-			// G4 — Community
+			// Community
 			'uniqueAuthors'            => array('group' => 'community'),
 			'reviewerCount'            => array('group' => 'community'),
 			'memberCount'              => array('group' => 'community'),
 			'authorCountries'          => array('group' => 'community'),
 			'completedReviews'         => array('group' => 'community'),
-			// G5 — Publication output
+			// Publication output
 			'articlesPerYear'          => array('group' => 'output'),
 			'issuesPerYear'            => array('group' => 'output'),
 			'archiveDepth'             => array('group' => 'output'),
-			// G6 — Manual metrics (one switch for the whole card group)
+			// Manual metrics (one switch for the whole card group)
 			'manualMetrics'            => array('group' => 'manual'),
 		);
 	}
@@ -521,7 +521,7 @@ class JournalMetricsPlugin extends GenericPlugin {
 			// dashboard and settings page always show it). Default ON.
 			'showDeveloperCredit' => 1,
 			// Rate/time suppression threshold: rates and time metrics with
-			// n below this value are hidden on rendered pages (R1/R9).
+			// n below this value are hidden on rendered pages.
 			'rateNThreshold'   => 10,
 			// Editorial statistics coverage start year (0 = no coverage,
 			// all-time). A transparent SCOPE DECLARATION, not a value edit:

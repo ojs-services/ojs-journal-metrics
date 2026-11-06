@@ -6,27 +6,26 @@
  * Distributed under the GNU GPL v3.
  *
  * @class JournalMetricsTimesProvider
- * @brief G2 turnaround-time metrics: avg / median / p80 / n for each span.
+ * @brief Turnaround-time metrics: avg / median / p80 / n for each span.
  *
- * BINDING RULE (architecture decision 3): duration metrics that need an
- * acceptance DATE use MIN(date_decided) WHERE decision IN (1, 7)
- * (ACCEPT + SEND_TO_PRODUCTION — Phase 0 report B5/B6; SKIP_REVIEW does
- * not exist in OJS 3.3). This looser set is for DATES only; counters and
- * rates (JournalMetricsEditorialProvider) always use the core service.
+ * BINDING RULE: duration metrics that need an acceptance DATE use
+ * MIN(date_decided) WHERE decision IN (1, 7) (ACCEPT +
+ * SEND_TO_PRODUCTION; SKIP_REVIEW does not exist in OJS 3.3). This looser
+ * set is for DATES only; the editorial counters
+ * (JournalMetricsEditorialProvider) always use the core service.
  *
- * BINDING RULE (architecture decision 4): "completed review" everywhere =
+ * BINDING RULE: "completed review" everywhere =
  * date_completed IS NOT NULL AND declined = 0 AND cancelled = 0 AND
  * date_notified IS NOT NULL.
  *
  * COVERAGE: the statsCoverageStartYear setting applies to every query in
- * this group via s.date_submitted >= coverage (a declared scope, always
- * announced on the public page — never a silent filter).
+ * this group — via s.date_submitted >= coverage, and via
+ * ra.date_notified >= coverage for review report times (a declared scope,
+ * always announced on the public page — never a silent filter).
  *
- * The inner queries are ported verbatim from Phase 0 report B6-1/2/3 with
- * one addition: an s.context_id filter (Phase 0 ran on a single-journal
- * database; multi-journal installs need the filter — R10). Aggregation
- * (avg/median/p80) happens in PHP with the exact rank semantics of the
- * Phase 0 window-function SQL, so the plugin also runs on MySQL < 8 /
+ * Every query filters on s.context_id so multi-journal installs count
+ * each journal separately. Aggregation (avg/median/p80) happens in PHP
+ * with nearest-rank semantics, so the plugin also runs on MySQL < 8 /
  * MariaDB < 10.2 (same approach as core PKPStatsEditorialService).
  */
 
@@ -92,7 +91,7 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 	}
 
 	/**
-	 * Submission -> acceptance (first decision IN (1,7)) — report B6-1.
+	 * Submission -> acceptance (first decision IN (1,7)).
 	 */
 	private function _submissionToAcceptDays($contextId, $coverageYear) {
 		list($cov, $covParams) = $this->_coverageClause('s.date_submitted', $coverageYear);
@@ -133,7 +132,7 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 	}
 
 	/**
-	 * Acceptance -> first publication — report B6-2.
+	 * Acceptance -> first publication.
 	 */
 	private function _acceptToPublishDays($contextId, $coverageYear) {
 		list($cov, $covParams) = $this->_coverageClause('s.date_submitted', $coverageYear);
@@ -154,7 +153,7 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 	}
 
 	/**
-	 * Submission -> first publication (total span) — report B6-3, with the
+	 * Submission -> first publication (total span), with the
 	 * core-style import exclusion (date_submitted <= first date_published).
 	 */
 	private function _submissionToPublishDays($contextId, $coverageYear) {
@@ -177,7 +176,7 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 
 	/**
 	 * Reviewer report time (date_notified -> date_completed) over all
-	 * completed reviews — single completed-review definition (decision 4).
+	 * completed reviews — the single completed-review definition above.
 	 */
 	private function _reviewReportDays($contextId, $coverageYear) {
 		list($cov, $covParams) = $this->_coverageClause('ra.date_notified', $coverageYear);

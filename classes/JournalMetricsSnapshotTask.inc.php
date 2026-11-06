@@ -6,7 +6,7 @@
  * Distributed under the GNU GPL v3.
  *
  * @class JournalMetricsSnapshotTask
- * @brief Chunked nightly snapshot computation (architecture decision 5 / R4).
+ * @brief Chunked nightly snapshot computation.
  *
  * Acron executes scheduled tasks in the shutdown phase of a web request,
  * bound by PHP max_execution_time. This task therefore works through a

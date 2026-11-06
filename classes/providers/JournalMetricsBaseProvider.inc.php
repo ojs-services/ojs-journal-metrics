@@ -9,9 +9,9 @@
  * @brief Abstract base class for metric providers.
  *
  * A provider computes one snapshot group for one journal context. Providers
- * are pure readers: they never write to the database. All SQL definitions
- * are binding to the Phase 0 research report (JOURNAL-METRICS-FAZ0-RAPOR.md);
- * the joins, filters and decision sets used there must not be altered.
+ * are pure readers: they never write to the database. The SQL definitions
+ * documented on each provider are fixed: their joins, filters and decision
+ * sets must not be altered without re-validating the resulting numbers.
  */
 
 import('lib.pkp.classes.db.DAO');
@@ -82,14 +82,14 @@ abstract class JournalMetricsBaseProvider extends DAO {
 	/**
 	 * Aggregate a list of day counts into {avg, median, p80, n}.
 	 *
-	 * Median/p80 semantics replicate the Phase 0 SQL exactly:
+	 * Median/p80 use nearest-rank semantics:
 	 * sort ascending, median = value at rank CEIL(n*0.5),
 	 * p80 = value at rank CEIL(n*0.8) (1-based ranks).
 	 *
 	 * The aggregation happens in PHP (instead of SQL window functions) so
 	 * the plugin also runs on MySQL < 8 / MariaDB < 10.2 — the same
-	 * approach OJS core takes in PKPStatsEditorialService. The values are
-	 * validated 1:1 against the Phase 0 window-function outputs.
+	 * approach OJS core takes in PKPStatsEditorialService. The results match
+	 * the equivalent window-function SQL 1:1.
 	 *
 	 * @param array $days list of integers
 	 * @return array ['avg'=>float|null,'median'=>int|null,'p80'=>int|null,'n'=>int]

@@ -6,9 +6,9 @@
  * Distributed under the GNU GPL v3.
  *
  * @class JournalMetricsEditorialProvider
- * @brief G1 editorial counters and rates.
+ * @brief Editorial counters and rates.
  *
- * BINDING RULE (architecture decision 3): all COUNTERS in this group come
+ * BINDING RULE: all COUNTERS in this group come
  * from the core editorialStats service output verbatim (accepted =
  * decision ACCEPT(1) only), so the counts always match the core
  * Statistics screen 1:1. The RATES are derived from those same counters
@@ -88,7 +88,7 @@ class JournalMetricsEditorialProvider extends JournalMetricsBaseProvider {
 			$averages = $this->_averagesFromByYear($byYear, $coverageYear, $currentYear);
 		} else {
 			// Yearly averages over full years; the service returns -1 when
-			// no full year of data exists — normalized to null (R6).
+			// no full year of data exists — normalized to null.
 			$averages = $service->getAverages(array('contextIds' => array($contextId)));
 			foreach ($averages as $key => $value) {
 				if ($value === -1) $averages[$key] = null;

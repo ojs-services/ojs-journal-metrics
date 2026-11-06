@@ -512,7 +512,7 @@ class JournalMetricsHandler extends Handler {
 	/**
 	 * "Recompute now": runs the fast provider groups synchronously and
 	 * queues the expensive usage group for the next scheduled run
-	 * (architecture decision 5).
+	 * (the usage queries are too slow for a web request).
 	 */
 	public function recompute($args, $request) {
 		if (!$request->isPost() || !$request->checkCSRF()) {
@@ -625,7 +625,7 @@ class JournalMetricsHandler extends Handler {
 	 * visibility "public" are included — everything else is stripped
 	 * before the data reaches the template. Data-poor metrics (n = 0 or
 	 * null value; rates with n below the threshold) are removed on public
-	 * surfaces and flagged 'insufficient' on the dashboard (R1).
+	 * surfaces and flagged 'insufficient' on the dashboard.
 	 *
 	 * @return array
 	 */
@@ -695,7 +695,7 @@ class JournalMetricsHandler extends Handler {
 			return $manager->getVisibility($snapshot, $key) === 'public';
 		};
 
-		// ---- G1 Editorial
+		// ---- Editorial
 		$cards = array();
 		if (isset($snapshot['editorial']['allTime'])) {
 			// Rates are derived from the stored counts at read time, so a
@@ -771,7 +771,7 @@ class JournalMetricsHandler extends Handler {
 			$model['groups']['editorial'] = array('cards' => $cards, 'byYear' => $byYear);
 		}
 
-		// ---- G2 Times
+		// ---- Turnaround times
 		$cards = array();
 		if (isset($snapshot['times'])) {
 			foreach ($snapshot['times'] as $key => $stat) {
@@ -790,7 +790,7 @@ class JournalMetricsHandler extends Handler {
 		}
 		if (!empty($cards)) $model['groups']['times'] = array('cards' => $cards);
 
-		// ---- G3 Usage
+		// ---- Usage
 		$cards = array();
 		$usageExtras = array();
 		if (isset($snapshot['usage'])) {
@@ -819,7 +819,7 @@ class JournalMetricsHandler extends Handler {
 			$model['groups']['usage'] = array_merge(array('cards' => $cards), $usageExtras);
 		}
 
-		// ---- G4 Community
+		// ---- Community
 		$cards = array();
 		$communityExtras = array();
 		if (isset($snapshot['community'])) {
@@ -867,7 +867,7 @@ class JournalMetricsHandler extends Handler {
 			$model['groups']['community'] = array_merge(array('cards' => $cards), $communityExtras);
 		}
 
-		// ---- G5 Output
+		// ---- Publication output
 		$cards = array();
 		$outputExtras = array();
 		if (isset($snapshot['output'])) {
@@ -894,7 +894,7 @@ class JournalMetricsHandler extends Handler {
 			$model['groups']['output'] = array_merge(array('cards' => $cards), $outputExtras);
 		}
 
-		// ---- G6 Manual (title/description resolved for the UI locale)
+		// ---- Manual metrics (title/description resolved for the UI locale)
 		if ($visible('manualMetrics') && !empty($snapshot['manual']) && is_array($snapshot['manual'])) {
 			$context = Application::get()->getRequest()->getContext();
 			$rows = array();
@@ -911,7 +911,7 @@ class JournalMetricsHandler extends Handler {
 	}
 
 	/**
-	 * Build one metric card, applying the data-poor rules (R1):
+	 * Build one metric card, applying the data-poor rules:
 	 * - value null (or n = 0 for rate/days types): public -> drop the card,
 	 *   dashboard -> keep it flagged 'insufficient' (rendered dimmed).
 	 * - rate/days types with 0 < n < threshold: same treatment.

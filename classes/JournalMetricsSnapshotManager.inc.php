@@ -8,13 +8,13 @@
  * @class JournalMetricsSnapshotManager
  * @brief Reads and writes the per-journal metrics snapshot.
  *
- * Storage (architecture decision 2 / Phase 0 F16): ONE JSON document per
+ * Storage: ONE JSON document per
  * journal in plugin_settings under the key `metricsSnapshot`, setting type
  * 'object' (core DAO json_encode/json_decode). plugin_settings.setting_value
  * is TEXT (64 KB); every write logs the encoded size and raises a warning
- * above 48 KB (R9).
+ * above 48 KB.
  *
- * The snapshot schema is the Phase 0 report §5 schema plus
+ * The snapshot holds one section per metric group plus
  * usage.monthlySeries (last 24 months) and mandatory `n` on every
  * duration/rate metric. schemaVersion 2: editorial rates are stored
  * unrounded over the decided cohort. Readers never trust stored rates —
@@ -23,7 +23,7 @@
  */
 
 define('JOURNAL_METRICS_SCHEMA_VERSION', 2);
-define('JOURNAL_METRICS_SNAPSHOT_WARN_BYTES', 49152); // 48 KB (R9)
+define('JOURNAL_METRICS_SNAPSHOT_WARN_BYTES', 49152); // 48 KB
 
 class JournalMetricsSnapshotManager {
 
@@ -156,7 +156,7 @@ class JournalMetricsSnapshotManager {
 	}
 
 	/**
-	 * Small-sample suppression (R1 / architecture decision 9): true when a
+	 * Small-sample suppression: true when a
 	 * rate or duration metric rests on fewer than $threshold records and
 	 * must therefore not be published on public surfaces (public page
 	 * cards, sidebar block, {journal_metric}).
@@ -220,7 +220,7 @@ class JournalMetricsSnapshotManager {
 		$snapshot['groupsUpdatedAt'][$group] = $this->_now();
 
 		// Copy the visibility map into the snapshot on every write so the
-		// public page reads a single JSON document (architecture decision 6).
+		// public page reads a single JSON document.
 		$snapshot['visibility'] = $this->_plugin->getVisibilityMap($contextId);
 
 		// Coverage declaration (backward-compatible root field within
@@ -265,7 +265,7 @@ class JournalMetricsSnapshotManager {
 	}
 
 	// ------------------------------------------------------------------
-	//  Work queue (chunked nightly runs — R4)
+	//  Work queue (chunked nightly runs)
 	// ------------------------------------------------------------------
 
 	/**

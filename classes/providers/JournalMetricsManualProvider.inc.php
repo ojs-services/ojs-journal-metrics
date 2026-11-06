@@ -6,7 +6,7 @@
  * Distributed under the GNU GPL v3.
  *
  * @class JournalMetricsManualProvider
- * @brief G6 manual metrics: copies the editor-declared rows from the
+ * @brief Manual metrics: copies the editor-declared rows from the
  *  plugin settings into the snapshot so the public page reads ONE JSON.
  *
  * The rows themselves are maintained in the settings form (max 5 rows;

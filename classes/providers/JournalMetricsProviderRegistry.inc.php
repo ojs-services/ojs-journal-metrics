@@ -10,7 +10,7 @@
  *
  * Fast (cheap) providers come first so a fresh install gets a usable
  * snapshot on the first chunked run; the expensive usage provider runs
- * last and may be deferred across runs (architecture decision 5 / R4).
+ * last and may be deferred across runs.
  */
 
 class JournalMetricsProviderRegistry {

@@ -6,15 +6,14 @@
  * Distributed under the GNU GPL v3.
  *
  * @class JournalMetricsOutputProvider
- * @brief G5 publication output: articles/year, issues/year, archive depth.
+ * @brief Publication output: articles/year, issues/year, archive depth.
  *
  * COVERAGE: statsCoverageStartYear does NOT apply here — publication
  * output always covers the whole archive.
  *
- * Queries ported verbatim from Phase 0 report E14-1/2/3. Articles are
- * counted by their FIRST published publication so later versions are not
- * double-counted (same rule as the core editorialStats service — the two
- * were cross-validated in Phase 0: 2024=507, 2025=308 on both paths).
+ * Articles are counted by their FIRST published publication so later
+ * versions are not double-counted — the same rule as the core
+ * editorialStats service, whose yearly figures these queries reproduce.
  */
 
 import('plugins.generic.journalMetrics.classes.providers.JournalMetricsBaseProvider');
@@ -34,7 +33,7 @@ class JournalMetricsOutputProvider extends JournalMetricsBaseProvider {
 	public function compute($contextId) {
 		$contextId = (int) $contextId;
 
-		// E14-1: published articles per year (first published publication)
+		// Published articles per year (first published publication)
 		$articlesByYear = array();
 		$rows = $this->selectRows(
 			"SELECT YEAR(first_pub) AS yr, COUNT(*) AS articles FROM (
@@ -52,7 +51,7 @@ class JournalMetricsOutputProvider extends JournalMetricsBaseProvider {
 			$articlesByYear[(string) $row['yr']] = (int) $row['articles'];
 		}
 
-		// E14-2: published issues per year
+		// Published issues per year
 		$issuesByYear = array();
 		$rows = $this->selectRows(
 			"SELECT YEAR(date_published) AS yr, COUNT(*) AS issues
@@ -65,7 +64,7 @@ class JournalMetricsOutputProvider extends JournalMetricsBaseProvider {
 			$issuesByYear[(string) $row['yr']] = (int) $row['issues'];
 		}
 
-		// E14-3: archive depth
+		// Archive depth
 		$depth = $this->selectRow(
 			"SELECT MIN(YEAR(date_published)) AS first_year,
 				MAX(YEAR(date_published)) AS last_year,

@@ -6,14 +6,14 @@
  * Distributed under the GNU GPL v3.
  *
  * @class JournalMetricsUsageProvider
- * @brief G3 usage metrics from the legacy OJS 3.3 `metrics` table.
+ * @brief Usage metrics from the legacy OJS 3.3 `metrics` table.
  *
- * ISOLATION RULE (architecture decision 1 / R3): every query against the
+ * ISOLATION RULE: every query against the
  * `metrics` table lives in THIS class and nowhere else. OJS 3.4+ replaces
  * the table with metrics_* split tables; a future port only touches this
  * provider.
  *
- * Constants verified in the Phase 0 report (C8):
+ * Constants (OJS 3.3):
  *   ASSOC_TYPE_SUBMISSION      = 1048585  (abstract landing page views)
  *   ASSOC_TYPE_SUBMISSION_FILE = 515      (galley file downloads)
  *   metric_type                = 'ojs::counter'
@@ -22,7 +22,7 @@
  * covers the whole archive (the archive enriches these figures).
  *
  * This provider is EXPENSIVE (~10-40 s per aggregate on multi-million-row
- * tables — Phase 0 C10) and therefore only ever runs inside the chunked
+ * tables) and therefore only ever runs inside the chunked
  * nightly task, never synchronously from a web request.
  */
 
@@ -30,7 +30,7 @@ import('plugins.generic.journalMetrics.classes.providers.JournalMetricsBaseProvi
 
 class JournalMetricsUsageProvider extends JournalMetricsBaseProvider {
 
-	/** Phase 0 C8 constants (decimal values of the ASSOC_TYPE_* hex) */
+	/** Decimal values of the ASSOC_TYPE_* hex constants */
 	const ASSOC_SUBMISSION = 1048585;
 	const ASSOC_SUBMISSION_FILE = 515;
 	const METRIC_TYPE = 'ojs::counter';
@@ -60,7 +60,7 @@ class JournalMetricsUsageProvider extends JournalMetricsBaseProvider {
 
 		// --- Single pass over views+downloads grouped by month.
 		// Feeds: totals, current-year figures AND the 24-month series
-		// (architecture decision 2: same scan, no extra passes).
+		// (one scan, no extra passes).
 		$monthly = $this->selectRows(
 			"SELECT m.month,
 				SUM(CASE WHEN m.assoc_type = " . self::ASSOC_SUBMISSION . " THEN m.metric ELSE 0 END) AS views,
@@ -95,7 +95,7 @@ class JournalMetricsUsageProvider extends JournalMetricsBaseProvider {
 		$series = array_slice($byMonth, 0, self::SERIES_MONTHS, true);
 		ksort($series);
 
-		// --- Average downloads per article (report C9-4)
+		// --- Average downloads per article
 		$avgRow = $this->selectRow(
 			"SELECT SUM(m.metric) AS total_downloads,
 				COUNT(DISTINCT m.submission_id) AS articles
@@ -110,7 +110,7 @@ class JournalMetricsUsageProvider extends JournalMetricsBaseProvider {
 			? round(((int) $avgRow['total_downloads']) / $articlesWithDownloads, 1)
 			: null;
 
-		// --- Top 10 most viewed articles (report C9-5); titles resolved
+		// --- Top 10 most viewed articles; titles resolved
 		// afterwards in a cheap per-id query (locale-aware).
 		$top = $this->selectRows(
 			"SELECT m.submission_id, SUM(m.metric) AS total_views
@@ -133,8 +133,8 @@ class JournalMetricsUsageProvider extends JournalMetricsBaseProvider {
 			);
 		}
 
-		// --- Access country count (reserved — G3-6). Phase 0 C11 found
-		// country_id empty on every inspected install; 0 distinct -> null
+		// --- Access country count (reserved). country_id is empty on
+		// typical OJS 3.3 installs; 0 distinct -> null
 		// so the metric is treated as "no data" (RED) and auto-hidden.
 		$countryRow = $this->selectRow(
 			"SELECT COUNT(DISTINCT m.country_id) AS cnt
