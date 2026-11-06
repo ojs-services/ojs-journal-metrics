@@ -1,21 +1,32 @@
 /**
  * Journal Metrics Plugin — dashboard & public page styles.
  * Self-contained; scoped under .jmx-dashboard / .jmx-public-page.
+ *
+ * Accessibility floor for every view: no text under 12px, text contrast
+ * at least 4.5:1 against its own background, interactive targets at least
+ * 24 x 24px. --jmx-primary (#0d9488) is for fills and decoration only —
+ * text and text-bearing buttons use --jmx-primary-dark (5.5:1 on white).
  */
 
 .jmx-dashboard {
 	--jmx-primary: #0d9488;
 	--jmx-primary-dark: #0f766e;
+	--jmx-primary-darker: #115e59;
 	--jmx-bg: #f8fafc;
 	--jmx-card-bg: #ffffff;
 	--jmx-border: #e2e8f0;
 	--jmx-text: #1e293b;
-	--jmx-text-muted: #64748b;
+	--jmx-text-muted: #475569;
 	--jmx-radius: 12px;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 	color: var(--jmx-text);
 	padding: 4px 2px 24px;
+	/* backend pages: where the OJS side menu leaves only a sliver of the
+	   screen (phones), the page keeps a usable width and scrolls sideways
+	   instead of squeezing fields and checkboxes below 24px */
+	min-width: 300px;
 }
+.jmx-public-page .jmx-dashboard { min-width: 0; }
 
 /* ------------------------------------------------------------------ */
 /*  Header                                                             */
@@ -48,7 +59,7 @@
 	border: 1px solid #fde68a;
 	border-radius: 999px;
 	padding: 2px 10px;
-	font-size: 11.5px;
+	font-size: 12px;
 	font-weight: 600;
 }
 .jmx-header-right {
@@ -75,8 +86,8 @@
 	transition: all .15s;
 }
 .jmx-btn:hover { border-color: var(--jmx-primary); color: var(--jmx-primary-dark); text-decoration: none; }
-.jmx-btn-primary { background: var(--jmx-primary); border-color: var(--jmx-primary); color: #fff; }
-.jmx-btn-primary:hover { background: var(--jmx-primary-dark); color: #fff; }
+.jmx-btn-primary { background: var(--jmx-primary-dark); border-color: var(--jmx-primary-dark); color: #fff; }
+.jmx-btn-primary:hover { background: var(--jmx-primary-darker); border-color: var(--jmx-primary-darker); color: #fff; }
 .jmx-btn[disabled] { opacity: .55; cursor: default; }
 .jmx-filter-select {
 	border: 1px solid var(--jmx-border);
@@ -147,7 +158,7 @@
 .jmx-card-value .jmx-unit { font-size: 13px; font-weight: 600; color: var(--jmx-text-muted); }
 .jmx-card-sub {
 	margin-top: 5px;
-	font-size: 11.5px;
+	font-size: 12px;
 	color: var(--jmx-text-muted);
 	line-height: 1.4;
 }
@@ -169,9 +180,9 @@
 .jmx-badge {
 	display: inline-block;
 	border-radius: 999px;
-	font-size: 10px;
+	font-size: 12px;
 	font-weight: 700;
-	letter-spacing: .3px;
+	letter-spacing: .2px;
 	padding: 2px 8px;
 	text-transform: uppercase;
 	white-space: nowrap;
@@ -179,18 +190,22 @@
 .jmx-badge-public { background: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; }
 .jmx-card-manual { border-left: 3px solid #eab308; }
 
-/* Methodology tooltip */
+/* Methodology tooltip: an 18px disc inside a transparent 3px ring, so the
+   focus / hover target is 24 x 24px while the visual stays small. */
 .jmx-tip {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 15px;
-	height: 15px;
-	margin-left: 5px;
+	box-sizing: content-box;
+	width: 18px;
+	height: 18px;
+	border: 3px solid transparent;
+	background-clip: padding-box;
+	margin-left: 2px;
 	border-radius: 50%;
-	background: var(--jmx-border);
+	background-color: var(--jmx-border);
 	color: var(--jmx-text-muted);
-	font-size: 10px;
+	font-size: 12px;
 	font-weight: 700;
 	cursor: help;
 	position: relative;
@@ -206,7 +221,7 @@
 	width: 240px;
 	background: #1e293b;
 	color: #f1f5f9;
-	font-size: 11.5px;
+	font-size: 12.5px;
 	font-weight: 400;
 	line-height: 1.5;
 	padding: 9px 11px;
@@ -243,9 +258,13 @@
 	font-weight: 700;
 	margin-bottom: 10px;
 }
-.jmx-trend-svg, .jmx-yearbar-svg { width: 100%; height: auto; display: block; }
+/* Bar charts are drawn at the width of their box (js/journalMetrics.js),
+   one SVG unit = one CSS pixel, so axis labels are a real 12px on every
+   screen; on narrow screens fewer labels are printed instead. */
+.jmx-chart-host { width: 100%; overflow-x: auto; }
+.jmx-trend-svg, .jmx-yearbar-svg { width: 100%; height: auto; display: block; max-width: none; }
 .jmx-grid { stroke: #e2e8f0; stroke-width: 1; }
-.jmx-axis-label { font-size: 9px; fill: #64748b; }
+.jmx-axis-label { font-size: 12px; fill: #475569; }
 .jmx-legend {
 	display: flex;
 	gap: 16px;
@@ -275,16 +294,26 @@
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
-	min-width: 26px;
+	min-width: 4px;
 	transition: width .4s;
 }
-.jmx-bar-fill span { color: #fff; font-size: 10.5px; font-weight: 700; padding-right: 7px; text-shadow: 0 1px 2px rgba(0,0,0,.45); }
+/* the count sits next to the bar in body text colour (white on the
+   palette colours fell below 4.5:1) */
+.jmx-bar-count {
+	min-width: 34px;
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--jmx-text);
+	text-align: right;
+	white-space: nowrap;
+}
 
-/* Donut */
+/* Donut (drawn in a 200-unit viewBox shown at 170px: 0.85 scale, so the
+   15-unit label is 12.75px on screen) */
 .jmx-donut-wrapper { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .jmx-donut-svg { width: 170px; height: 170px; flex-shrink: 0; }
 .jmx-donut-center-text { font-size: 26px; font-weight: 800; text-anchor: middle; fill: #1e293b; }
-.jmx-donut-center-label { font-size: 10px; text-anchor: middle; fill: #64748b; }
+.jmx-donut-center-label { font-size: 15px; text-anchor: middle; fill: #475569; }
 .jmx-donut-legend { flex: 1; min-width: 150px; display: flex; flex-direction: column; gap: 4px; }
 .jmx-donut-legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; }
 .jmx-donut-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
@@ -332,13 +361,16 @@
 }
 .jmx-table-wrap { overflow-x: auto; }
 .jmx-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.jmx-table th {
+/* Header cells set their own background and colour: themes style bare
+   <th> (e.g. #ddd), which would otherwise sit under our muted text. */
+.jmx-dashboard .jmx-table th {
 	text-align: left;
-	font-size: 11px;
+	font-size: 12px;
 	font-weight: 700;
 	text-transform: uppercase;
-	letter-spacing: .4px;
+	letter-spacing: .3px;
 	color: var(--jmx-text-muted);
+	background: var(--jmx-card-bg);
 	border-bottom: 2px solid var(--jmx-border);
 	padding: 8px 10px;
 	white-space: nowrap;
@@ -356,12 +388,12 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-width: 30px;
-	height: 20px;
+	min-width: 34px;
+	height: 22px;
 	background: #f1f5f9;
 	border: 1px solid var(--jmx-border);
 	border-radius: 4px;
-	font-size: 10px;
+	font-size: 12px;
 	font-weight: 700;
 	color: var(--jmx-text-muted);
 }
@@ -376,7 +408,7 @@
 	display: flex;
 	gap: 18px;
 	flex-wrap: wrap;
-	font-size: 11.5px;
+	font-size: 12px;
 	color: var(--jmx-text-muted);
 	padding: 10px 4px 0;
 }
@@ -385,12 +417,15 @@
 
 .jmx-developer-credit { margin-top: 14px; text-align: right; }
 .jmx-developer-credit a {
-	font-size: 11.5px;
+	display: inline-block;
+	padding: 4px 0;
+	line-height: 16px;
+	font-size: 12px;
 	color: var(--jmx-text-muted);
 	text-decoration: none;
 }
 .jmx-developer-credit a:hover { color: var(--jmx-primary-dark); }
-.jmx-dev-icon { color: var(--jmx-primary); margin-right: 3px; }
+.jmx-dev-icon { color: var(--jmx-primary-dark); margin-right: 3px; }
 
 /* ------------------------------------------------------------------ */
 /*  Public page                                                        */
@@ -399,7 +434,8 @@
 .jmx-public-page .jmx-dashboard { padding-top: 0; }
 .jmx-public-header { margin: 6px 0 18px; }
 .jmx-public-header h2 { font-size: 24px; font-weight: 800; margin: 0 0 6px; }
-.jmx-public-subtitle { color: #64748b; font-size: 14px; margin: 0; }
+.jmx-public-subtitle { color: #475569; font-size: 14px; margin: 0; }
+.jmx-empty-state { text-align: center; padding: 36px 16px; color: var(--jmx-text-muted); }
 
 /* ------------------------------------------------------------------ */
 /*  Sidebar block: styles live in css/journalMetricsBlock.css, which   */
@@ -462,7 +498,7 @@
 	border: 1px solid var(--jmx-border);
 	border-radius: 999px;
 	color: #475569;
-	font-size: 10px;
+	font-size: 12px;
 	font-weight: 700;
 	padding: 2px 8px;
 	white-space: nowrap;
@@ -474,7 +510,8 @@
 	margin: 10px 0 4px;
 	font-size: 13px;
 }
-.jmx-check-list label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+/* the whole label row is the click target: at least 24px tall */
+.jmx-check-list label { display: flex; align-items: center; gap: 8px; min-height: 24px; cursor: pointer; }
 .jmx-check-grid {
 	flex-direction: row;
 	flex-wrap: wrap;
@@ -508,7 +545,7 @@
 	font-size: 13px;
 	word-break: break-all;
 }
-.jmx-url-box a { color: var(--jmx-primary-dark); text-decoration: none; font-weight: 600; }
+.jmx-url-box a { display: inline-block; padding: 4px 0; color: var(--jmx-primary-dark); text-decoration: none; font-weight: 600; }
 .jmx-form-actions { margin: 4px 0 20px; }
 .jmx-btn-lg { font-size: 14px; padding: 10px 26px; }
 
@@ -517,17 +554,20 @@
 /* ------------------------------------------------------------------ */
 
 .jmx-settings-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 6px 0 10px; }
-.jmx-settings-table th {
+.jmx-dashboard .jmx-settings-table th {
 	text-align: left;
-	font-size: 11px;
+	font-size: 12px;
 	text-transform: uppercase;
-	letter-spacing: .4px;
-	color: #64748b;
+	letter-spacing: .3px;
+	color: var(--jmx-text-muted);
+	background: var(--jmx-card-bg);
 	border-bottom: 2px solid #e2e8f0;
 	padding: 6px 8px;
 }
 .jmx-settings-table td { border-bottom: 1px solid #f1f5f9; padding: 6px 8px; }
-.jmx-settings-table input[type="text"] { width: 100%; box-sizing: border-box; }
+/* min-width: on a narrow screen the table scrolls inside .jmx-table-wrap
+   instead of squeezing the fields next to their language chips */
+.jmx-settings-table input[type="text"] { width: 100%; box-sizing: border-box; min-width: 90px; min-height: 30px; padding: 4px 8px; font-size: 13px; }
 .jmx-vis-select { min-width: 110px; }
 .jmx-row-remove {
 	background: #fee2e2;
@@ -537,6 +577,7 @@
 	font-size: 12px;
 	font-weight: 700;
 	padding: 4px 10px;
+	min-height: 26px;
 	cursor: pointer;
 }
 .jmx-row-add {
@@ -547,9 +588,10 @@
 	font-size: 12px;
 	font-weight: 700;
 	padding: 5px 12px;
+	min-height: 26px;
 	cursor: pointer;
 }
-.jmx-settings-hint { font-size: 11.5px; color: #64748b; margin: 4px 0 12px; }
+.jmx-settings-hint { font-size: 12px; color: var(--jmx-text-muted); margin: 4px 0 12px; }
 
 @media (max-width: 640px) {
 	.jmx-cards { grid-template-columns: 1fr 1fr; }
@@ -573,7 +615,7 @@
 }
 .jmx-table-footnote {
 	margin: 8px 2px 0;
-	font-size: 11.5px;
+	font-size: 12px;
 	color: #475569;
 	line-height: 1.5;
 }
@@ -621,6 +663,8 @@
 	.jmx-cards { gap: 8px; }
 	.jmx-charts-row { grid-template-columns: 1fr; }
 	.jmx-trend-svg, .jmx-yearbar-svg, .jmx-donut-svg { max-height: 220px; }
+	.jmx-chart-host { overflow: visible; }
+	.jmx-trend-svg, .jmx-yearbar-svg { width: 100% !important; }
 
 	/* keep chart colors legible on paper */
 	.jmx-bar-fill,
@@ -654,19 +698,21 @@ div.jmx-coverage-line { margin-left: 0; }
 	border-radius: 10px;
 	background: #e0f2f1;
 	color: #0f766e;
-	font-size: 11px;
+	font-size: 12px;
 	font-weight: 600;
 	letter-spacing: 0.02em;
 }
 
 /* Clickable most-read article titles */
 .jmx-top-link {
+	display: inline-block;
+	padding: 4px 0;
 	color: inherit;
 	text-decoration: underline;
 	text-underline-offset: 2px;
 	text-decoration-color: #94a3b8;
 }
-.jmx-top-link:hover { color: #0d9488; text-decoration-color: #0d9488; }
+.jmx-top-link:hover { color: var(--jmx-primary-dark); text-decoration-color: var(--jmx-primary-dark); }
 
 @media print {
 	.jmx-top-link { text-decoration: none !important; color: inherit !important; }
@@ -674,8 +720,8 @@ div.jmx-coverage-line { margin-left: 0; }
 
 /* Visibility matrix bulk helpers */
 .jmx-vis-bulkbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
-.jmx-btn-sm { padding: 5px 12px; font-size: 12.5px; }
-.jmx-btn-xs { padding: 2px 9px; font-size: 11.5px; border-radius: 6px; }
+.jmx-btn-sm { padding: 5px 12px; font-size: 12.5px; min-height: 28px; }
+.jmx-btn-xs { padding: 3px 9px; font-size: 12px; border-radius: 6px; min-height: 26px; }
 .jmx-vis-grouprow td {
 	background: #f1f5f9;
 	border-top: 2px solid #e2e8f0;

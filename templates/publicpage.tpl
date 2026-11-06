@@ -107,7 +107,7 @@
 		{/if}
 
 		{* Empty state: no public metrics or snapshot not ready *}
-		<div id="jmxEmptyState" class="jmx-section" style="display:none;text-align:center;padding:36px 16px;color:#64748b;">
+		<div id="jmxEmptyState" class="jmx-section jmx-empty-state" style="display:none;">
 			{translate key="plugins.generic.journalMetrics.public.noMetrics"}
 		</div>
 
