@@ -145,8 +145,46 @@
   //  SVG charts
   // ---------------------------------------------------------------------
 
+  // Bar charts are drawn at the pixel width of their box (one SVG unit =
+  // one CSS pixel), so the 12px axis labels set in the stylesheet are 12px
+  // on every screen. Where the box is narrow, fewer labels are printed so
+  // they never overlap. Charts are redrawn when the box width changes.
+  // Below a minimum width (a box squeezed by the surrounding layout) the
+  // chart keeps that minimum and its box scrolls sideways instead of
+  // shrinking the labels.
+  var CHARTS = [];
+  var CHAR_PX = 7.4; // average width of a 12px label glyph (digits, '-')
+
+  function chartHost(spec) {
+    CHARTS.push(spec);
+    return '<div class="jmx-chart-host" data-jmx-chart="' + (CHARTS.length - 1) + '"></div>';
+  }
+
+  /** Smallest step from the list that leaves `minPx` per label. */
+  function labelStep(slotPx, minPx, steps) {
+    for (var i = 0; i < steps.length; i++) {
+      if (steps[i] * slotPx >= minPx) return steps[i];
+    }
+    return steps[steps.length - 1];
+  }
+
+  function drawCharts() {
+    var hosts = document.querySelectorAll('.jmx-chart-host[data-jmx-chart]');
+    [].forEach.call(hosts, function (host) {
+      var spec = CHARTS[parseInt(host.getAttribute('data-jmx-chart'), 10)];
+      if (!spec) return;
+      var w = Math.floor(host.getBoundingClientRect().width);
+      if (w < 1) w = 640; // hidden box: any width, redrawn when shown
+      if (host.getAttribute('data-jmx-w') === String(w)) return;
+      host.setAttribute('data-jmx-w', String(w));
+      host.innerHTML = spec.type === 'trend'
+        ? trendChartSvg(spec.data, w)
+        : yearBarChartSvg(spec.data, spec.color, spec.label, w);
+    });
+  }
+
   /** Vertical dual-series bar chart for the monthly usage trend. */
-  function trendChartSvg(series) {
+  function trendChartSvg(series, W) {
     var keys = Object.keys(series).sort();
     if (!keys.length) return '';
 
@@ -170,22 +208,27 @@
     months.forEach(function (m) { sumV += series[m].views; sumD += series[m].downloads; });
     var trendAria = t('trendTitle') + ': ' + sumV.toLocaleString(NL) + ' ' + t('views') +
       ', ' + sumD.toLocaleString(NL) + ' ' + t('downloads');
-    var W = 720, H = 210, padL = 46, padB = 34, padT = 12;
-    var innerW = W - padL - 10, innerH = H - padT - padB;
     var max = 1;
     months.forEach(function (m) {
       max = Math.max(max, series[m].views, series[m].downloads);
     });
+    W = Math.max(240, W || 640);
+    var H = Math.round(Math.max(180, Math.min(300, W * 0.3)));
+    var padT = 12, padB = 30, padR = 10;
+    var padL = Math.ceil(Math.round(max).toLocaleString(NL).length * CHAR_PX) + 12;
+    var innerW = W - padL - padR, innerH = H - padT - padB;
     var group = innerW / months.length;
-    var barW = Math.max(2, Math.min(10, group * 0.34));
-    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="jmx-trend-svg" role="img" aria-label="' + escHtml(trendAria) + '">';
+    var barW = Math.max(1.5, Math.min(14, group * 0.34));
+    // one 'YYYY-MM' label every `step` months, never closer than its width
+    var step = labelStep(group, 7 * CHAR_PX + 10, [1, 2, 3, 4, 6, 12]);
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:' + W + 'px" class="jmx-trend-svg" role="img" aria-label="' + escHtml(trendAria) + '">';
 
     // horizontal gridlines + labels
     for (var g = 0; g <= 4; g++) {
       var gy = padT + innerH - (innerH * g / 4);
       var gv = Math.round(max * g / 4);
-      svg += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - 10) + '" y2="' + gy + '" class="jmx-grid"/>';
-      svg += '<text x="' + (padL - 6) + '" y="' + (gy + 3) + '" class="jmx-axis-label" text-anchor="end">' + gv.toLocaleString(NL) + '</text>';
+      svg += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy + '" class="jmx-grid"/>';
+      svg += '<text x="' + (padL - 6) + '" y="' + (gy + 4) + '" class="jmx-axis-label" text-anchor="end">' + gv.toLocaleString(NL) + '</text>';
     }
 
     months.forEach(function (m, i) {
@@ -194,9 +237,11 @@
       var hd = series[m].downloads / max * innerH;
       svg += '<rect x="' + x + '" y="' + (padT + innerH - hv) + '" width="' + barW + '" height="' + hv + '" fill="#0d9488"><title>' + m + ' · ' + t('views') + ': ' + series[m].views.toLocaleString(NL) + '</title></rect>';
       svg += '<rect x="' + (x + barW + 2) + '" y="' + (padT + innerH - hd) + '" width="' + barW + '" height="' + hd + '" fill="#2563eb"><title>' + m + ' · ' + t('downloads') + ': ' + series[m].downloads.toLocaleString(NL) + '</title></rect>';
-      if (i % 3 === 0) {
+      // the latest month is always labelled; others every `step` months
+      if ((months.length - 1 - i) % step === 0) {
         var ml = m.substring(0, 4) + '-' + m.substring(4);
-        svg += '<text x="' + (x + barW) + '" y="' + (H - padB + 14) + '" class="jmx-axis-label" text-anchor="middle">' + ml + '</text>';
+        var lx = Math.min(Math.max(x + barW, padL + 26), W - padR - 26);
+        svg += '<text x="' + lx + '" y="' + (H - padB + 17) + '" class="jmx-axis-label" text-anchor="middle">' + ml + '</text>';
       }
     });
 
@@ -208,27 +253,34 @@
   }
 
   /** Simple single-series vertical bar chart keyed by year. */
-  function yearBarChartSvg(byYear, color, chartLabel) {
+  function yearBarChartSvg(byYear, color, chartLabel, W) {
     var years = Object.keys(byYear).sort();
     if (!years.length) return '';
-    var W = 340, H = 170, padL = 40, padB = 26, padT = 10;
-    var innerW = W - padL - 8, innerH = H - padT - padB;
     var max = 1;
     years.forEach(function (y) { max = Math.max(max, byYear[y]); });
+    W = Math.max(200, W || 340);
+    var H = Math.round(Math.max(160, Math.min(240, W * 0.5)));
+    var padT = 10, padB = 28, padR = 8;
+    var padL = Math.ceil(Math.round(max).toLocaleString(NL).length * CHAR_PX) + 11;
+    var innerW = W - padL - padR, innerH = H - padT - padB;
     var group = innerW / years.length;
-    var barW = Math.max(6, Math.min(34, group * 0.6));
+    var barW = Math.max(4, Math.min(34, group * 0.6));
+    // one year label every `step` years (the latest year always)
+    var step = labelStep(group, 4 * CHAR_PX + 8, [1, 2, 3, 4, 5, 10, 20]);
     var barAria = (chartLabel || '') + ': ' + years.map(function (y) { return y + ' = ' + byYear[y]; }).join(', ');
-    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="jmx-yearbar-svg" role="img" aria-label="' + escHtml(barAria) + '">';
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:' + W + 'px" class="jmx-yearbar-svg" role="img" aria-label="' + escHtml(barAria) + '">';
     for (var g = 0; g <= 2; g++) {
       var gy = padT + innerH - (innerH * g / 2);
-      svg += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - 8) + '" y2="' + gy + '" class="jmx-grid"/>';
-      svg += '<text x="' + (padL - 5) + '" y="' + (gy + 3) + '" class="jmx-axis-label" text-anchor="end">' + Math.round(max * g / 2).toLocaleString(NL) + '</text>';
+      svg += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy + '" class="jmx-grid"/>';
+      svg += '<text x="' + (padL - 5) + '" y="' + (gy + 4) + '" class="jmx-axis-label" text-anchor="end">' + Math.round(max * g / 2).toLocaleString(NL) + '</text>';
     }
     years.forEach(function (y, i) {
       var h = byYear[y] / max * innerH;
       var x = padL + i * group + (group - barW) / 2;
       svg += '<rect x="' + x + '" y="' + (padT + innerH - h) + '" width="' + barW + '" height="' + h + '" fill="' + color + '" rx="2"><title>' + y + ': ' + byYear[y].toLocaleString(NL) + '</title></rect>';
-      svg += '<text x="' + (x + barW / 2) + '" y="' + (H - padB + 13) + '" class="jmx-axis-label" text-anchor="middle">' + y + '</text>';
+      if ((years.length - 1 - i) % step === 0) {
+        svg += '<text x="' + (x + barW / 2) + '" y="' + (H - padB + 16) + '" class="jmx-axis-label" text-anchor="middle">' + y + '</text>';
+      }
     });
     svg += '</svg>';
     return svg;
@@ -302,7 +354,7 @@
     var html = '<div class="jmx-cards">' + (group.cards || []).map(function (card) { return renderCard(card, 'usage'); }).join('') + '</div>';
     if (group.monthlySeries) {
       html += '<div class="jmx-chart-card jmx-wide"><div class="jmx-chart-title">' + escHtml(t('trendTitle')) + '</div>' +
-        trendChartSvg(group.monthlySeries) + '</div>';
+        chartHost({ type: 'trend', data: group.monthlySeries }) + '</div>';
     }
     if (group.topArticles && group.topArticles.length) {
       html += '<div class="jmx-chart-card jmx-wide"><div class="jmx-chart-title">' + escHtml(t('topArticlesTitle')) + '</div>' +
@@ -330,7 +382,7 @@
     var html = '<div class="jmx-cards">' + (group.cards || []).map(function (card) { return renderCard(card, 'community'); }).join('') + '</div>';
     if (group.completedReviewsByYear && Object.keys(group.completedReviewsByYear).length) {
       html += '<div class="jmx-chart-card"><div class="jmx-chart-title">' + escHtml(t('completedReviewsTitle')) + '</div>' +
-        yearBarChartSvg(group.completedReviewsByYear, '#7c3aed', t('completedReviewsTitle')) + '</div>';
+        chartHost({ type: 'year', data: group.completedReviewsByYear, color: '#7c3aed', label: t('completedReviewsTitle') }) + '</div>';
     }
     return sectionShell('community', html);
   }
@@ -340,11 +392,11 @@
     var charts = '';
     if (group.articlesByYear && Object.keys(group.articlesByYear).length) {
       charts += '<div class="jmx-chart-card"><div class="jmx-chart-title">' + escHtml(t('articlesPerYearTitle')) + '</div>' +
-        yearBarChartSvg(group.articlesByYear, '#0d9488', t('articlesPerYearTitle')) + '</div>';
+        chartHost({ type: 'year', data: group.articlesByYear, color: '#0d9488', label: t('articlesPerYearTitle') }) + '</div>';
     }
     if (group.issuesByYear && Object.keys(group.issuesByYear).length) {
       charts += '<div class="jmx-chart-card"><div class="jmx-chart-title">' + escHtml(t('issuesPerYearTitle')) + '</div>' +
-        yearBarChartSvg(group.issuesByYear, '#0891b2', t('issuesPerYearTitle')) + '</div>';
+        chartHost({ type: 'year', data: group.issuesByYear, color: '#0891b2', label: t('issuesPerYearTitle') }) + '</div>';
     }
     if (charts) html += '<div class="jmx-charts-row">' + charts + '</div>';
     return sectionShell('output', html);
@@ -376,6 +428,7 @@
   function renderGroups() {
     var el = document.getElementById('jmxGroups');
     if (!el) return;
+    CHARTS.length = 0;
     var html = '';
     GROUP_ORDER.forEach(function (key) {
       if (D.groups && D.groups[key] && RENDERERS[key]) {
@@ -383,6 +436,7 @@
       }
     });
     el.innerHTML = html;
+    drawCharts();
   }
 
   // ---------------------------------------------------------------------
@@ -422,7 +476,8 @@
     sorted.forEach(function (d, i) {
       html += '<div class="jmx-bar-row">' +
         '<div class="jmx-bar-country" title="' + escHtml(formatCountry(d)) + '">' + escHtml(formatCountry(d)) + '</div>' +
-        '<div class="jmx-bar-track"><div class="jmx-bar-fill" style="width:' + (d.count / max * 100) + '%;background:' + COLORS[i % COLORS.length] + '"><span>' + fmt(d.count) + '</span></div></div></div>';
+        '<div class="jmx-bar-track"><div class="jmx-bar-fill" style="width:' + (d.count / max * 100) + '%;background:' + COLORS[i % COLORS.length] + '"></div></div>' +
+        '<span class="jmx-bar-count">' + fmt(d.count) + '</span></div>';
     });
     el.innerHTML = html;
   }
@@ -669,6 +724,18 @@
     renderGroups();
     initCountrySection();
     initRecompute();
+
+    // redraw the bar charts when their box width changes (resize, rotate,
+    // late stylesheet, print layout)
+    var timer = null;
+    function later() { clearTimeout(timer); timer = setTimeout(drawCharts, 150); }
+    window.addEventListener('resize', later);
+    window.addEventListener('load', drawCharts);
+    if (window.matchMedia) {
+      var mq = window.matchMedia('print');
+      if (mq.addEventListener) mq.addEventListener('change', drawCharts);
+      else if (mq.addListener) mq.addListener(drawCharts);
+    }
   }
 
   if (document.readyState === 'loading') {
