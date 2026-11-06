@@ -12,6 +12,10 @@
 
   var L = D.labels || {};
   var TIPS = D.tooltips || {};
+  // Numbers follow the interface language chosen server-side
+  // (JournalMetricsPlugin::numberLocaleTag), never the browser's.
+  var NL = D.numberLocale || 'en-US';
+  var PCT_FIRST = NL.indexOf('tr') === 0; // Turkish: %66,7
 
   var COLORS = [
     '#0d9488', '#0891b2', '#2563eb', '#7c3aed', '#c026d3',
@@ -45,17 +49,23 @@
 
   function fmt(value) {
     if (value === null || value === undefined) return '—';
-    if (typeof value === 'number') return value.toLocaleString();
+    if (typeof value === 'number') return value.toLocaleString(NL);
     return String(value);
   }
 
-  // Same display rule as JournalMetricsPlugin::formatRate(): one decimal.
+  // A percentage (already x100) with one decimal, sign placed per language.
+  function pctStr(pct) {
+    var s = Number(pct).toLocaleString(NL, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    return PCT_FIRST ? '%' + s : s + '%';
+  }
+
+  // Same display rule as JournalMetricsPlugin::formatRate().
   function fmtRate(rate) {
-    return (Math.round(rate * 1000) / 10).toFixed(1) + '%';
+    return pctStr(Math.round(rate * 1000) / 10);
   }
 
   function pctOf(val, total) {
-    return total > 0 ? ((val / total) * 100).toFixed(1) : '0.0';
+    return pctStr(total > 0 ? (val / total) * 100 : 0);
   }
 
   // ---------------------------------------------------------------------
@@ -158,8 +168,8 @@
 
     var sumV = 0, sumD = 0;
     months.forEach(function (m) { sumV += series[m].views; sumD += series[m].downloads; });
-    var trendAria = t('trendTitle') + ': ' + sumV.toLocaleString() + ' ' + t('views') +
-      ', ' + sumD.toLocaleString() + ' ' + t('downloads');
+    var trendAria = t('trendTitle') + ': ' + sumV.toLocaleString(NL) + ' ' + t('views') +
+      ', ' + sumD.toLocaleString(NL) + ' ' + t('downloads');
     var W = 720, H = 210, padL = 46, padB = 34, padT = 12;
     var innerW = W - padL - 10, innerH = H - padT - padB;
     var max = 1;
@@ -175,15 +185,15 @@
       var gy = padT + innerH - (innerH * g / 4);
       var gv = Math.round(max * g / 4);
       svg += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - 10) + '" y2="' + gy + '" class="jmx-grid"/>';
-      svg += '<text x="' + (padL - 6) + '" y="' + (gy + 3) + '" class="jmx-axis-label" text-anchor="end">' + gv.toLocaleString() + '</text>';
+      svg += '<text x="' + (padL - 6) + '" y="' + (gy + 3) + '" class="jmx-axis-label" text-anchor="end">' + gv.toLocaleString(NL) + '</text>';
     }
 
     months.forEach(function (m, i) {
       var x = padL + i * group + (group - barW * 2 - 2) / 2;
       var hv = series[m].views / max * innerH;
       var hd = series[m].downloads / max * innerH;
-      svg += '<rect x="' + x + '" y="' + (padT + innerH - hv) + '" width="' + barW + '" height="' + hv + '" fill="#0d9488"><title>' + m + ' · ' + t('views') + ': ' + series[m].views.toLocaleString() + '</title></rect>';
-      svg += '<rect x="' + (x + barW + 2) + '" y="' + (padT + innerH - hd) + '" width="' + barW + '" height="' + hd + '" fill="#2563eb"><title>' + m + ' · ' + t('downloads') + ': ' + series[m].downloads.toLocaleString() + '</title></rect>';
+      svg += '<rect x="' + x + '" y="' + (padT + innerH - hv) + '" width="' + barW + '" height="' + hv + '" fill="#0d9488"><title>' + m + ' · ' + t('views') + ': ' + series[m].views.toLocaleString(NL) + '</title></rect>';
+      svg += '<rect x="' + (x + barW + 2) + '" y="' + (padT + innerH - hd) + '" width="' + barW + '" height="' + hd + '" fill="#2563eb"><title>' + m + ' · ' + t('downloads') + ': ' + series[m].downloads.toLocaleString(NL) + '</title></rect>';
       if (i % 3 === 0) {
         var ml = m.substring(0, 4) + '-' + m.substring(4);
         svg += '<text x="' + (x + barW) + '" y="' + (H - padB + 14) + '" class="jmx-axis-label" text-anchor="middle">' + ml + '</text>';
@@ -212,12 +222,12 @@
     for (var g = 0; g <= 2; g++) {
       var gy = padT + innerH - (innerH * g / 2);
       svg += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - 8) + '" y2="' + gy + '" class="jmx-grid"/>';
-      svg += '<text x="' + (padL - 5) + '" y="' + (gy + 3) + '" class="jmx-axis-label" text-anchor="end">' + Math.round(max * g / 2).toLocaleString() + '</text>';
+      svg += '<text x="' + (padL - 5) + '" y="' + (gy + 3) + '" class="jmx-axis-label" text-anchor="end">' + Math.round(max * g / 2).toLocaleString(NL) + '</text>';
     }
     years.forEach(function (y, i) {
       var h = byYear[y] / max * innerH;
       var x = padL + i * group + (group - barW) / 2;
-      svg += '<rect x="' + x + '" y="' + (padT + innerH - h) + '" width="' + barW + '" height="' + h + '" fill="' + color + '" rx="2"><title>' + y + ': ' + byYear[y].toLocaleString() + '</title></rect>';
+      svg += '<rect x="' + x + '" y="' + (padT + innerH - h) + '" width="' + barW + '" height="' + h + '" fill="' + color + '" rx="2"><title>' + y + ': ' + byYear[y].toLocaleString(NL) + '</title></rect>';
       svg += '<text x="' + (x + barW / 2) + '" y="' + (H - padB + 13) + '" class="jmx-axis-label" text-anchor="middle">' + y + '</text>';
     });
     svg += '</svg>';
@@ -406,13 +416,13 @@
     var max = sorted.length ? sorted[0].count : 1;
     el.setAttribute('role', 'img');
     el.setAttribute('aria-label', t('topCountries') + ': ' + sorted.slice(0, 3).map(function (d) {
-      return d.name + ' ' + d.count;
+      return d.name + ' ' + fmt(d.count);
     }).join(', '));
     var html = '';
     sorted.forEach(function (d, i) {
       html += '<div class="jmx-bar-row">' +
         '<div class="jmx-bar-country" title="' + escHtml(formatCountry(d)) + '">' + escHtml(formatCountry(d)) + '</div>' +
-        '<div class="jmx-bar-track"><div class="jmx-bar-fill" style="width:' + (d.count / max * 100) + '%;background:' + COLORS[i % COLORS.length] + '"><span>' + d.count + '</span></div></div></div>';
+        '<div class="jmx-bar-track"><div class="jmx-bar-fill" style="width:' + (d.count / max * 100) + '%;background:' + COLORS[i % COLORS.length] + '"><span>' + fmt(d.count) + '</span></div></div></div>';
     });
     el.innerHTML = html;
   }
@@ -459,7 +469,7 @@
     legend.innerHTML = segments.map(function (seg) {
       return '<div class="jmx-donut-legend-item"><span class="jmx-donut-dot" style="background:' + seg.color + '"></span>' +
         '<span class="jmx-donut-legend-label" title="' + escHtml(seg.label) + '">' + escHtml(seg.label) + '</span>' +
-        '<span class="jmx-donut-legend-pct">' + pctOf(seg.value, segTotal) + '%</span></div>';
+        '<span class="jmx-donut-legend-pct">' + pctOf(seg.value, segTotal) + '</span></div>';
     }).join('');
   }
 
@@ -482,9 +492,9 @@
       shown++;
       html += '<tr><td class="jmx-muted">' + shown + '</td>' +
         '<td><div class="jmx-country-cell"><span class="jmx-flag-placeholder">' + escHtml(d.code) + '</span><span>' + escHtml(d.name) + '</span></div></td>' +
-        '<td><span class="jmx-count-bold">' + d.count + '</span></td>' +
+        '<td><span class="jmx-count-bold">' + fmt(d.count) + '</span></td>' +
         '<td><div class="jmx-mini-bar-bg"><div class="jmx-mini-bar-fill" style="width:' + (d.count / max * 100) + '%"></div></div></td>' +
-        '<td><span class="jmx-pct">' + pctOf(d.count, total) + '%</span></td></tr>';
+        '<td><span class="jmx-pct">' + pctOf(d.count, total) + '</span></td></tr>';
     });
     if (!shown) {
       html = '<tr><td colspan="5" class="jmx-empty-row">' + escHtml(t('noResults')) + '</td></tr>';

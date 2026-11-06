@@ -89,8 +89,8 @@ class JournalMetricsBlockPlugin extends BlockPlugin {
 			if ($value === null || $value === '') continue;
 			if ($key === 'acceptanceRate' || $key === 'declineRate') {
 				$value = JournalMetricsPlugin::formatRate($value);
-			} elseif (is_numeric($value) && (int) $value == $value) {
-				$value = number_format((int) $value);
+			} elseif (is_numeric($value)) {
+				$value = JournalMetricsPlugin::formatNumber($value);
 			}
 			$items[] = array(
 				'label' => __('plugins.generic.journalMetrics.metric.' . $key),

@@ -639,6 +639,7 @@ class JournalMetricsHandler extends Handler {
 			'generatedAt'    => null,
 			'usagePending'   => true,
 			'coverageYear'   => null,
+			'numberLocale'   => JournalMetricsPlugin::numberLocaleTag(),
 			'groups'         => array(),
 			'countrySection' => null,
 			'tooltips'       => array(),

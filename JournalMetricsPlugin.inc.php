@@ -375,11 +375,52 @@ class JournalMetricsPlugin extends GenericPlugin {
 	}
 
 	/**
-	 * Display form of a rate: percent with exactly one decimal ("66.7%").
-	 * Rounding happens here only — stored values stay unrounded.
+	 * Number formatting follows the INTERFACE language, never the browser's:
+	 * Turkish gets Turkish conventions, every other UI locale falls back to
+	 * English ones (the plugin's labels fall back to English there too).
+	 * The JS renderer receives the same choice via numberLocaleTag(), so
+	 * server- and client-rendered numbers on one page always agree.
+	 *
+	 * @param string|null $locale OJS locale code; null = current UI locale
+	 * @return bool
 	 */
-	public static function formatRate($rate) {
-		return number_format(((float) $rate) * 100, 1, '.', '') . '%';
+	private static function _isTurkishNumbers($locale) {
+		if ($locale === null) $locale = AppLocale::getLocale();
+		return strpos((string) $locale, 'tr') === 0;
+	}
+
+	/**
+	 * BCP 47 tag the JS renderer formats numbers with ('tr-TR' / 'en-US').
+	 */
+	public static function numberLocaleTag($locale = null) {
+		return self::_isTurkishNumbers($locale) ? 'tr-TR' : 'en-US';
+	}
+
+	/**
+	 * Display form of a plain number in the interface language
+	 * (2.825 / 192,6 vs 2,825 / 192.6). Up to 3 decimals are kept, as
+	 * JavaScript's toLocaleString() does, so block and page match.
+	 */
+	public static function formatNumber($value, $locale = null) {
+		$value = (float) $value;
+		$plain = rtrim(rtrim(sprintf('%.3F', $value), '0'), '.');
+		$dot = strpos($plain, '.');
+		$decimals = ($dot === false) ? 0 : strlen($plain) - $dot - 1;
+		return self::_isTurkishNumbers($locale)
+			? number_format($value, $decimals, ',', '.')
+			: number_format($value, $decimals, '.', ',');
+	}
+
+	/**
+	 * Display form of a rate: percent with exactly one decimal, in the
+	 * interface language ("%66,7" / "66.7%"). Rounding happens here only —
+	 * stored values stay unrounded.
+	 */
+	public static function formatRate($rate, $locale = null) {
+		$percent = round(((float) $rate) * 100, 1);
+		return self::_isTurkishNumbers($locale)
+			? '%' . number_format($percent, 1, ',', '.')
+			: number_format($percent, 1, '.', ',') . '%';
 	}
 
 	// ------------------------------------------------------------------
