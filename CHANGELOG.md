@@ -22,6 +22,8 @@ the sidebar block. Computed numbers do not change.
   most-read article links, the block's "All metrics" link, the credit
   link, the small buttons of the visibility matrix, the checkbox rows and
   the text fields of the editor-declared metrics table.
+- Keyboard focus is clearly outlined, and transitions are switched off
+  when the reader's system asks for reduced motion.
 - Backend pages keep a usable width of 300px. On a phone, where the OJS
   side menu leaves only a sliver of the screen, they scroll sideways
   instead of squeezing fields below 24px.
@@ -52,6 +54,8 @@ Hesaplanan sayılar değişmez.
   makale bağlantıları, bloktaki "Tüm metrikler" bağlantısı, geliştirici
   bağlantısı, görünürlük matrisinin küçük düğmeleri, onay kutusu
   satırları ve editör beyanı metrikler tablosunun metin alanları.
+- Klavye odağı belirgin bir çerçeveyle görünüyor; okurun sistemi
+  hareketin azaltılmasını istiyorsa geçiş efektleri kapanıyor.
 - Yönetim sayfaları en az 300px kullanılabilir genişliği koruyor.
   Telefonda OJS yan menüsü ekranın küçük bir kısmını bıraktığında
   alanları 24px'in altına sıkıştırmak yerine yana kayıyor.
