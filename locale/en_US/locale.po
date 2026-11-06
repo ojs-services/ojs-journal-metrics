@@ -142,10 +142,10 @@ msgstr "Editor-declared metrics"
 # ---------------------------------------------------------------- Tooltips (methodology)
 
 msgid "plugins.generic.journalMetrics.tooltip.acceptanceRate"
-msgstr "Accepted submissions divided by submissions received, computed by the OJS core statistics engine. Within a date range, only submissions received in that range that have reached a final decision are counted."
+msgstr "Accepted submissions divided by all decided submissions (accepted + declined), using the counts of the OJS core statistics engine. Submissions still under review are not included."
 
 msgid "plugins.generic.journalMetrics.tooltip.declineRate"
-msgstr "Declined submissions (desk + post-review) divided by submissions received, computed by the OJS core statistics engine. Within a date range, only submissions received in that range that have reached a final decision are counted."
+msgstr "Declined submissions (desk + post-review) divided by all decided submissions (accepted + declined), using the counts of the OJS core statistics engine. Submissions still under review are not included."
 
 msgid "plugins.generic.journalMetrics.tooltip.firstDecisionDays"
 msgstr "Average days from submission to the first editorial decision of any kind. Incomplete and imported submissions are excluded."
@@ -351,7 +351,7 @@ msgid "plugins.generic.journalMetrics.note.snapshot"
 msgstr "Values come from a nightly snapshot; use \"Recompute now\" for fresh figures."
 
 msgid "plugins.generic.journalMetrics.note.coreConsistency"
-msgstr "Editorial counters and rates match the OJS core Statistics screen exactly."
+msgstr "Editorial counters match the OJS core Statistics screen exactly; rates are calculated over decided submissions only."
 
 msgid "plugins.generic.journalMetrics.note.uniqueBy"
 msgstr "Authors deduplicated by {$strategy}."

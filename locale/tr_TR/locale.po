@@ -142,10 +142,10 @@ msgstr "Editör beyanı metrikler"
 # ---------------------------------------------------------------- Metodoloji ipuçları
 
 msgid "plugins.generic.journalMetrics.tooltip.acceptanceRate"
-msgstr "Kabul edilen gönderilerin alınan gönderilere oranıdır; OJS çekirdek istatistik motoruyla hesaplanır. Tarih aralığında yalnızca o aralıkta gönderilmiş VE nihai karar almış gönderiler sayılır."
+msgstr "Kabul edilen gönderilerin karar verilmiş tüm gönderilere (kabul + ret) oranıdır; sayılar OJS çekirdek istatistik motorundan alınır. İncelemesi süren gönderiler dahil değildir."
 
 msgid "plugins.generic.journalMetrics.tooltip.declineRate"
-msgstr "Reddedilen gönderilerin (masa + hakem sonrası) alınan gönderilere oranıdır; OJS çekirdek istatistik motoruyla hesaplanır. Tarih aralığında yalnızca o aralıkta gönderilmiş VE nihai karar almış gönderiler sayılır."
+msgstr "Reddedilen gönderilerin (masa + hakem sonrası) karar verilmiş tüm gönderilere (kabul + ret) oranıdır; sayılar OJS çekirdek istatistik motorundan alınır. İncelemesi süren gönderiler dahil değildir."
 
 msgid "plugins.generic.journalMetrics.tooltip.firstDecisionDays"
 msgstr "Gönderiden herhangi bir ilk editoryal karara kadar geçen ortalama gün. Tamamlanmamış ve içe aktarılmış gönderiler hariçtir."
@@ -351,7 +351,7 @@ msgid "plugins.generic.journalMetrics.note.snapshot"
 msgstr "Değerler gece hesaplanan snapshot'tan gelir; güncel rakamlar için \"Şimdi yeniden hesapla\"yı kullanın."
 
 msgid "plugins.generic.journalMetrics.note.coreConsistency"
-msgstr "Editoryal sayaçlar ve oranlar OJS çekirdek İstatistikler ekranıyla birebir aynıdır."
+msgstr "Editoryal sayaçlar OJS çekirdek İstatistikler ekranıyla birebir aynıdır; oranlar yalnız karar verilmiş gönderiler üzerinden hesaplanır."
 
 msgid "plugins.generic.journalMetrics.note.uniqueBy"
 msgstr "Yazarlar {$strategy} ölçütüyle benzersizleştirildi."

@@ -8,11 +8,13 @@
  * @class JournalMetricsEditorialProvider
  * @brief G1 editorial counters and rates.
  *
- * BINDING RULE (architecture decision 3): all COUNTERS and RATES in this
- * group come from the core editorialStats service output verbatim
- * (accepted = decision ACCEPT(1) only), so the plugin always matches the
- * core Statistics screen 1:1. The looser accept definition
- * (decision IN (1,7)) is used ONLY for date-based duration metrics in
+ * BINDING RULE (architecture decision 3): all COUNTERS in this group come
+ * from the core editorialStats service output verbatim (accepted =
+ * decision ACCEPT(1) only), so the counts always match the core
+ * Statistics screen 1:1. The RATES are derived from those same counters
+ * over the decided cohort (JournalMetricsPlugin::decisionRates) and
+ * stored unrounded. The looser accept definition (decision IN (1,7)) is
+ * used ONLY for date-based duration metrics in
  * JournalMetricsTimesProvider — never here. Do not mix the two.
  *
  * COVERAGE: the statsCoverageStartYear setting applies here (a declared
@@ -49,6 +51,7 @@ class JournalMetricsEditorialProvider extends JournalMetricsBaseProvider {
 			$allTimeArgs['dateStart'] = $coverageYear . '-01-01';
 		}
 		$allTime = $this->_overviewToMap($service->getOverview($allTimeArgs));
+		$allTime = array_merge($allTime, JournalMetricsPlugin::decisionRates($allTime));
 
 		// Per-year overviews. Without coverage: the last YEARS_BACK
 		// calendar years. With coverage: every year from the coverage year
@@ -63,16 +66,18 @@ class JournalMetricsEditorialProvider extends JournalMetricsBaseProvider {
 				'dateStart'  => $year . '-01-01',
 				'dateEnd'    => $year . '-12-31',
 			)));
-			$byYear[(string) $year] = array(
+			$row = array(
 				'submissionsReceived'           => $overview['submissionsReceived'],
 				'submissionsAccepted'           => $overview['submissionsAccepted'],
 				'submissionsDeclined'           => $overview['submissionsDeclined'],
 				'submissionsDeclinedDeskReject' => $overview['submissionsDeclinedDeskReject'],
 				'submissionsDeclinedPostReview' => $overview['submissionsDeclinedPostReview'],
 				'submissionsPublished'          => $overview['submissionsPublished'],
-				'acceptanceRate'                => $overview['acceptanceRate'],
-				'declineRate'                   => $overview['declineRate'],
 			);
+			$rates = JournalMetricsPlugin::decisionRates($row);
+			$row['acceptanceRate'] = $rates['acceptanceRate'];
+			$row['declineRate'] = $rates['declineRate'];
+			$byYear[(string) $year] = $row;
 		}
 
 		if ($coverageYear > 0) {

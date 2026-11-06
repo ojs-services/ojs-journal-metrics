@@ -49,6 +49,11 @@
     return String(value);
   }
 
+  // Same display rule as JournalMetricsPlugin::formatRate(): one decimal.
+  function fmtRate(rate) {
+    return (Math.round(rate * 1000) / 10).toFixed(1) + '%';
+  }
+
   function pctOf(val, total) {
     return total > 0 ? ((val / total) * 100).toFixed(1) : '0.0';
   }
@@ -68,7 +73,7 @@
 
     switch (card.type) {
       case 'rate':
-        main = (Math.round(v * 1000) / 10).toFixed(1).replace(/\.0$/, '') + '%';
+        main = fmtRate(v);
         if (card.n !== null && card.n !== undefined) sub = t('n') + ' = ' + fmt(card.n);
         break;
       case 'days':
@@ -264,7 +269,7 @@
         colKeys.forEach(function (c) {
           var v = group.byYear[y][c];
           if ((c === 'acceptanceRate' || c === 'declineRate') && v !== null && v !== undefined) {
-            v = (Math.round(v * 1000) / 10) + '%';
+            v = fmtRate(v);
           }
           html += '<td>' + fmt(v) + '</td>';
         });

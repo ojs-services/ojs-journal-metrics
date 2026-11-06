@@ -87,8 +87,8 @@ class JournalMetricsBlockPlugin extends BlockPlugin {
 			if ($manager->isSuppressed($snapshot, $key, $nThreshold)) continue;
 			$value = $manager->lookupMetricValue($snapshot, $key);
 			if ($value === null || $value === '') continue;
-			if ($key === 'acceptanceRate') {
-				$value = round(((float) $value) * 100, 1) . '%';
+			if ($key === 'acceptanceRate' || $key === 'declineRate') {
+				$value = JournalMetricsPlugin::formatRate($value);
 			} elseif (is_numeric($value) && (int) $value == $value) {
 				$value = number_format((int) $value);
 			}

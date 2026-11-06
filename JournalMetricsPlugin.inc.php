@@ -332,7 +332,54 @@ class JournalMetricsPlugin extends GenericPlugin {
 
 		$value = $manager->lookupMetricValue($snapshot, $key, $year);
 		if ($value === null || $value === '') return $default;
+		if (in_array($key, array('acceptanceRate', 'declineRate'), true)) {
+			$value = self::formatRate($value);
+		}
 		return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+	}
+
+	/**
+	 * Editorial decision rates over the DECIDED cohort:
+	 * accepted ÷ (accepted + declined) and declined ÷ (accepted + declined),
+	 * unrounded. The single definition used by every surface (dashboard,
+	 * public page, sidebar block, {journal_metric}).
+	 *
+	 * The core service's own rates are not used: without a date range it
+	 * divides by ALL received submissions (those still under review
+	 * included), with a range it counts a submission-date cohort that does
+	 * not match the displayed decision counts, and it rounds to 2 decimals.
+	 *
+	 * @param array $row Snapshot row holding submissionsAccepted /
+	 *  submissionsDeclined (and optionally the desk/post-review split)
+	 * @return array Rate keys => float, or null when nothing was decided
+	 *  ("no rate" — never 0%)
+	 */
+	public static function decisionRates($row) {
+		$accepted = isset($row['submissionsAccepted']) ? (int) $row['submissionsAccepted'] : 0;
+		$declined = isset($row['submissionsDeclined']) ? (int) $row['submissionsDeclined'] : 0;
+		$desk = isset($row['submissionsDeclinedDeskReject']) ? (int) $row['submissionsDeclinedDeskReject'] : 0;
+		$review = isset($row['submissionsDeclinedPostReview']) ? (int) $row['submissionsDeclinedPostReview'] : 0;
+		$decided = $accepted + $declined;
+		if ($decided <= 0) {
+			return array(
+				'acceptanceRate' => null, 'declineRate' => null,
+				'declinedDeskRate' => null, 'declinedReviewRate' => null,
+			);
+		}
+		return array(
+			'acceptanceRate'     => $accepted / $decided,
+			'declineRate'        => $declined / $decided,
+			'declinedDeskRate'   => $desk / $decided,
+			'declinedReviewRate' => $review / $decided,
+		);
+	}
+
+	/**
+	 * Display form of a rate: percent with exactly one decimal ("66.7%").
+	 * Rounding happens here only — stored values stay unrounded.
+	 */
+	public static function formatRate($rate) {
+		return number_format(((float) $rate) * 100, 1, '.', '') . '%';
 	}
 
 	// ------------------------------------------------------------------

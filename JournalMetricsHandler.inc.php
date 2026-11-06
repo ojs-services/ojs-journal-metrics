@@ -697,9 +697,15 @@ class JournalMetricsHandler extends Handler {
 		// ---- G1 Editorial
 		$cards = array();
 		if (isset($snapshot['editorial']['allTime'])) {
-			$allTime = $snapshot['editorial']['allTime'];
-			// Rates are meaningful only over the decided cohort: a journal
-			// with zero decisions must show "insufficient data", not "0%".
+			// Rates are derived from the stored counts at read time, so a
+			// snapshot written by an older version (core-computed rates)
+			// displays the corrected values without waiting for a recompute.
+			// n is the same decided cohort as the rate's denominator; zero
+			// decisions -> null rate -> "insufficient data", never "0%".
+			$allTime = array_merge(
+				$snapshot['editorial']['allTime'],
+				JournalMetricsPlugin::decisionRates($snapshot['editorial']['allTime'])
+			);
 			$decided = (isset($allTime['submissionsAccepted']) ? (int) $allTime['submissionsAccepted'] : 0)
 				+ (isset($allTime['submissionsDeclined']) ? (int) $allTime['submissionsDeclined'] : 0);
 
@@ -721,8 +727,18 @@ class JournalMetricsHandler extends Handler {
 				if ($card !== null) $cards[] = $card;
 			}
 		}
-		$byYear = (isset($snapshot['editorial']['byYear']) && !$forPublic) ? $snapshot['editorial']['byYear'] : null;
-		if ($forPublic && isset($snapshot['editorial']['byYear'])) {
+		$snapshotByYear = null;
+		if (isset($snapshot['editorial']['byYear']) && is_array($snapshot['editorial']['byYear'])) {
+			$snapshotByYear = array();
+			foreach ($snapshot['editorial']['byYear'] as $year => $data) {
+				$rates = JournalMetricsPlugin::decisionRates($data);
+				$data['acceptanceRate'] = $rates['acceptanceRate'];
+				$data['declineRate'] = $rates['declineRate'];
+				$snapshotByYear[$year] = $data;
+			}
+		}
+		$byYear = !$forPublic ? $snapshotByYear : null;
+		if ($forPublic && $snapshotByYear !== null) {
 			// Public by-year table only includes public editorial columns
 			$byYear = array();
 			$publicCols = array();
@@ -730,7 +746,7 @@ class JournalMetricsHandler extends Handler {
 				if ($visible($col)) $publicCols[] = $col;
 			}
 			if (!empty($publicCols)) {
-				foreach ($snapshot['editorial']['byYear'] as $year => $data) {
+				foreach ($snapshotByYear as $year => $data) {
 					// Rate columns obey the same small-sample rule as the
 					// cards: below-threshold decided cohorts render blank.
 					$yearDecided = (isset($data['submissionsAccepted']) ? (int) $data['submissionsAccepted'] : 0)

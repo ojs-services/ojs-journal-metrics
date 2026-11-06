@@ -14,12 +14,15 @@
  * is TEXT (64 KB); every write logs the encoded size and raises a warning
  * above 48 KB (R9).
  *
- * The snapshot schema is the Phase 0 report §5 schema, schemaVersion 1,
- * plus usage.monthlySeries (last 24 months) and mandatory `n` on every
- * duration/rate metric.
+ * The snapshot schema is the Phase 0 report §5 schema plus
+ * usage.monthlySeries (last 24 months) and mandatory `n` on every
+ * duration/rate metric. schemaVersion 2: editorial rates are stored
+ * unrounded over the decided cohort. Readers never trust stored rates —
+ * they re-derive them from the counts — so version 1 snapshots (core
+ * rates) display correctly without a recompute.
  */
 
-define('JOURNAL_METRICS_SCHEMA_VERSION', 1);
+define('JOURNAL_METRICS_SCHEMA_VERSION', 2);
 define('JOURNAL_METRICS_SNAPSHOT_WARN_BYTES', 49152); // 48 KB (R9)
 
 class JournalMetricsSnapshotManager {
@@ -86,10 +89,20 @@ class JournalMetricsSnapshotManager {
 			'submissionsPublished', 'acceptanceRate', 'declineRate',
 		);
 		if (in_array($key, $editorialKeys, true)) {
-			if ($year !== null && isset($snapshot['editorial']['byYear'][$year][$key])) {
-				return $snapshot['editorial']['byYear'][$year][$key];
+			$row = null;
+			if ($year !== null && isset($snapshot['editorial']['byYear'][$year])) {
+				$row = $snapshot['editorial']['byYear'][$year];
+			} elseif (isset($snapshot['editorial']['allTime'])) {
+				$row = $snapshot['editorial']['allTime'];
 			}
-			return isset($snapshot['editorial']['allTime'][$key]) ? $snapshot['editorial']['allTime'][$key] : null;
+			if ($row === null) return null;
+			// Rates are always derived from the stored counts (decided
+			// cohort), never read back — older snapshots carry core rates.
+			if ($key === 'acceptanceRate' || $key === 'declineRate') {
+				$rates = JournalMetricsPlugin::decisionRates($row);
+				return $rates[$key];
+			}
+			return isset($row[$key]) ? $row[$key] : null;
 		}
 
 		$timeKeys = array(
