@@ -1,5 +1,66 @@
 # Changelog
 
+## 1.0.3.2 — 2026-11-06 · OJS 3.3
+
+### Accessibility
+Applies to the dashboard, the settings page, the public metrics page and
+the sidebar block. Computed numbers do not change.
+- No text is smaller than 12px. Badges, card notes, table headers,
+  tooltips, footnotes, chips, small buttons and the credit line used
+  9–11.5px.
+- Text contrast is at least 4.5:1. Secondary text is darker; the
+  "Recompute now" button and other primary buttons use the darker teal;
+  table headers set their own background, because some themes painted
+  them grey; the sidebar block's "All metrics" link has its own colour.
+- Country bars: the count now sits next to the bar in body text colour.
+  White numbers on the bar colours were too faint.
+- Bar charts (usage trend, completed reviews, articles and issues per
+  year) are drawn at the width of their box, so axis labels are 12px on
+  every screen. On narrow screens fewer labels are shown; a box narrower
+  than the chart scrolls sideways instead of shrinking the labels.
+- Clickable targets are at least 24 × 24px: the "?" methodology tips,
+  most-read article links, the block's "All metrics" link, the credit
+  link, the small buttons of the visibility matrix, the checkbox rows and
+  the text fields of the editor-declared metrics table.
+- Backend pages keep a usable width of 300px. On a phone, where the OJS
+  side menu leaves only a sliver of the screen, they scroll sideways
+  instead of squeezing fields below 24px.
+
+### Housekeeping
+- Code comments no longer refer to internal process notes (no code
+  change).
+- The Turkish README is now `README_TR.md`; both READMEs link to each
+  other.
+
+### Erişilebilirlik (TR)
+Pano, ayarlar sayfası, kamu metrik sayfası ve kenar bloğu için geçerli.
+Hesaplanan sayılar değişmez.
+- 12px'ten küçük yazı yok. Rozetler, kart notları, tablo başlıkları,
+  ipuçları, dipnotlar, çipler, küçük düğmeler ve geliştirici satırı
+  9–11,5px idi.
+- Yazı kontrastı en az 4,5:1. İkincil yazı koyulaştı; "Şimdi yeniden
+  hesapla" ve diğer birincil düğmeler koyu yeşil-mavi; tablo başlıkları
+  kendi zeminini kullanıyor, çünkü bazı temalar onları griye boyuyordu;
+  kenar bloğundaki "Tüm metrikler" bağlantısının rengi kendi.
+- Ülke çubukları: sayı artık çubuğun yanında, gövde yazı renginde.
+  Çubuk renklerinin üstündeki beyaz sayılar okunmuyordu.
+- Çubuk grafikler (kullanım eğilimi, tamamlanan hakemlikler, yıllara göre
+  makale ve sayı) kutularının genişliğinde çiziliyor; eksen etiketleri
+  her ekranda 12px. Dar ekranda daha az etiket gösteriliyor; grafikten
+  dar bir kutu etiketleri küçültmek yerine yana kayıyor.
+- Tıklanan hedefler en az 24 × 24px: "?" yöntem ipuçları, en çok okunan
+  makale bağlantıları, bloktaki "Tüm metrikler" bağlantısı, geliştirici
+  bağlantısı, görünürlük matrisinin küçük düğmeleri, onay kutusu
+  satırları ve editör beyanı metrikler tablosunun metin alanları.
+- Yönetim sayfaları en az 300px kullanılabilir genişliği koruyor.
+  Telefonda OJS yan menüsü ekranın küçük bir kısmını bıraktığında
+  alanları 24px'in altına sıkıştırmak yerine yana kayıyor.
+
+### Bakım (TR)
+- Kod yorumlarında iç süreç notlarına atıf kalmadı (kod değişmedi).
+- Türkçe README artık `README_TR.md`; iki README birbirine bağlantı
+  veriyor.
+
 ## 1.0.3.1 — 2026-11-06 · OJS 3.3
 
 ### Fixed
