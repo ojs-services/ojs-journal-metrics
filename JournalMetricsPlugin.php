@@ -575,6 +575,9 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 	 */
 	public function getSettingWithDefault($contextId, $name) {
 		$val = $this->getSetting($contextId, $name);
+		if ($name === 'publicPageTitle' && is_array($val)) {
+			$val = self::normalizeLocaleKeys($val, $this->_contextLocaleCodes($contextId));
+		}
 		$defaults = $this->getDefaultSettings();
 		return ($val !== null && $val !== '') ? $val : (isset($defaults[$name]) ? $defaults[$name] : null);
 	}
@@ -667,7 +670,70 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 	 */
 	public function getManualMetrics($contextId) {
 		$rows = $this->getSetting($contextId, 'manualMetrics');
-		return is_array($rows) ? array_slice(array_values($rows), 0, 5) : array();
+		if (!is_array($rows)) return array();
+		$rows = array_slice(array_values($rows), 0, 5);
+		$locales = $this->_contextLocaleCodes($contextId);
+		foreach ($rows as $i => $row) {
+			if (!is_array($row)) continue;
+			foreach (array('title', 'description') as $field) {
+				if (isset($row[$field]) && is_array($row[$field])) {
+					$rows[$i][$field] = self::normalizeLocaleKeys($row[$field], $locales);
+				}
+			}
+		}
+		return $rows;
+	}
+
+	/**
+	 * Values saved by the OJS 3.3 line are keyed by 3.3 locale codes
+	 * (en_US, tr_TR); OJS 3.4+ uses en, tr (pt_BR, fr_CA… keep the region).
+	 * The core upgrade does not touch plugin data, so legacy keys are moved
+	 * here, on read, to the journal locale they belong to. A value already
+	 * stored under the new code wins. Saving the settings page then writes
+	 * the new codes only.
+	 *
+	 * @param array $value locale => string
+	 * @param array $locales the journal's locale codes
+	 * @return array
+	 */
+	public static function normalizeLocaleKeys(array $value, array $locales) {
+		$out = array();
+		$legacy = array();
+		foreach ($value as $key => $translation) {
+			if (in_array($key, $locales, true) || !preg_match('/^([a-z]{2,3})_[A-Z]{2}/', (string) $key)) {
+				$out[$key] = $translation;
+			} else {
+				$legacy[$key] = $translation;
+			}
+		}
+		foreach ($legacy as $key => $translation) {
+			$language = substr($key, 0, strpos($key, '_'));
+			$target = in_array($language, $locales, true) ? $language : $key;
+			if (!isset($out[$target]) || trim((string) $out[$target]) === '') {
+				$out[$target] = $translation;
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * All locale codes a journal uses (form, interface and primary).
+	 *
+	 * @param int $contextId
+	 * @return array
+	 */
+	protected function _contextLocaleCodes($contextId) {
+		static $cache = array();
+		$contextId = (int) $contextId;
+		if (!isset($cache[$contextId])) {
+			$context = $contextId ? Application::getContextDAO()->getById($contextId) : null;
+			$cache[$contextId] = $context ? array_values(array_unique(array_merge(
+				(array) $context->getSupportedFormLocales(),
+				(array) $context->getSupportedLocales(),
+				array($context->getPrimaryLocale())
+			))) : array();
+		}
+		return $cache[$contextId];
 	}
 
 	// ------------------------------------------------------------------
@@ -710,6 +776,13 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 		foreach ($preferred as $locale) {
 			if (isset($value[$locale]) && trim((string) $value[$locale]) !== '') {
 				return trim((string) $value[$locale]);
+			}
+			// Snapshots written by the OJS 3.3 line carry 3.3 locale codes
+			// (tr_TR for tr) until the next recompute.
+			foreach ($value as $key => $translation) {
+				if (strpos((string) $key, $locale . '_') === 0 && trim((string) $translation) !== '') {
+					return trim((string) $translation);
+				}
 			}
 		}
 		foreach ($value as $translation) {
