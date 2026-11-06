@@ -164,6 +164,14 @@ devam eder.
 | Temalar | her OJS 3.4 / 3.5 temasıyla çalışır — varsayılan veya özel; temalarımız: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
 | Eklenti sürümü | 2.0.0.0 |
 
+**OJS 3.3'ten yükseltme.** Ayarlar, görünürlük seçimleri ve editörün
+girdiği metrikler korunur; OJS yükseltmesinden sonra 2.x paketini kurun.
+Bilinmesi gereken bir çekirdek sınırı: OJS 3.4.0-x'te, 3.3'ten yapılan
+çekirdek yükseltmesi eski kabul kararlarının bir kısmını dönüştürmeden
+bırakabilir. Bu durumda çekirdeğin İstatistikler sayfası kabul edilen
+gönderiyi 0 gösterir; her zaman çekirdek sayaçlarını izleyen bu eklenti de
+öyle gösterir. OJS 3.5'e yükseltmek bu kararları onarır.
+
 ## Lisans ve destek
 
 GNU GPL v3.

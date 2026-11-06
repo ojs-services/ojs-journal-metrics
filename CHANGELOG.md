@@ -23,6 +23,14 @@
   the built-in task scheduler on OJS 3.5.
 - Country names come from the OJS 3.4+ language data.
 
+### Upgrading from OJS 3.3
+- Settings saved by the 1.x line keep working: the public page title and
+  editor-declared metrics written with OJS 3.3 language codes (en_US,
+  tr_TR) are read under the new codes (en, tr) and shown in the right
+  language.
+- The package also installs on a site upgraded from OJS 3.3 where the
+  1.x plugin was enabled; just upload it as a new plugin.
+
 ### Eklendi (TR)
 - OJS 3.4 ve 3.5 için ilk sürüm; iki sürüm için tek paket. OJS 3.3
   hattının 1.0.3.1'e kadarki tüm özelliklerini ve düzeltmelerini içerir:
@@ -43,6 +51,13 @@
 - Snapshot görevi OJS 3.4'te Acron eklentisiyle, OJS 3.5'te yerleşik görev
   zamanlayıcısıyla çalışır.
 - Ülke adları OJS 3.4+ dil verisinden gelir.
+
+### OJS 3.3'ten yükseltme (TR)
+- 1.x hattında kaydedilen ayarlar çalışmaya devam eder: OJS 3.3 dil
+  kodlarıyla (en_US, tr_TR) yazılmış kamu sayfası başlığı ve editörün
+  girdiği metrikler yeni kodlarla (en, tr) okunur ve doğru dilde gösterilir.
+- Paket, 1.x eklentisinin etkin olduğu ve OJS 3.3'ten yükseltilmiş bir
+  sitede de kurulur; yeni eklenti olarak yüklemeniz yeterli.
 
 ## 1.0.3.1 — 2026-11-06 · OJS 3.3
 

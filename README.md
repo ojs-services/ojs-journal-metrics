@@ -161,6 +161,13 @@ output and community figures keep counting the whole archive.
 | Themes | works on any OJS 3.4 / 3.5 theme — default or custom; see our themes: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
 | Plugin version | 2.0.0.0 |
 
+**Upgrading from OJS 3.3.** Settings, visibility choices and editor-declared
+metrics carry over; install the 2.x package after the OJS upgrade. One core
+limitation to know: on OJS 3.4.0-x, the core upgrade from 3.3 can leave older
+acceptance decisions unconverted. The core Statistics page then shows 0
+accepted submissions, and so does this plugin, which always follows the core
+counters. Upgrading to OJS 3.5 repairs those decisions.
+
 ## License & support
 
 GNU GPL v3.
