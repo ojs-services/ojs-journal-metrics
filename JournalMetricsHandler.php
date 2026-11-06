@@ -1,6 +1,6 @@
 <?php
 /**
- * @file plugins/generic/journalMetrics/JournalMetricsHandler.inc.php
+ * @file plugins/generic/journalMetrics/JournalMetricsHandler.php
  *
  * Copyright (c) 2026 ojs-services.com
  * Distributed under the GNU GPL v3.
@@ -10,7 +10,19 @@
  *  (admin dashboard, settings, public page, country AJAX, recompute).
  */
 
-import('classes.handler.Handler');
+namespace APP\plugins\generic\journalMetrics;
+
+use APP\core\Application;
+use APP\handler\Handler;
+use APP\plugins\generic\journalMetrics\classes\JournalMetricsCompat;
+use APP\plugins\generic\journalMetrics\classes\providers\JournalMetricsManualProvider;
+use APP\template\TemplateManager;
+use PKP\plugins\PluginRegistry;
+use PKP\security\authorization\ContextRequiredPolicy;
+use PKP\security\authorization\PolicySet;
+use PKP\security\authorization\RoleBasedHandlerOperationPolicy;
+use PKP\security\Role;
+use PKP\site\VersionCheck;
 
 class JournalMetricsHandler extends Handler {
 
@@ -22,7 +34,7 @@ class JournalMetricsHandler extends Handler {
 
 		// Admin operations require Manager or Site Admin role
 		$this->addRoleAssignment(
-			array(ROLE_ID_SITE_ADMIN, ROLE_ID_MANAGER),
+			array(Role::ROLE_ID_SITE_ADMIN, Role::ROLE_ID_MANAGER),
 			array('dashboard', 'settings', 'saveSettings', 'fetchData', 'recompute')
 		);
 
@@ -35,7 +47,6 @@ class JournalMetricsHandler extends Handler {
 	public function authorize($request, &$args, $roleAssignments) {
 		$op = $request->getRouter()->getRequestedOp($request);
 
-		import('lib.pkp.classes.security.authorization.ContextRequiredPolicy');
 		$this->addPolicy(new ContextRequiredPolicy($request));
 
 		if ($op === 'publicpage') {
@@ -43,10 +54,8 @@ class JournalMetricsHandler extends Handler {
 			return parent::authorize($request, $args, array());
 		}
 
-		import('lib.pkp.classes.security.authorization.PolicySet');
-		$rolePolicy = new PolicySet(COMBINING_PERMIT_OVERRIDES);
+		$rolePolicy = new PolicySet(PolicySet::COMBINING_PERMIT_OVERRIDES);
 
-		import('lib.pkp.classes.security.authorization.RoleBasedHandlerOperationPolicy');
 		foreach ($roleAssignments as $role => $operations) {
 			$rolePolicy->addPolicy(
 				new RoleBasedHandlerOperationPolicy($request, $role, $operations)
@@ -107,8 +116,8 @@ class JournalMetricsHandler extends Handler {
 			'generatedAt'  => $viewModel['generatedAt'],
 			'usagePending' => $viewModel['usagePending'],
 			'coverageYear' => $viewModel['coverageYear'],
-			'articleUrlBase' => $request->getDispatcher()->url($request, ROUTE_PAGE, null, 'article', 'view'),
-			'csrfToken'    => $request->getSession()->getCSRFToken(),
+			'articleUrlBase' => $request->getDispatcher()->url($request, Application::ROUTE_PAGE, null, 'article', 'view'),
+			'csrfToken'    => JournalMetricsCompat::csrfToken($request),
 		));
 
 		$templateMgr->display($plugin->getTemplateResource('dashboard.tpl'));
@@ -209,11 +218,11 @@ class JournalMetricsHandler extends Handler {
 			// Deep anchor into Website Settings → Appearance → Setup, where
 			// the sidebar is managed. Appended manually: the router would
 			// urlencode the "/" inside the anchor and break the Vue tab.
-			'sidebarSettingsUrl' => $dispatcher->url($request, ROUTE_PAGE, null, 'management', 'settings', array('website')) . '#appearance/appearance-setup',
-			'saveUrl'       => $dispatcher->url($request, ROUTE_PAGE, null, 'journalmetrics', 'saveSettings'),
-			'dashboardUrl'  => $dispatcher->url($request, ROUTE_PAGE, null, 'journalmetrics', 'dashboard'),
-			'recomputeUrl'  => $dispatcher->url($request, ROUTE_PAGE, null, 'journalmetrics', 'recompute'),
-			'publicPageUrl' => $dispatcher->url($request, ROUTE_PAGE, null, 'journalmetrics', 'publicpage'),
+			'sidebarSettingsUrl' => $dispatcher->url($request, Application::ROUTE_PAGE, null, 'management', 'settings', array('website')) . '#appearance/appearance-setup',
+			'saveUrl'       => $dispatcher->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'saveSettings'),
+			'dashboardUrl'  => $dispatcher->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'dashboard'),
+			'recomputeUrl'  => $dispatcher->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'recompute'),
+			'publicPageUrl' => $dispatcher->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'publicpage'),
 			'justSaved'     => (bool) $request->getUserVar('saved'),
 			'uniqueStrategyOptions' => array(
 				'orcid' => __($base . 'filter.orcid'),
@@ -250,7 +259,7 @@ class JournalMetricsHandler extends Handler {
 	 */
 	public function saveSettings($args, $request) {
 		if (!$request->isPost() || !$request->checkCSRF()) {
-			$request->getDispatcher()->handle404();
+			JournalMetricsCompat::notFound($request);
 			return;
 		}
 
@@ -392,7 +401,6 @@ class JournalMetricsHandler extends Handler {
 		// page — a single JSON read — is current without a recompute.
 		$manager = $plugin->getSnapshotManager();
 		if ($manager->getSnapshot($contextId) !== null) {
-			$plugin->import('classes.providers.JournalMetricsManualProvider');
 			$provider = new JournalMetricsManualProvider($plugin);
 			$manager->updateGroup($contextId, 'manual', $provider->compute($contextId), 0);
 
@@ -477,7 +485,7 @@ class JournalMetricsHandler extends Handler {
 
 		$settings = $plugin->getAllSettings($contextId);
 		if (!$settings['enablePublicPage']) {
-			$request->getDispatcher()->handle404();
+			JournalMetricsCompat::notFound($request);
 			return;
 		}
 
@@ -497,7 +505,7 @@ class JournalMetricsHandler extends Handler {
 			'isAdmin'      => false,
 			'generatedAt'  => $viewModel['generatedAt'],
 			'coverageYear' => $viewModel['coverageYear'],
-			'articleUrlBase' => $request->getDispatcher()->url($request, ROUTE_PAGE, null, 'article', 'view'),
+			'articleUrlBase' => $request->getDispatcher()->url($request, Application::ROUTE_PAGE, null, 'article', 'view'),
 			'showDeveloperCredit' => (bool) $settings['showDeveloperCredit'],
 			'pageTitle'    => $plugin->localize($settings['publicPageTitle'], $context) ?: 'Journal Metrics',
 		));
@@ -988,8 +996,7 @@ class JournalMetricsHandler extends Handler {
 	protected function _assetVersion() {
 		static $release = null;
 		if ($release === null) {
-			$release = '1.0.0.0';
-			import('lib.pkp.classes.site.VersionCheck');
+			$release = '2.0.0.0';
 			$info = VersionCheck::parseVersionXML($this->_getPlugin()->getPluginPath() . '/version.xml');
 			if ($info && !empty($info['release'])) $release = $info['release'];
 		}
@@ -1006,12 +1013,8 @@ class JournalMetricsHandler extends Handler {
 	protected function _setupTemplate($request, $isBackend = true) {
 		if ($isBackend) {
 			$this->_isBackendPage = true;
-			if (!defined('APT_BACKEND_PAGE')) {
-				define('APT_BACKEND_PAGE', true);
-			}
 		}
 		parent::setupTemplate($request);
-		AppLocale::requireComponents(LOCALE_COMPONENT_PKP_MANAGER, LOCALE_COMPONENT_APP_MANAGER);
 	}
 
 }

@@ -1,12 +1,12 @@
 <?php
 /**
- * @file plugins/generic/journalMetrics/JournalMetricsPlugin.inc.php
+ * @file plugins/generic/journalMetrics/JournalMetricsPlugin.php
  *
  * Copyright (c) 2026 ojs-services.com
  * Distributed under the GNU GPL v3.
  *
  * @class JournalMetricsPlugin
- * @brief Main class for the Journal Metrics plugin.
+ * @brief Main class for the Journal Metrics plugin (OJS 3.4 and 3.5).
  *
  * Provides a full journal metrics catalogue (editorial, turnaround times,
  * usage, community, publication output, manual metrics) with a nightly
@@ -14,14 +14,38 @@
  * a {journal_metric} Smarty function.
  */
 
-import('lib.pkp.classes.plugins.GenericPlugin');
+namespace APP\plugins\generic\journalMetrics;
 
-define('NMI_TYPE_JOURNAL_METRICS', 'NMI_TYPE_JOURNAL_METRICS');
+use APP\core\Application;
+use APP\plugins\generic\journalMetrics\classes\JournalMetricsCompat;
+use APP\plugins\generic\journalMetrics\classes\JournalMetricsCountryDAO;
+use APP\plugins\generic\journalMetrics\classes\JournalMetricsSnapshotManager;
+use APP\plugins\generic\journalMetrics\classes\JournalMetricsSnapshotTask;
+use APP\plugins\generic\journalMetrics\classes\providers\JournalMetricsProviderRegistry;
+use APP\template\TemplateManager;
+use PKP\config\Config;
+use PKP\core\PKPComponentRouter;
+use PKP\core\PKPPageRouter;
+use PKP\facades\Locale;
+use PKP\linkAction\LinkAction;
+use PKP\linkAction\request\RedirectAction;
+use PKP\plugins\GenericPlugin;
+use PKP\plugins\Hook;
+use PKP\plugins\interfaces\HasTaskScheduler;
+use PKP\plugins\PluginRegistry;
+use PKP\scheduledTask\PKPScheduler;
+use PKP\security\Role;
+use PKP\security\Validation;
+use PKP\site\VersionCheck;
 
-class JournalMetricsPlugin extends GenericPlugin {
+if (!interface_exists(HasTaskScheduler::class)) {
+	require_once __DIR__ . '/classes/compat/HasTaskSchedulerPolyfill.php';
+}
 
-	/** @var boolean Guard so the Smarty function is registered only once */
-	private $_smartyFunctionRegistered = false;
+class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
+
+	/** Navigation menu item type (the value stored in the database) */
+	public const NMI_TYPE_JOURNAL_METRICS = 'NMI_TYPE_JOURNAL_METRICS';
 
 	/**
 	 * @copydoc Plugin::register()
@@ -29,28 +53,49 @@ class JournalMetricsPlugin extends GenericPlugin {
 	public function register($category, $path, $mainContextId = null) {
 		$success = parent::register($category, $path, $mainContextId);
 
-		// Scheduled task registration must happen regardless of the enabled
-		// state so acron can (re)parse the crontab during installation.
-		// The callback itself checks getEnabled() (usageStats pattern).
-		HookRegistry::register('AcronPlugin::parseCronTab', array($this, 'callbackParseCronTab'));
+		// OJS 3.4: the nightly task goes through Acron. Registered
+		// regardless of the enabled state so Acron can (re)parse the
+		// crontab during installation; the callback checks getEnabled().
+		// OJS 3.5 rejects this hook (it throws) — there the task is added
+		// by registerSchedules() below.
+		if (!JournalMetricsCompat::hasCoreScheduler()) {
+			Hook::add('AcronPlugin::parseCronTab', array($this, 'callbackParseCronTab'));
+		}
 
 		if ($success && $this->getEnabled()) {
 			// Route /journalmetrics requests to our handler
-			HookRegistry::register('LoadHandler', array($this, 'callbackLoadHandler'));
+			Hook::add('LoadHandler', array($this, 'callbackLoadHandler'));
 
-			// Backend sidebar menu entry + {journal_metric} Smarty function
-			HookRegistry::register('TemplateManager::display', array($this, 'callbackTemplateDisplay'));
+			// {journal_metric} Smarty function + sidebar block stylesheet
+			Hook::add('TemplateManager::display', array($this, 'callbackTemplateDisplay'));
+
+			// Backend side menu entry
+			Hook::add('TemplateManager::setupBackendPage', array($this, 'callbackSetupBackendPage'));
 
 			// Frontend navigation menu item type
-			HookRegistry::register('NavigationMenus::itemTypes', array($this, 'addNavigationMenuItemTypes'));
-			HookRegistry::register('NavigationMenus::displaySettings', array($this, 'setNavigationMenuItemDisplaySettings'));
+			Hook::add('NavigationMenus::itemTypes', array($this, 'addNavigationMenuItemTypes'));
+			Hook::add('NavigationMenus::displaySettings', array($this, 'setNavigationMenuItemDisplaySettings'));
 
 			// Sidebar block
-			$this->import('JournalMetricsBlockPlugin');
 			PluginRegistry::register('blocks', new JournalMetricsBlockPlugin($this), $this->getPluginPath());
 		}
 
 		return $success;
+	}
+
+	/**
+	 * OJS 3.5: add the nightly snapshot task to the core scheduler. It runs
+	 * hourly; the task itself starts a full cycle at most once per ~20 hours
+	 * and otherwise only continues an unfinished one.
+	 *
+	 * @copydoc \PKP\plugins\interfaces\HasTaskScheduler::registerSchedules()
+	 */
+	public function registerSchedules(PKPScheduler $scheduler): void {
+		$scheduler
+			->addSchedule(new JournalMetricsSnapshotTask())
+			->hourly()
+			->name(JournalMetricsSnapshotTask::class)
+			->withoutOverlapping();
 	}
 
 	/**
@@ -82,10 +127,6 @@ class JournalMetricsPlugin extends GenericPlugin {
 	 * @copydoc Plugin::getActions()
 	 */
 	public function getActions($request, $actionArgs) {
-		import('lib.pkp.classes.linkAction.request.RedirectAction');
-		import('lib.pkp.classes.linkAction.LinkAction');
-
-		$router = $request->getRouter();
 		$actions = array();
 
 		if ($this->getEnabled()) {
@@ -93,7 +134,7 @@ class JournalMetricsPlugin extends GenericPlugin {
 			$actions[] = new LinkAction(
 				'dashboard',
 				new RedirectAction(
-					$dispatcher->url($request, ROUTE_PAGE, null, 'journalmetrics', 'dashboard')
+					$dispatcher->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'dashboard')
 				),
 				__('plugins.generic.journalMetrics.dashboard'),
 				null
@@ -103,7 +144,7 @@ class JournalMetricsPlugin extends GenericPlugin {
 			$actions[] = new LinkAction(
 				'settings',
 				new RedirectAction(
-					$dispatcher->url($request, ROUTE_PAGE, null, 'journalmetrics', 'settings')
+					$dispatcher->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'settings')
 				),
 				__('manager.plugins.settings'),
 				null
@@ -131,18 +172,18 @@ class JournalMetricsPlugin extends GenericPlugin {
 	 * Route /journalmetrics/* requests to our handler.
 	 */
 	public function callbackLoadHandler($hookName, $args) {
-		$page =& $args[0];
+		$page = $args[0];
+		$handler =& $args[3];
 
 		if ($page === 'journalmetrics') {
-			require_once($this->getPluginPath() . '/JournalMetricsHandler.inc.php');
-			define('HANDLER_CLASS', 'JournalMetricsHandler');
+			$handler = new JournalMetricsHandler();
 			return true;
 		}
 		return false;
 	}
 
 	/**
-	 * Register our scheduled task file with acron.
+	 * OJS 3.4: register our scheduled task file with Acron.
 	 * @see AcronPlugin::parseCronTab()
 	 */
 	public function callbackParseCronTab($hookName, $args) {
@@ -154,20 +195,19 @@ class JournalMetricsPlugin extends GenericPlugin {
 	}
 
 	/**
-	 * TemplateManager::display callback: injects the backend sidebar link
-	 * and registers the {journal_metric} Smarty function.
+	 * TemplateManager::display callback: registers the {journal_metric}
+	 * Smarty function and the sidebar block stylesheet.
 	 */
 	public function callbackTemplateDisplay($hookName, $args) {
 		$templateMgr = $args[0];
 
-		// Register the Smarty function once per request
-		if (!$this->_smartyFunctionRegistered) {
+		// Registering a Smarty plugin twice throws; the plugin list may
+		// build a second instance of this class in the same request.
+		if (!isset($templateMgr->registered_plugins['function']['journal_metric'])) {
 			$templateMgr->registerPlugin('function', 'journal_metric', array($this, 'smartyJournalMetric'));
-			$this->_smartyFunctionRegistered = true;
 		}
 
 		$this->_registerBlockStyles($templateMgr);
-		$this->_addSidebarLink($templateMgr);
 
 		return false;
 	}
@@ -194,8 +234,7 @@ class JournalMetricsPlugin extends GenericPlugin {
 		if (!in_array('journalmetricsblockplugin', $sidebarBlocks, true)) return;
 		if (!count($this->getBlockMetrics($context->getId()))) return;
 
-		import('lib.pkp.classes.site.VersionCheck');
-		$release = '1.0.0.0';
+		$release = '2.0.0.0';
 		$info = VersionCheck::parseVersionXML($this->getPluginPath() . '/version.xml');
 		if ($info && !empty($info['release'])) $release = $info['release'];
 
@@ -208,39 +247,39 @@ class JournalMetricsPlugin extends GenericPlugin {
 	}
 
 	/**
-	 * Inject the "Journal Metrics" link into the management sidebar.
-	 * Only fires on backend pages (detected via the template menu state).
+	 * TemplateManager::setupBackendPage callback (no arguments): add the
+	 * "Journal Metrics" entry to the backend side menu.
 	 */
-	private function _addSidebarLink($templateMgr) {
+	public function callbackSetupBackendPage($hookName, $args) {
 		$request = Application::get()->getRequest();
 		$context = $request->getContext();
-		if (!$context) return;
+		if (!$context) return false;
 
 		// Journal managers and site admins only. Reviewers/authors also
 		// have a backend (the menu state exists for them too), but the
 		// metrics dashboard is not part of their interface — the handler
 		// would deny the page anyway; the link must not appear either.
 		$user = $request->getUser();
-		if (!$user) return;
-		import('lib.pkp.classes.security.Validation');
-		if (!$user->hasRole(array(ROLE_ID_MANAGER), $context->getId())
-				&& !Validation::isSiteAdmin()) return;
+		if (!$user) return false;
+		if (!$user->hasRole(array(Role::ROLE_ID_MANAGER), $context->getId())
+				&& !Validation::isSiteAdmin()) return false;
 
 		$router = $request->getRouter();
-		if (strpos(get_class($router), 'PageRouter') === false) return;
+		if (!$router instanceof PKPPageRouter) return false;
 
+		$templateMgr = TemplateManager::getManager($request);
 		$menu = (array) $templateMgr->getState('menu');
-		if (empty($menu) || isset($menu['journalmetrics'])) return;
-
-		$requestedPage = $router->getRequestedPage($request);
-		$dispatcher = $request->getDispatcher();
+		if (empty($menu) || isset($menu['journalmetrics'])) return false;
 
 		$menu['journalmetrics'] = array(
 			'name' => __('plugins.generic.journalMetrics.menuTitle'),
-			'url'  => $dispatcher->url($request, ROUTE_PAGE, null, 'journalmetrics', 'dashboard'),
-			'isCurrent' => ($requestedPage === 'journalmetrics'),
+			'url'  => $request->getDispatcher()->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'dashboard'),
+			'isCurrent' => ($router->getRequestedPage($request) === 'journalmetrics'),
+			// OJS 3.5 menu entries need an icon from the core set; 3.4 ignores it.
+			'icon' => 'Statistics',
 		);
 		$templateMgr->setState(array('menu' => $menu));
+		return false;
 	}
 
 	// ------------------------------------------------------------------
@@ -253,7 +292,7 @@ class JournalMetricsPlugin extends GenericPlugin {
 	 */
 	public function addNavigationMenuItemTypes($hookName, $args) {
 		$types =& $args[0];
-		$types[NMI_TYPE_JOURNAL_METRICS] = array(
+		$types[self::NMI_TYPE_JOURNAL_METRICS] = array(
 			'title'       => __('plugins.generic.journalMetrics.navMenuItem.title'),
 			'description' => __('plugins.generic.journalMetrics.navMenuItem.description'),
 		);
@@ -265,7 +304,7 @@ class JournalMetricsPlugin extends GenericPlugin {
 	public function setNavigationMenuItemDisplaySettings($hookName, $args) {
 		$navigationMenuItem = $args[0];
 
-		if ($navigationMenuItem->getType() !== NMI_TYPE_JOURNAL_METRICS) {
+		if ($navigationMenuItem->getType() !== self::NMI_TYPE_JOURNAL_METRICS) {
 			return;
 		}
 
@@ -281,7 +320,7 @@ class JournalMetricsPlugin extends GenericPlugin {
 		if ($context) {
 			$dispatcher = $request->getDispatcher();
 			$navigationMenuItem->setUrl($dispatcher->url(
-				$request, ROUTE_PAGE, null, 'journalmetrics', 'publicpage'
+				$request, Application::ROUTE_PAGE, null, 'journalmetrics', 'publicpage'
 			));
 		}
 	}
@@ -314,7 +353,7 @@ class JournalMetricsPlugin extends GenericPlugin {
 		// Frontend requests only expose public metrics. Backend (dashboard,
 		// component) templates may read everything.
 		$router = $request->getRouter();
-		$isBackend = is_a($router, 'PKPComponentRouter');
+		$isBackend = ($router instanceof PKPComponentRouter);
 		if (!$isBackend) {
 			$op = method_exists($router, 'getRequestedOp') ? $router->getRequestedOp($request) : '';
 			$page = method_exists($router, 'getRequestedPage') ? $router->getRequestedPage($request) : '';
@@ -385,7 +424,7 @@ class JournalMetricsPlugin extends GenericPlugin {
 	 * @return bool
 	 */
 	private static function _isTurkishNumbers($locale) {
-		if ($locale === null) $locale = AppLocale::getLocale();
+		if ($locale === null) $locale = Locale::getLocale();
 		return strpos((string) $locale, 'tr') === 0;
 	}
 
@@ -643,18 +682,16 @@ class JournalMetricsPlugin extends GenericPlugin {
 	 * @return array
 	 */
 	public function getSupportedLocaleNames($context) {
-		$locales = $context->getSupportedFormLocales();
-		if (empty($locales)) $locales = array($context->getPrimaryLocale());
+		$names = (array) $context->getSupportedFormLocaleNames();
+		if (empty($names)) {
+			$primary = $context->getPrimaryLocale();
+			$names = array($primary => $primary);
+		}
 		$primary = $context->getPrimaryLocale();
-		if (in_array($primary, $locales, true)) {
-			$locales = array_merge(array($primary), array_diff($locales, array($primary)));
+		if (isset($names[$primary])) {
+			$names = array($primary => $names[$primary]) + $names;
 		}
-		$all = AppLocale::getAllLocales();
-		$out = array();
-		foreach ($locales as $locale) {
-			$out[$locale] = isset($all[$locale]) ? $all[$locale] : $locale;
-		}
-		return $out;
+		return $names;
 	}
 
 	/**
@@ -668,7 +705,7 @@ class JournalMetricsPlugin extends GenericPlugin {
 	 */
 	public function localize($value, $context = null) {
 		if (!is_array($value)) return trim((string) $value);
-		$preferred = array(AppLocale::getLocale());
+		$preferred = array(Locale::getLocale());
 		if ($context) $preferred[] = $context->getPrimaryLocale();
 		foreach ($preferred as $locale) {
 			if (isset($value[$locale]) && trim((string) $value[$locale]) !== '') {
@@ -686,10 +723,10 @@ class JournalMetricsPlugin extends GenericPlugin {
 	// ------------------------------------------------------------------
 
 	/**
-	 * ISO 3166-1 country name map (Sokil ISO codes, bundled with OJS;
-	 * hardcoded fallback otherwise).
+	 * ISO 3166-1 country name map in the interface language (the core
+	 * country list; hardcoded English fallback if it is unavailable).
 	 *
-	 * @return array ['TR' => 'Turkey', ...]
+	 * @return array ['TR' => 'Türkiye', ...]
 	 */
 	public function getCountryNames() {
 		static $map = null;
@@ -697,14 +734,11 @@ class JournalMetricsPlugin extends GenericPlugin {
 
 		$map = array();
 		try {
-			if (class_exists('\Sokil\IsoCodes\IsoCodesFactory')) {
-				$isoCodes = new \Sokil\IsoCodes\IsoCodesFactory();
-				foreach ($isoCodes->getCountries() as $country) {
-					$map[$country->getAlpha2()] = $country->getName();
-				}
+			foreach (Locale::getCountries() as $country) {
+				$map[$country->getAlpha2()] = $country->getLocalName();
 			}
-		} catch (\Exception $e) {
-			// fallback below
+		} catch (\Throwable $e) {
+			error_log('Journal Metrics: country list unavailable, using the built-in names: ' . $e->getMessage());
 		}
 		if (empty($map)) {
 			$map = array(
@@ -767,7 +801,6 @@ class JournalMetricsPlugin extends GenericPlugin {
 	 * @return JournalMetricsSnapshotManager
 	 */
 	public function getSnapshotManager() {
-		$this->import('classes.JournalMetricsSnapshotManager');
 		static $manager = null;
 		if ($manager === null) $manager = new JournalMetricsSnapshotManager($this);
 		return $manager;
@@ -777,7 +810,6 @@ class JournalMetricsPlugin extends GenericPlugin {
 	 * @return JournalMetricsProviderRegistry
 	 */
 	public function getProviderRegistry() {
-		$this->import('classes.providers.JournalMetricsProviderRegistry');
 		static $registry = null;
 		if ($registry === null) $registry = new JournalMetricsProviderRegistry($this);
 		return $registry;
@@ -787,7 +819,6 @@ class JournalMetricsPlugin extends GenericPlugin {
 	 * @return JournalMetricsCountryDAO
 	 */
 	public function getCountryDAO() {
-		$this->import('classes.JournalMetricsCountryDAO');
 		return new JournalMetricsCountryDAO();
 	}
 }

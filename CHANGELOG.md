@@ -1,5 +1,49 @@
 # Changelog
 
+## 2.0.0.0 — 2026-11-06 · OJS 3.4–3.5
+
+### Added
+- First release for OJS 3.4 and 3.5, one package for both. It carries
+  every feature and fix of the OJS 3.3 line up to 1.0.3.1, including
+  rates over decided submissions only and numbers formatted in the
+  interface language.
+
+### Changed (compared with the OJS 3.3 line)
+- Counters follow the OJS 3.4+ core statistics: "Accepted" also counts
+  submissions sent straight to copyediting or production without a
+  separate accept decision, as the core Statistics page does. Turnaround
+  times use the same decisions for the acceptance date.
+- Readership comes from the OJS 3.4+ usage tables. Abstract views and
+  galley downloads keep the 3.3 definition; supplementary file downloads
+  are not counted, as before.
+- "Access countries" is read from the country-of-access statistics; it
+  stays hidden when the journal does not record the country of access.
+- On OJS 3.5, role counts leave out role memberships that have ended.
+- The snapshot task runs through the Acron plugin on OJS 3.4 and through
+  the built-in task scheduler on OJS 3.5.
+- Country names come from the OJS 3.4+ language data.
+
+### Eklendi (TR)
+- OJS 3.4 ve 3.5 için ilk sürüm; iki sürüm için tek paket. OJS 3.3
+  hattının 1.0.3.1'e kadarki tüm özelliklerini ve düzeltmelerini içerir:
+  oranlar yalnız karar verilmiş gönderiler üzerinden, sayılar arayüz
+  dilinde biçimli.
+
+### Değişti (OJS 3.3 hattına göre) (TR)
+- Sayaçlar OJS 3.4+ çekirdek istatistiklerini izler: "Kabul edilen",
+  ayrı bir kabul kararı olmadan doğrudan dizgi ya da yayın aşamasına
+  gönderilen gönderileri de sayar; çekirdeğin İstatistikler sayfası da
+  böyle sayar. Süre metrikleri kabul tarihi için aynı kararları kullanır.
+- Okunma verileri OJS 3.4+ kullanım tablolarından gelir. Özet görüntüleme
+  ve tam metin indirme 3.3'teki tanımı korur; ek dosya indirmeleri
+  önceden olduğu gibi sayılmaz.
+- "Erişim ülkeleri" erişim ülkesi istatistiklerinden okunur; dergi erişim
+  ülkesini kaydetmiyorsa gizli kalır.
+- OJS 3.5'te rol sayıları sona ermiş rol üyeliklerini saymaz.
+- Snapshot görevi OJS 3.4'te Acron eklentisiyle, OJS 3.5'te yerleşik görev
+  zamanlayıcısıyla çalışır.
+- Ülke adları OJS 3.4+ dil verisinden gelir.
+
 ## 1.0.3.1 — 2026-11-06 · OJS 3.3
 
 ### Fixed

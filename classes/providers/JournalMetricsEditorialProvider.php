@@ -1,6 +1,6 @@
 <?php
 /**
- * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsEditorialProvider.inc.php
+ * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsEditorialProvider.php
  *
  * Copyright (c) 2026 ojs-services.com
  * Distributed under the GNU GPL v3.
@@ -9,19 +9,22 @@
  * @brief Editorial counters and rates.
  *
  * BINDING RULE: all COUNTERS in this group come
- * from the core editorialStats service output verbatim (accepted =
- * decision ACCEPT(1) only), so the counts always match the core
- * Statistics screen 1:1. The RATES are derived from those same counters
+ * from the core editorialStats service output verbatim, so the counts
+ * always match the core Statistics screen 1:1. OJS 3.4+ counts as
+ * accepted: Decision::ACCEPT, SKIP_EXTERNAL_REVIEW and SEND_TO_PRODUCTION
+ * (OJS 3.3: ACCEPT only). The RATES are derived from those same counters
  * over the decided cohort (JournalMetricsPlugin::decisionRates) and
- * stored unrounded. The looser accept definition (decision IN (1,7)) is
- * used ONLY for date-based duration metrics in
- * JournalMetricsTimesProvider — never here. Do not mix the two.
+ * stored unrounded. Duration metrics (JournalMetricsTimesProvider) use
+ * the same accept set for their dates.
  *
  * COVERAGE: the statsCoverageStartYear setting applies here (a declared
  * scope, always announced on the public page — never a silent filter).
  */
 
-import('plugins.generic.journalMetrics.classes.providers.JournalMetricsBaseProvider');
+namespace APP\plugins\generic\journalMetrics\classes\providers;
+
+use APP\core\Services;
+use APP\plugins\generic\journalMetrics\JournalMetricsPlugin;
 
 class JournalMetricsEditorialProvider extends JournalMetricsBaseProvider {
 

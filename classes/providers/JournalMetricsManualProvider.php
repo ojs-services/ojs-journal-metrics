@@ -1,6 +1,6 @@
 <?php
 /**
- * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsManualProvider.inc.php
+ * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsManualProvider.php
  *
  * Copyright (c) 2026 ojs-services.com
  * Distributed under the GNU GPL v3.
@@ -15,7 +15,7 @@
  * displayed with an "editor-declared" badge on public surfaces.
  */
 
-import('plugins.generic.journalMetrics.classes.providers.JournalMetricsBaseProvider');
+namespace APP\plugins\generic\journalMetrics\classes\providers;
 
 class JournalMetricsManualProvider extends JournalMetricsBaseProvider {
 

@@ -7,7 +7,9 @@
   * Copyright (c) 2026 ojs-services.com
   * Distributed under the GNU GPL v3.
   *
-  * Journal Metrics scheduled task registry: the chunked snapshot
+  * Journal Metrics scheduled task registry (OJS 3.4, read by the Acron
+  * plugin; OJS 3.5 registers the same task in code through
+  * JournalMetricsPlugin::registerSchedules): the chunked snapshot
   * computation. <frequency minute="0"/> = at most once per hour; the task
   * resumes an unfinished cycle on each run and starts a NEW full cycle
   * only when the last completed cycle is older than ~20 hours, so a full
@@ -16,7 +18,7 @@
   -->
 
 <scheduled_tasks>
-	<task class="plugins.generic.journalMetrics.classes.JournalMetricsSnapshotTask">
+	<task class="APP\plugins\generic\journalMetrics\classes\JournalMetricsSnapshotTask">
 		<descr>Compute the nightly Journal Metrics snapshot (chunked).</descr>
 		<frequency minute="0"/>
 	</task>

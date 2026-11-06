@@ -1,16 +1,21 @@
 <?php
 /**
- * @file plugins/generic/countryStats/classes/JournalMetricsCountryDAO.inc.php
+ * @file plugins/generic/journalMetrics/classes/JournalMetricsCountryDAO.php
  *
  * @class JournalMetricsCountryDAO
- * @brief Database queries for Journal Metrics plugin (ported verbatim from the Country Statistics plugin DAO).
+ * @brief Database queries for Journal Metrics plugin (ported from the
+ *  Country Statistics plugin DAO). Plain query helper: the SQL runs through
+ *  Laravel's query builder; the tables and columns it reads are the same in
+ *  OJS 3.3, 3.4 and 3.5.
  */
 
-import('lib.pkp.classes.db.DAO');
+namespace APP\plugins\generic\journalMetrics\classes;
 
-class JournalMetricsCountryDAO extends DAO {
+use Illuminate\Support\Facades\DB;
 
-	// STATUS_PUBLISHED = 3 in OJS 3.3
+class JournalMetricsCountryDAO {
+
+	// Submission::STATUS_PUBLISHED (3 in every OJS 3.x)
 	const STATUS_PUBLISHED = 3;
 
 	/**
@@ -55,8 +60,7 @@ class JournalMetricsCountryDAO extends DAO {
 			ORDER BY author_count DESC
 		";
 
-		$result = $this->retrieve($sql, $params);
-		return $this->_resultToArray($result);
+		return $this->_resultToArray(DB::select($sql, $params));
 	}
 
 	/**
@@ -90,8 +94,7 @@ class JournalMetricsCountryDAO extends DAO {
 			ORDER BY article_count DESC
 		";
 
-		$result = $this->retrieve($sql, $params);
-		return $this->_resultToArray($result);
+		return $this->_resultToArray(DB::select($sql, $params));
 	}
 
 	/**
@@ -117,8 +120,8 @@ class JournalMetricsCountryDAO extends DAO {
 			  AND s.context_id = ?
 			  {$dateWhere1}
 		";
-		$result1 = $this->retrieve($sql1, $params1);
-		$row1 = $result1->current();
+		$result1 = DB::select($sql1, $params1);
+		$row1 = $result1 ? $result1[0] : null;
 		$totalArticles = $row1 ? (int)$row1->cnt : 0;
 
 		// Total unique authors + total countries
@@ -148,8 +151,8 @@ class JournalMetricsCountryDAO extends DAO {
 				GROUP BY unique_id
 			) AS unique_authors
 		";
-		$result2 = $this->retrieve($sql2, $params2);
-		$row2 = $result2->current();
+		$result2 = DB::select($sql2, $params2);
+		$row2 = $result2 ? $result2[0] : null;
 
 		return array(
 			'totalArticles'  => $totalArticles,
@@ -213,7 +216,7 @@ class JournalMetricsCountryDAO extends DAO {
 	}
 
 	/**
-	 * Convert ADORecordSet result to a plain array.
+	 * Convert query rows (stdClass) to plain arrays.
 	 */
 	private function _resultToArray($result) {
 		$rows = array();

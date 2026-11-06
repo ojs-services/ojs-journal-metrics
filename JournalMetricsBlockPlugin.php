@@ -1,6 +1,6 @@
 <?php
 /**
- * @file plugins/generic/journalMetrics/JournalMetricsBlockPlugin.inc.php
+ * @file plugins/generic/journalMetrics/JournalMetricsBlockPlugin.php
  *
  * Copyright (c) 2026 ojs-services.com
  * Distributed under the GNU GPL v3.
@@ -10,7 +10,10 @@
  *  snapshot (single JSON read, zero computation at render time).
  */
 
-import('lib.pkp.classes.plugins.BlockPlugin');
+namespace APP\plugins\generic\journalMetrics;
+
+use APP\core\Application;
+use PKP\plugins\BlockPlugin;
 
 class JournalMetricsBlockPlugin extends BlockPlugin {
 
@@ -110,7 +113,7 @@ class JournalMetricsBlockPlugin extends BlockPlugin {
 		$publicPageUrl = null;
 		if ($plugin->getSetting($context->getId(), 'enablePublicPage')) {
 			$publicPageUrl = $request->getDispatcher()->url(
-				$request, ROUTE_PAGE, null, 'journalmetrics', 'publicpage'
+				$request, Application::ROUTE_PAGE, null, 'journalmetrics', 'publicpage'
 			);
 		}
 

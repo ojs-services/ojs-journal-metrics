@@ -1,6 +1,6 @@
 <?php
 /**
- * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsOutputProvider.inc.php
+ * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsOutputProvider.php
  *
  * Copyright (c) 2026 ojs-services.com
  * Distributed under the GNU GPL v3.
@@ -16,7 +16,7 @@
  * editorialStats service, whose yearly figures these queries reproduce.
  */
 
-import('plugins.generic.journalMetrics.classes.providers.JournalMetricsBaseProvider');
+namespace APP\plugins\generic\journalMetrics\classes\providers;
 
 class JournalMetricsOutputProvider extends JournalMetricsBaseProvider {
 

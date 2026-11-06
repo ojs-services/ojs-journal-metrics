@@ -13,6 +13,4 @@
  * @brief Wrapper for the Journal Metrics plugin.
  */
 
-require_once('JournalMetricsPlugin.inc.php');
-
-return new JournalMetricsPlugin();
+return new \APP\plugins\generic\journalMetrics\JournalMetricsPlugin();

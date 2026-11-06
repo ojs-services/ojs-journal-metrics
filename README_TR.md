@@ -4,7 +4,7 @@
 
 **Derginiz hakkındaki önemli sayıları — otomatik, şeffaf ve tek sayfada gösterin.**
 
-Journal Metrics, OJS 3.3 kurulumunuzun içinde zaten var olan verileri
+Journal Metrics, OJS 3.4 ve 3.5 kurulumunuzun içinde zaten var olan verileri
 profesyonel bir metrik sayfasına dönüştüren bir generic eklentidir: editoryal
 etkinlik, süreç süreleri, okunma, topluluk erişimi ve yayın çıktısı. Dergiler
 bu sayfayı dizin başvurularını güçlendirmek (DOAJ, Scopus, Web of Science ve
@@ -108,21 +108,29 @@ metriklerden ayrı gösterilir ve her biri son güncelleme tarihiyle damgalanır
 ## Kurulum
 
 1. Web Sitesi Ayarları → Eklentiler → **Yeni Eklenti Yükle** ile
-   `journalMetrics-ojs3.3-1.0.3.1.tar.gz` dosyasını seçin.
+   `journalMetrics-ojs3.4-3.5-2.0.0.0.tar.gz` dosyasını seçin.
 2. Generic Eklentiler altında **Journal Metrics**'i etkinleştirin.
 3. Sol yönetim menüsünden **Dergi Metrikleri**'ni açın; hızlı metrik grupları
    ilk ziyarette hesaplanır.
 4. **Kurulumdan sonra zamanlanmış görevi bir kez çalıştırın** ki kullanım
    istatistikleri hemen hesaplansın (aksi halde bir sonraki zamanlanmış
-   koşuda hesaplanır):
+   koşuda hesaplanır). OJS 3.4'te:
 
    ```
    php tools/runScheduledTasks.php plugins/generic/journalMetrics/scheduledTasks.xml
    ```
 
-Eklenti kendini Acron eklentisine kaydeder ve snapshot'ını otomatik yeniler
-(saatlik koşular, günde bir tam yeniden hesaplama). Büyük kurulumlarda
-yukarıdaki komutun gerçek bir cron görevi olarak eklenmesini öneririz.
+   OJS 3.5'te:
+
+   ```
+   php lib/pkp/tools/scheduler.php test --name="APP\plugins\generic\journalMetrics\classes\JournalMetricsSnapshotTask"
+   ```
+
+Eklenti snapshot'ını otomatik yeniler (saatlik koşular, günde bir tam
+yeniden hesaplama): OJS 3.4'te Acron eklentisi, OJS 3.5'te yerleşik görev
+zamanlayıcısı üzerinden. Büyük kurulumlarda gerçek bir cron görevi
+öneririz — OJS 3.4'te yukarıdaki ilk komut, OJS 3.5'te her dakika
+`php lib/pkp/tools/scheduler.php run`.
 `config.inc.php` düzenlemesi ve FTP erişimi gerekmez.
 
 ## Yapılandırma
@@ -149,12 +157,12 @@ devam eder.
 
 | | |
 |---|---|
-| OJS | 3.3.0-x (3.3.0.0 – 3.3.0.22) |
-| PHP | 7.4 – 8.1 |
+| OJS | 3.4.0-x ve 3.5.0-x (3.4.0.10 ve 3.5.0.3'te sınandı); OJS 3.3 için 1.0.x hattını kullanın |
+| PHP | OJS'nizin istediği sürüm: OJS 3.4'te 8.0 ve üstü, OJS 3.5'te 8.2 ve üstü |
 | Veritabanı | MySQL / MariaDB (standart OJS kurulumları) |
 | Dergiler | tek ve çok dergili kurulumlar |
-| Temalar | her OJS 3.3 temasıyla çalışır — varsayılan veya özel; temalarımız: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Eklenti sürümü | 1.0.3.1 |
+| Temalar | her OJS 3.4 / 3.5 temasıyla çalışır — varsayılan veya özel; temalarımız: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
+| Eklenti sürümü | 2.0.0.0 |
 
 ## Lisans ve destek
 

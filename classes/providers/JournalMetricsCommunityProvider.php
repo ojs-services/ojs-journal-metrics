@@ -1,6 +1,6 @@
 <?php
 /**
- * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsCommunityProvider.inc.php
+ * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsCommunityProvider.php
  *
  * Copyright (c) 2026 ojs-services.com
  * Distributed under the GNU GPL v3.
@@ -9,9 +9,12 @@
  * @brief Community metrics: unique authors, role counts, author
  *  countries, completed reviews per year.
  *
- * Role counts use the OJS 3.3 ROLE_ID constants: REVIEWER=4096,
- * AUTHOR=65536, READER=1048576. Disabled users are
- * excluded everywhere. The unique-author deduplication is delegated to
+ * Role counts use PKP\security\Role::ROLE_ID_* (REVIEWER=4096,
+ * AUTHOR=65536, READER=1048576). Disabled users are
+ * excluded everywhere; on OJS 3.5 ended role memberships
+ * (user_user_groups.date_end in the past) are excluded as well
+ * (JournalMetricsCompat::activeMembershipClause). The unique-author
+ * deduplication is delegated to
  * JournalMetricsCountryDAO (ported verbatim from countryStats), honouring
  * the configured strategy (ORCID -> email -> name by default).
  *
@@ -25,7 +28,10 @@
  * date_notified IS NOT NULL — identical filter in yearly and total counts.
  */
 
-import('plugins.generic.journalMetrics.classes.providers.JournalMetricsBaseProvider');
+namespace APP\plugins\generic\journalMetrics\classes\providers;
+
+use APP\plugins\generic\journalMetrics\classes\JournalMetricsCompat;
+use PKP\security\Role;
 
 class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 
@@ -76,7 +82,7 @@ class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 			FROM user_user_groups uug
 			JOIN user_groups ug ON ug.user_group_id = uug.user_group_id
 			JOIN users u ON u.user_id = uug.user_id
-			WHERE ug.context_id = ?",
+			WHERE ug.context_id = ?" . JournalMetricsCompat::activeMembershipClause('uug'),
 			array($contextId)
 		);
 
@@ -133,8 +139,7 @@ class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 	}
 
 	/**
-	 * Active user counts per role (ROLE_ID constants from
-	 * lib/pkp/classes/security/Role.inc.php).
+	 * Active user counts per role (PKP\security\Role::ROLE_ID_*).
 	 */
 	private function _roleCounts($contextId) {
 		$rows = $this->selectRows(
@@ -143,7 +148,7 @@ class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 			FROM user_groups ug
 			JOIN user_user_groups uug ON uug.user_group_id = ug.user_group_id
 			JOIN users u ON u.user_id = uug.user_id
-			WHERE ug.context_id = ?
+			WHERE ug.context_id = ?" . JournalMetricsCompat::activeMembershipClause('uug') . "
 			GROUP BY ug.role_id",
 			array($contextId)
 		);
@@ -152,9 +157,9 @@ class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 			$byRole[(int) $row['role_id']] = (int) $row['active_users'];
 		}
 		return array(
-			'reviewers' => isset($byRole[4096]) ? $byRole[4096] : 0,     // ROLE_ID_REVIEWER
-			'authors'   => isset($byRole[65536]) ? $byRole[65536] : 0,   // ROLE_ID_AUTHOR
-			'readers'   => isset($byRole[1048576]) ? $byRole[1048576] : 0, // ROLE_ID_READER
+			'reviewers' => isset($byRole[Role::ROLE_ID_REVIEWER]) ? $byRole[Role::ROLE_ID_REVIEWER] : 0,
+			'authors'   => isset($byRole[Role::ROLE_ID_AUTHOR]) ? $byRole[Role::ROLE_ID_AUTHOR] : 0,
+			'readers'   => isset($byRole[Role::ROLE_ID_READER]) ? $byRole[Role::ROLE_ID_READER] : 0,
 		);
 	}
 }

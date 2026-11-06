@@ -4,7 +4,7 @@
 
 **Show the numbers that matter about your journal — automatically, transparently, in one place.**
 
-Journal Metrics is a generic plugin for Open Journal Systems 3.3 that turns the
+Journal Metrics is a generic plugin for Open Journal Systems 3.4 and 3.5 that turns the
 data already inside your OJS installation into a professional metrics page:
 editorial activity, turnaround times, readership, community reach and
 publication output. Journals use it to strengthen indexing applications
@@ -106,21 +106,29 @@ stamped with its last update date.
 ## Installation
 
 1. Website Settings → Plugins → **Upload A New Plugin** and select
-   `journalMetrics-ojs3.3-1.0.3.1.tar.gz`.
+   `journalMetrics-ojs3.4-3.5-2.0.0.0.tar.gz`.
 2. Enable **Journal Metrics** under Generic Plugins.
 3. Open **Journal Metrics** from the left management menu; the fast metric
    groups are computed on first visit.
 4. **Run the scheduled task once after installation** so usage statistics are
    computed immediately (they are otherwise picked up by the next scheduled
-   run):
+   run). On OJS 3.4:
 
    ```
    php tools/runScheduledTasks.php plugins/generic/journalMetrics/scheduledTasks.xml
    ```
 
-The plugin registers itself with the Acron plugin and refreshes its snapshot
-automatically (hourly runs, one full recomputation per day). On large
-installations we recommend adding the command above as a real cron job.
+   On OJS 3.5:
+
+   ```
+   php lib/pkp/tools/scheduler.php test --name="APP\plugins\generic\journalMetrics\classes\JournalMetricsSnapshotTask"
+   ```
+
+The plugin refreshes its snapshot automatically (hourly runs, one full
+recomputation per day): on OJS 3.4 through the Acron plugin, on OJS 3.5
+through the built-in task scheduler. On large installations we recommend a
+real cron job — on OJS 3.4 the first command above, on OJS 3.5
+`php lib/pkp/tools/scheduler.php run` every minute.
 No `config.inc.php` changes and no FTP access are required.
 
 ## Configuration
@@ -146,12 +154,12 @@ output and community figures keep counting the whole archive.
 
 | | |
 |---|---|
-| OJS | 3.3.0-x (3.3.0.0 – 3.3.0.22) |
-| PHP | 7.4 – 8.1 |
+| OJS | 3.4.0-x and 3.5.0-x (tested on 3.4.0.10 and 3.5.0.3); for OJS 3.3 use the 1.0.x line |
+| PHP | what your OJS needs: 8.0 or newer on OJS 3.4, 8.2 or newer on OJS 3.5 |
 | Database | MySQL / MariaDB (standard OJS setups) |
 | Journals | single- and multi-journal installations |
-| Themes | works on any OJS 3.3 theme — default or custom; see our themes: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Plugin version | 1.0.3.1 |
+| Themes | works on any OJS 3.4 / 3.5 theme — default or custom; see our themes: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
+| Plugin version | 2.0.0.0 |
 
 ## License & support
 

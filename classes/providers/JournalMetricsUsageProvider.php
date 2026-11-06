@@ -1,22 +1,26 @@
 <?php
 /**
- * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsUsageProvider.inc.php
+ * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsUsageProvider.php
  *
  * Copyright (c) 2026 ojs-services.com
  * Distributed under the GNU GPL v3.
  *
  * @class JournalMetricsUsageProvider
- * @brief Usage metrics from the legacy OJS 3.3 `metrics` table.
+ * @brief Usage metrics from the OJS 3.4+ COUNTER tables.
  *
- * ISOLATION RULE: every query against the
- * `metrics` table lives in THIS class and nowhere else. OJS 3.4+ replaces
- * the table with metrics_* split tables; a future port only touches this
- * provider.
+ * ISOLATION RULE: every query against the usage
+ * tables lives in THIS class and nowhere else.
  *
- * Constants (OJS 3.3):
- *   ASSOC_TYPE_SUBMISSION      = 1048585  (abstract landing page views)
- *   ASSOC_TYPE_SUBMISSION_FILE = 515      (galley file downloads)
- *   metric_type                = 'ojs::counter'
+ * Sources (OJS 3.4 / 3.5; the 3.4 upgrade moves the 3.3 `metrics` rows
+ * here, keeping their assoc types):
+ *   metrics_submission              per-day views / downloads
+ *     assoc_type 1048585 (Application::ASSOC_TYPE_SUBMISSION)
+ *                        abstract landing page views
+ *     assoc_type 515     (Application::ASSOC_TYPE_SUBMISSION_FILE)
+ *                        galley file downloads — the same definition as
+ *                        the 3.3 line (supplementary files, 531, are not
+ *                        counted there either)
+ *   metrics_submission_geo_monthly  country of access, per month
  *
  * COVERAGE: statsCoverageStartYear does NOT apply here — usage always
  * covers the whole archive (the archive enriches these figures).
@@ -26,14 +30,13 @@
  * nightly task, never synchronously from a web request.
  */
 
-import('plugins.generic.journalMetrics.classes.providers.JournalMetricsBaseProvider');
+namespace APP\plugins\generic\journalMetrics\classes\providers;
 
 class JournalMetricsUsageProvider extends JournalMetricsBaseProvider {
 
 	/** Decimal values of the ASSOC_TYPE_* hex constants */
 	const ASSOC_SUBMISSION = 1048585;
 	const ASSOC_SUBMISSION_FILE = 515;
-	const METRIC_TYPE = 'ojs::counter';
 
 	/** Months kept in the monthly series */
 	const SERIES_MONTHS = 24;
@@ -61,16 +64,18 @@ class JournalMetricsUsageProvider extends JournalMetricsBaseProvider {
 		// --- Single pass over views+downloads grouped by month.
 		// Feeds: totals, current-year figures AND the 24-month series
 		// (one scan, no extra passes).
+		// Month keys keep the 3.3 'YYYYMM' shape, so the snapshot format and
+		// the charts are identical on both lines.
 		$monthly = $this->selectRows(
-			"SELECT m.month,
+			"SELECT DATE_FORMAT(m.date, '%Y%m') AS month,
 				SUM(CASE WHEN m.assoc_type = " . self::ASSOC_SUBMISSION . " THEN m.metric ELSE 0 END) AS views,
 				SUM(CASE WHEN m.assoc_type = " . self::ASSOC_SUBMISSION_FILE . " THEN m.metric ELSE 0 END) AS downloads
-			FROM metrics m
-			WHERE m.metric_type = ? AND m.context_id = ?
+			FROM metrics_submission m
+			WHERE m.context_id = ?
 			  AND m.assoc_type IN (" . self::ASSOC_SUBMISSION . ", " . self::ASSOC_SUBMISSION_FILE . ")
-			  AND m.month IS NOT NULL
-			GROUP BY m.month",
-			array(self::METRIC_TYPE, $contextId)
+			  AND m.date IS NOT NULL
+			GROUP BY DATE_FORMAT(m.date, '%Y%m')",
+			array($contextId)
 		);
 
 		$totalViews = 0;
@@ -99,11 +104,10 @@ class JournalMetricsUsageProvider extends JournalMetricsBaseProvider {
 		$avgRow = $this->selectRow(
 			"SELECT SUM(m.metric) AS total_downloads,
 				COUNT(DISTINCT m.submission_id) AS articles
-			FROM metrics m
-			WHERE m.metric_type = ? AND m.context_id = ?
-			  AND m.assoc_type = " . self::ASSOC_SUBMISSION_FILE . "
-			  AND m.submission_id IS NOT NULL",
-			array(self::METRIC_TYPE, $contextId)
+			FROM metrics_submission m
+			WHERE m.context_id = ?
+			  AND m.assoc_type = " . self::ASSOC_SUBMISSION_FILE,
+			array($contextId)
 		);
 		$articlesWithDownloads = $avgRow ? (int) $avgRow['articles'] : 0;
 		$avgDownloads = ($articlesWithDownloads > 0)
@@ -114,14 +118,13 @@ class JournalMetricsUsageProvider extends JournalMetricsBaseProvider {
 		// afterwards in a cheap per-id query (locale-aware).
 		$top = $this->selectRows(
 			"SELECT m.submission_id, SUM(m.metric) AS total_views
-			FROM metrics m
-			WHERE m.metric_type = ? AND m.context_id = ?
+			FROM metrics_submission m
+			WHERE m.context_id = ?
 			  AND m.assoc_type = " . self::ASSOC_SUBMISSION . "
-			  AND m.submission_id IS NOT NULL
 			GROUP BY m.submission_id
 			ORDER BY total_views DESC
 			LIMIT 10",
-			array(self::METRIC_TYPE, $contextId)
+			array($contextId)
 		);
 		$topArticles = array();
 		foreach ($top as $row) {
@@ -133,15 +136,16 @@ class JournalMetricsUsageProvider extends JournalMetricsBaseProvider {
 			);
 		}
 
-		// --- Access country count (reserved). country_id is empty on
-		// typical OJS 3.3 installs; 0 distinct -> null
-		// so the metric is treated as "no data" (RED) and auto-hidden.
+		// --- Access country count from the geo table (filled only when
+		// the journal records the country of access — a site / usage
+		// statistics setting); 0 distinct -> null so the metric is treated
+		// as "no data" (RED) and auto-hidden.
 		$countryRow = $this->selectRow(
-			"SELECT COUNT(DISTINCT m.country_id) AS cnt
-			FROM metrics m
-			WHERE m.metric_type = ? AND m.context_id = ?
-			  AND m.country_id IS NOT NULL AND m.country_id <> ''",
-			array(self::METRIC_TYPE, $contextId)
+			"SELECT COUNT(DISTINCT g.country) AS cnt
+			FROM metrics_submission_geo_monthly g
+			WHERE g.context_id = ?
+			  AND g.country IS NOT NULL AND g.country <> ''",
+			array($contextId)
 		);
 		$countryCount = ($countryRow && (int) $countryRow['cnt'] > 0) ? (int) $countryRow['cnt'] : null;
 

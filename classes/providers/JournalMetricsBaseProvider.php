@@ -1,6 +1,6 @@
 <?php
 /**
- * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsBaseProvider.inc.php
+ * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsBaseProvider.php
  *
  * Copyright (c) 2026 ojs-services.com
  * Distributed under the GNU GPL v3.
@@ -12,11 +12,16 @@
  * are pure readers: they never write to the database. The SQL definitions
  * documented on each provider are fixed: their joins, filters and decision
  * sets must not be altered without re-validating the resulting numbers.
+ *
+ * OJS 3.4 / 3.5: the SQL runs through Laravel's query builder (DB::select);
+ * decision codes come from PKP\decision\Decision (renumbered in 3.4).
  */
 
-import('lib.pkp.classes.db.DAO');
+namespace APP\plugins\generic\journalMetrics\classes\providers;
 
-abstract class JournalMetricsBaseProvider extends DAO {
+use Illuminate\Support\Facades\DB;
+
+abstract class JournalMetricsBaseProvider {
 
 	/** @var JournalMetricsPlugin */
 	protected $_plugin;
@@ -25,7 +30,6 @@ abstract class JournalMetricsBaseProvider extends DAO {
 	 * @param JournalMetricsPlugin $plugin
 	 */
 	public function __construct($plugin) {
-		parent::__construct();
 		$this->_plugin = $plugin;
 	}
 
@@ -63,7 +67,7 @@ abstract class JournalMetricsBaseProvider extends DAO {
 	 * @return array
 	 */
 	protected function selectRows($sql, $params = array()) {
-		$result = $this->retrieve($sql, $params);
+		$result = DB::select($sql, $params);
 		$rows = array();
 		foreach ($result as $row) {
 			$rows[] = (array) $row;

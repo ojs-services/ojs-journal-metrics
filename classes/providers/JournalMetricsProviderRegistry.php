@@ -1,6 +1,6 @@
 <?php
 /**
- * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsProviderRegistry.inc.php
+ * @file plugins/generic/journalMetrics/classes/providers/JournalMetricsProviderRegistry.php
  *
  * Copyright (c) 2026 ojs-services.com
  * Distributed under the GNU GPL v3.
@@ -12,6 +12,8 @@
  * snapshot on the first chunked run; the expensive usage provider runs
  * last and may be deferred across runs.
  */
+
+namespace APP\plugins\generic\journalMetrics\classes\providers;
 
 class JournalMetricsProviderRegistry {
 
@@ -41,7 +43,7 @@ class JournalMetricsProviderRegistry {
 			);
 			$this->_providers = array();
 			foreach ($classes as $class) {
-				$this->_plugin->import('classes.providers.' . $class);
+				$class = __NAMESPACE__ . '\\' . $class; // PSR-4 autoloaded
 				$provider = new $class($this->_plugin);
 				$this->_providers[$provider->getGroup()] = $provider;
 			}

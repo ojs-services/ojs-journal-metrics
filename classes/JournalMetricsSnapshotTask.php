@@ -1,6 +1,6 @@
 <?php
 /**
- * @file plugins/generic/journalMetrics/classes/JournalMetricsSnapshotTask.inc.php
+ * @file plugins/generic/journalMetrics/classes/JournalMetricsSnapshotTask.php
  *
  * Copyright (c) 2026 ojs-services.com
  * Distributed under the GNU GPL v3.
@@ -8,16 +8,22 @@
  * @class JournalMetricsSnapshotTask
  * @brief Chunked nightly snapshot computation.
  *
- * Acron executes scheduled tasks in the shutdown phase of a web request,
- * bound by PHP max_execution_time. This task therefore works through a
- * persistent queue of (journal × provider-group) work items and stops
- * after a fixed time budget, saving the snapshot after EVERY item. The
- * next run (acron or real cron via tools/runScheduledTasks.php) resumes
- * where it left off. A full pass over all journals may span several runs;
- * that is by design.
+ * OJS 3.4 runs it through the Acron plugin, OJS 3.5 through the core
+ * scheduler (JournalMetricsPlugin::registerSchedules); both may execute
+ * tasks in the shutdown phase of a web request, bound by PHP
+ * max_execution_time. This task therefore works through a persistent
+ * queue of (journal × provider-group) work items and stops after a fixed
+ * time budget, saving the snapshot after EVERY item. The next run (web
+ * runner or real cron) resumes where it left off. A full pass over all
+ * journals may span several runs; that is by design.
  */
 
-import('lib.pkp.classes.scheduledTask.ScheduledTask');
+namespace APP\plugins\generic\journalMetrics\classes;
+
+use APP\core\Application;
+use PKP\plugins\PluginRegistry;
+use PKP\scheduledTask\ScheduledTask;
+use PKP\scheduledTask\ScheduledTaskHelper;
 
 class JournalMetricsSnapshotTask extends ScheduledTask {
 
@@ -30,14 +36,14 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 	/**
 	 * @copydoc ScheduledTask::getName()
 	 */
-	public function getName() {
+	public function getName(): string {
 		return __('plugins.generic.journalMetrics.task.name');
 	}
 
 	/**
 	 * @copydoc ScheduledTask::executeActions()
 	 */
-	protected function executeActions() {
+	protected function executeActions(): bool {
 		$plugin = PluginRegistry::getPlugin('generic', 'journalmetricsplugin');
 		if (!$plugin) {
 			// Lazy-load plugins are not in the registry during scheduled
@@ -56,29 +62,30 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 		$manager = $plugin->getSnapshotManager();
 		$registry = $plugin->getProviderRegistry();
 
-		// Run lock (L2): acron may fire from two overlapping web requests;
+		// Run lock (L2): the web runner may fire from two overlapping
+		// requests (3.5 also adds withoutOverlapping());
 		// only one runner may drain the queue at a time. plugin_settings
 		// offers no atomic compare-and-swap, so this is a best-effort lock
 		// with a stale timeout — good enough to stop double computation.
 		$runId = uniqid('jmx', true);
-		$lock = $plugin->getSetting(0, 'snapshotRunLock');
+		$lock = $plugin->getSetting(Application::CONTEXT_ID_NONE, 'snapshotRunLock');
 		if (is_array($lock) && isset($lock['startedAt'])
 				&& (time() - (int) $lock['startedAt']) < self::LOCK_TIMEOUT) {
 			$this->addExecutionLogEntry(
 				'Journal Metrics: another snapshot run is in progress; skipping.',
-				SCHEDULED_TASK_MESSAGE_TYPE_NOTICE
+				ScheduledTaskHelper::SCHEDULED_TASK_MESSAGE_TYPE_NOTICE
 			);
 			return true;
 		}
-		$plugin->updateSetting(0, 'snapshotRunLock', array('runId' => $runId, 'startedAt' => time()), 'object');
+		$plugin->updateSetting(Application::CONTEXT_ID_NONE, 'snapshotRunLock', array('runId' => $runId, 'startedAt' => time()), 'object');
 
 		try {
 			return $this->_drainQueue($plugin, $manager, $registry, $runId);
 		} finally {
 			// Release only our own lock (a stale-takeover may have replaced it)
-			$lock = $plugin->getSetting(0, 'snapshotRunLock');
+			$lock = $plugin->getSetting(Application::CONTEXT_ID_NONE, 'snapshotRunLock');
 			if (is_array($lock) && isset($lock['runId']) && $lock['runId'] === $runId) {
-				$plugin->updateSetting(0, 'snapshotRunLock', array(), 'object');
+				$plugin->updateSetting(Application::CONTEXT_ID_NONE, 'snapshotRunLock', array(), 'object');
 			}
 		}
 	}
@@ -93,7 +100,7 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 			// older than ~20 hours — the task itself fires hourly so that
 			// unfinished cycles can progress, but a full recomputation
 			// happens once per day.
-			$lastCycle = $plugin->getSetting(0, 'snapshotCycleCompletedAt');
+			$lastCycle = $plugin->getSetting(Application::CONTEXT_ID_NONE, 'snapshotCycleCompletedAt');
 			if ($lastCycle && (time() - strtotime($lastCycle)) < 20 * 3600) {
 				return true;
 			}
@@ -105,13 +112,13 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 			if (empty($queue)) {
 				$this->addExecutionLogEntry(
 					'Journal Metrics: no journals with the plugin enabled; nothing to do.',
-					SCHEDULED_TASK_MESSAGE_TYPE_NOTICE
+					ScheduledTaskHelper::SCHEDULED_TASK_MESSAGE_TYPE_NOTICE
 				);
 				return true;
 			}
 			$this->addExecutionLogEntry(
 				sprintf('Journal Metrics: starting a new snapshot cycle (%d work items).', count($queue)),
-				SCHEDULED_TASK_MESSAGE_TYPE_NOTICE
+				ScheduledTaskHelper::SCHEDULED_TASK_MESSAGE_TYPE_NOTICE
 			);
 		}
 
@@ -132,16 +139,16 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 				$durationMs = (int) round((microtime(true) - $t0) * 1000);
 				list(, $warning, $sizeBytes) = $manager->updateGroup($contextId, $group, $payload, $durationMs);
 				if ($warning !== null) {
-					$this->addExecutionLogEntry($warning, SCHEDULED_TASK_MESSAGE_TYPE_WARNING);
+					$this->addExecutionLogEntry($warning, ScheduledTaskHelper::SCHEDULED_TASK_MESSAGE_TYPE_WARNING);
 				}
 				$this->addExecutionLogEntry(
 					sprintf('Journal Metrics: context %d group "%s" computed in %d ms (snapshot %d bytes).', $contextId, $group, $durationMs, $sizeBytes),
-					SCHEDULED_TASK_MESSAGE_TYPE_NOTICE
+					ScheduledTaskHelper::SCHEDULED_TASK_MESSAGE_TYPE_NOTICE
 				);
-			} catch (Throwable $e) {
+			} catch (\Throwable $e) {
 				$this->addExecutionLogEntry(
 					sprintf('Journal Metrics: context %d group "%s" FAILED: %s', $contextId, $group, $e->getMessage()),
-					SCHEDULED_TASK_MESSAGE_TYPE_ERROR
+					ScheduledTaskHelper::SCHEDULED_TASK_MESSAGE_TYPE_ERROR
 				);
 			}
 
@@ -152,16 +159,16 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 			if ((microtime(true) - $startedAt) > self::TIME_BUDGET && !empty($queue)) {
 				$this->addExecutionLogEntry(
 					sprintf('Journal Metrics: time budget reached after %d items; %d items remain for the next run.', $done, count($queue)),
-					SCHEDULED_TASK_MESSAGE_TYPE_NOTICE
+					ScheduledTaskHelper::SCHEDULED_TASK_MESSAGE_TYPE_NOTICE
 				);
 				return true;
 			}
 		}
 
-		$plugin->updateSetting(0, 'snapshotCycleCompletedAt', date('c'), 'string');
+		$plugin->updateSetting(Application::CONTEXT_ID_NONE, 'snapshotCycleCompletedAt', date('c'), 'string');
 		$this->addExecutionLogEntry(
 			sprintf('Journal Metrics: snapshot cycle completed (%d items this run).', $done),
-			SCHEDULED_TASK_MESSAGE_TYPE_COMPLETED
+			ScheduledTaskHelper::SCHEDULED_TASK_MESSAGE_TYPE_COMPLETED
 		);
 		return true;
 	}

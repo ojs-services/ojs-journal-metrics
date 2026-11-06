@@ -1,6 +1,6 @@
 <?php
 /**
- * @file plugins/generic/journalMetrics/classes/JournalMetricsSnapshotManager.inc.php
+ * @file plugins/generic/journalMetrics/classes/JournalMetricsSnapshotManager.php
  *
  * Copyright (c) 2026 ojs-services.com
  * Distributed under the GNU GPL v3.
@@ -22,10 +22,18 @@
  * rates) display correctly without a recompute.
  */
 
-define('JOURNAL_METRICS_SCHEMA_VERSION', 2);
-define('JOURNAL_METRICS_SNAPSHOT_WARN_BYTES', 49152); // 48 KB
+namespace APP\plugins\generic\journalMetrics\classes;
+
+use APP\core\Application;
+use APP\plugins\generic\journalMetrics\JournalMetricsPlugin;
 
 class JournalMetricsSnapshotManager {
+
+	/** Snapshot schema version (see the file comment) */
+	public const SCHEMA_VERSION = 2;
+
+	/** Encoded size above which a write logs a warning: 48 KB */
+	public const SNAPSHOT_WARN_BYTES = 49152;
 
 	/** Snapshot groups in canonical order */
 	public static $GROUPS = array('editorial', 'times', 'community', 'output', 'manual', 'usage');
@@ -205,7 +213,7 @@ class JournalMetricsSnapshotManager {
 		$snapshot = $this->getSnapshot($contextId);
 		if (!is_array($snapshot)) {
 			$snapshot = array(
-				'schemaVersion'   => JOURNAL_METRICS_SCHEMA_VERSION,
+				'schemaVersion'   => self::SCHEMA_VERSION,
 				'generatedAt'     => null,
 				'contextId'       => $contextId,
 				'durations'       => array(),
@@ -213,7 +221,7 @@ class JournalMetricsSnapshotManager {
 			);
 		}
 
-		$snapshot['schemaVersion'] = JOURNAL_METRICS_SCHEMA_VERSION;
+		$snapshot['schemaVersion'] = self::SCHEMA_VERSION;
 		$snapshot['contextId'] = $contextId;
 		$snapshot[$group] = $payload;
 		$snapshot['durations'][$group . 'Ms'] = (int) $durationMs;
@@ -240,10 +248,10 @@ class JournalMetricsSnapshotManager {
 
 		$warning = null;
 		$size = strlen(json_encode($snapshot, JSON_UNESCAPED_UNICODE));
-		if ($size > JOURNAL_METRICS_SNAPSHOT_WARN_BYTES) {
+		if ($size > self::SNAPSHOT_WARN_BYTES) {
 			$warning = sprintf(
 				'Journal Metrics snapshot for context %d is %d bytes (> %d). plugin_settings holds TEXT (64 KB); consider trimming series/top lists.',
-				$contextId, $size, JOURNAL_METRICS_SNAPSHOT_WARN_BYTES
+				$contextId, $size, self::SNAPSHOT_WARN_BYTES
 			);
 			error_log('[journalMetrics] WARNING: ' . $warning);
 		}
@@ -269,11 +277,12 @@ class JournalMetricsSnapshotManager {
 	// ------------------------------------------------------------------
 
 	/**
-	 * The pending work queue, stored site-wide (context 0).
+	 * The pending work queue, stored site-wide (site context: 0 on
+	 * OJS 3.4, null on 3.5 — Application::CONTEXT_ID_NONE resolves it).
 	 * @return array list of [contextId, group] pairs
 	 */
 	public function getQueue() {
-		$queue = $this->_plugin->getSetting(0, 'snapshotQueue');
+		$queue = $this->_plugin->getSetting(Application::CONTEXT_ID_NONE, 'snapshotQueue');
 		return is_array($queue) ? $queue : array();
 	}
 
@@ -281,7 +290,7 @@ class JournalMetricsSnapshotManager {
 	 * @param array $queue list of [contextId, group] pairs
 	 */
 	public function saveQueue($queue) {
-		$this->_plugin->updateSetting(0, 'snapshotQueue', array_values($queue), 'object');
+		$this->_plugin->updateSetting(Application::CONTEXT_ID_NONE, 'snapshotQueue', array_values($queue), 'object');
 	}
 
 	/**
