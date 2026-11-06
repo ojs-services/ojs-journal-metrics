@@ -43,3 +43,7 @@
 }
 .jmx-block .content a.jmx-block-more:hover,
 .jmx-block a.jmx-block-more:hover { color: #115e59; }
+.jmx-block a.jmx-block-more:focus-visible { outline: 2px solid #0f766e; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+	.jmx-block * { transition: none !important; }
+}
