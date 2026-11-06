@@ -730,3 +730,18 @@ div.jmx-coverage-line { margin-left: 0; }
 }
 .jmx-vis-groupbtns { text-align: right; }
 .jmx-vis-groupbtns .jmx-btn-xs { margin-left: 4px; }
+
+/* Keyboard focus is always visible; motion follows the reader's setting */
+.jmx-dashboard a:focus-visible,
+.jmx-dashboard button:focus-visible,
+.jmx-dashboard input:focus-visible,
+.jmx-dashboard select:focus-visible,
+.jmx-dashboard [tabindex]:focus-visible {
+	outline: 2px solid #0f766e;
+	outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+	.jmx-dashboard *,
+	.jmx-dashboard *::before,
+	.jmx-dashboard *::after { transition: none !important; animation: none !important; }
+}
