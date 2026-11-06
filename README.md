@@ -1,5 +1,7 @@
 # Journal Metrics for OJS
 
+**English** · [Türkçe](README_TR.md)
+
 **Show the numbers that matter about your journal — automatically, transparently, in one place.**
 
 Journal Metrics is a generic plugin for Open Journal Systems 3.3 that turns the

@@ -1,5 +1,7 @@
 # Journal Metrics for OJS
 
+[English](README.md) · **Türkçe**
+
 **Derginiz hakkındaki önemli sayıları — otomatik, şeffaf ve tek sayfada gösterin.**
 
 Journal Metrics, OJS 3.3 kurulumunuzun içinde zaten var olan verileri

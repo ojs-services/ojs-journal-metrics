@@ -131,7 +131,7 @@ First public release.
 - JSON embedded in `<script>` blocks is hex-encoded (`JSON_HEX_TAG` et al.)
   as defense-in-depth against markup breakout.
 
-## 1.0.0.x — 2026-07-17 … 2026-07-18 (internal iterations)
+## 1.0.0.x — 2026-07-17 … 2026-07-18 (pre-release)
 
 - 1.0.0.6 — geographic distribution wired to the visibility matrix and the
   public page (snapshot-served, no live queries); asset cache-buster reads
