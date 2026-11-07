@@ -1,5 +1,71 @@
 # Changelog
 
+## 2.0.0.2 — 2026-11-08 · OJS 3.4–3.5
+
+### Fixed
+- Imported articles no longer distort the workflow metrics. Archives loaded
+  into OJS get their submission and decision dates on the day of the
+  import, after publication, which produced meaningless and even negative
+  turnaround times. Every workflow metric (editorial counters and rates,
+  all turnaround times, completed reviews) now uses one shared rule, the
+  same one OJS's own statistics use: an article whose submission date is
+  later than its first publication date counts as imported and is left
+  out. Readership, publication output and author figures still count it.
+- Impossible spans that remain (for example an acceptance recorded after
+  publication, or a review completed before it was requested) are left
+  out of the averages. The dashboard shows managers how many were left out
+  on each turnaround card.
+- On themes that give plugin pages no content container (Immersion,
+  Pragma, Classic, Health Sciences and others) the public metrics page ran
+  from edge to edge of the window. It is now at most 1140px wide and
+  centred, with a small side margin on phones; inside a theme's own
+  column nothing changes.
+
+### Changed
+- The settings page says how many imported articles are left out of the
+  editorial metrics.
+- With the public page switched off, managers who open its address see a
+  short note with a link to the setting instead of "page not found";
+  visitors still get "page not found".
+- When no metric has been made public yet, the public page says so
+  ("No metrics have been made public yet") instead of "Metrics are being
+  prepared"; managers also get a link to the settings.
+- Metrics stored before the update keep their old figures until they are
+  recomputed: the scheduled task does it within a day, or press
+  "Recompute now" on the dashboard.
+
+### Düzeltildi (TR)
+- İçe aktarılan makaleler artık iş akışı göstergelerini bozmuyor. OJS'ye
+  sonradan yüklenen arşivlerin gönderi ve karar tarihleri yükleme gününe,
+  yani yayından sonraya düşüyor; bu da anlamsız, hatta eksi süreler
+  üretiyordu. Bütün iş akışı göstergeleri (editoryal sayaçlar ve oranlar,
+  bütün süreç süreleri, tamamlanan hakemlikler) artık tek bir ortak kural
+  kullanıyor; kural OJS'nin kendi istatistikleriyle aynı: gönderi tarihi
+  ilk yayın tarihinden sonra olan makale içe aktarılmış sayılır ve dışarıda
+  kalır. Okunma, yayın çıktısı ve yazar göstergeleri bu makaleleri saymaya
+  devam ediyor.
+- Geriye kalan imkânsız süreler (örneğin yayından sonra kaydedilmiş bir
+  kabul ya da istenmeden önce tamamlanmış bir hakemlik) ortalamalara
+  girmiyor. Panoda her süre kartında kaçının dışarıda kaldığı yöneticiye
+  gösteriliyor.
+- Eklenti sayfalarına içerik kabı vermeyen temalarda (Immersion, Pragma,
+  Classic, Health Sciences ve diğerleri) herkese açık metrik sayfası
+  pencerenin bir ucundan öbür ucuna uzanıyordu. Artık en çok 1140px
+  genişlikte ve ortalı; telefonda iki yanda küçük bir boşluk var. Temanın
+  kendi sütunu varsa hiçbir şey değişmiyor.
+
+### Değişti (TR)
+- Ayar sayfası, editoryal göstergelerin dışında kalan içe aktarılmış
+  makale sayısını gösteriyor.
+- Herkese açık sayfa kapalıyken adresini açan yönetici "sayfa bulunamadı"
+  yerine ayara bağlantı veren kısa bir not görüyor; ziyaretçi yine "sayfa
+  bulunamadı" görüyor.
+- Henüz hiçbir gösterge herkese açık değilse sayfa bunu söylüyor ("Henüz
+  herkese açık gösterge seçilmedi"); "Metrikler hazırlanıyor" yazmıyor.
+  Yöneticiye ayrıca ayarlara bağlantı gösteriliyor.
+- Güncellemeden önce kaydedilmiş metrikler yeniden hesaplanana kadar eski
+  değerleri gösterir: zamanlanmış görev bunu bir gün içinde yapar ya da
+  panodaki "Şimdi yeniden hesapla" düğmesine basın.
 ## 2.0.0.1 — 2026-11-06 · OJS 3.4–3.5
 
 ### Accessibility

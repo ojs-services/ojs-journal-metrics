@@ -108,7 +108,7 @@ metriklerden ayrı gösterilir ve her biri son güncelleme tarihiyle damgalanır
 ## Kurulum
 
 1. Web Sitesi Ayarları → Eklentiler → **Yeni Eklenti Yükle** ile
-   `journalMetrics-ojs3.4-3.5-2.0.0.1.tar.gz` dosyasını seçin.
+   `journalMetrics-ojs3.4-3.5-2.0.0.2.tar.gz` dosyasını seçin.
 2. Generic Eklentiler altında **Journal Metrics**'i etkinleştirin.
 3. Sol yönetim menüsünden **Dergi Metrikleri**'ni açın; hızlı metrik grupları
    ilk ziyarette hesaplanır.
@@ -152,6 +152,17 @@ dönemini kapsar." beyanını son güncelleme damgasının yanında açıkça ta
 kapsam daraltıldığında bu her zaman sayfada açıkça beyan edilir, asla sessiz
 kalınmaz. Kullanım, yayın çıktısı ve topluluk sayıları tüm arşivi saymaya
 devam eder.
+**İçe aktarılan makaleler** — OJS'ye sonradan yüklenen arşivlerin (örneğin
+Native XML içe aktarma ile) gönderi ve karar tarihleri, yükleme gününe ve
+yayın tarihinden sonraya düşer. Bu makaleler bütün iş akışı göstergelerinin
+dışında tutulur: editoryal sayaçlar ve oranlar, süreç süreleri ve
+tamamlanan hakem değerlendirmeleri. Kural OJS'nin kendi istatistikleriyle
+aynıdır: gönderi tarihi ilk yayın tarihinden sonraysa makale içe
+aktarılmış sayılır. Ayar sayfası bunun kaç makaleyi kapsadığını gösterir.
+Okunma, yayın çıktısı ve yazar göstergeleri bu makaleleri saymaya devam
+eder. Geriye kalan imkânsız süreler (örneğin yayından sonra kaydedilmiş bir
+kabul) ortalamalara girmez; kaç tane olduğu yöneticiye panoda gösterilir.
+
 
 ## Uyumluluk
 
@@ -162,7 +173,7 @@ devam eder.
 | Veritabanı | MySQL / MariaDB (standart OJS kurulumları) |
 | Dergiler | tek ve çok dergili kurulumlar |
 | Temalar | her OJS 3.4 / 3.5 temasıyla çalışır — varsayılan veya özel; temalarımız: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Eklenti sürümü | 2.0.0.1 |
+| Eklenti sürümü | 2.0.0.2 |
 
 **OJS 3.3'ten yükseltme.** Ayarlar, görünürlük seçimleri ve editörün
 girdiği metrikler korunur; OJS yükseltmesinden sonra 2.x paketini kurun.

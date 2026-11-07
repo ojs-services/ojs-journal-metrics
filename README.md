@@ -106,7 +106,7 @@ stamped with its last update date.
 ## Installation
 
 1. Website Settings → Plugins → **Upload A New Plugin** and select
-   `journalMetrics-ojs3.4-3.5-2.0.0.1.tar.gz`.
+   `journalMetrics-ojs3.4-3.5-2.0.0.2.tar.gz`.
 2. Enable **Journal Metrics** under Generic Plugins.
 3. Open **Journal Metrics** from the left management menu; the fast metric
    groups are computed on first visit.
@@ -149,6 +149,17 @@ averages use only the covered full years, and the pages openly declare
 "Editorial statistics cover {year}–present." next to the last-updated
 stamp — narrowed scope is always declared, never silent. Usage, publication
 output and community figures keep counting the whole archive.
+**Imported articles** — archives loaded into OJS (for example with the
+Native XML import) get their submission and decision dates on the day of
+the import, after their publication date. Such articles are left out of
+every workflow metric: editorial counters and rates, turnaround times and
+completed reviews, with the same rule OJS's own statistics use (submission
+date later than the first publication date). The settings page shows how
+many articles this concerns. Readership, publication output and author
+figures still count them. Impossible spans that remain (for example an
+acceptance recorded after publication) are left out of the averages, and
+managers see how many on the dashboard.
+
 
 ## Compatibility
 
@@ -159,7 +170,7 @@ output and community figures keep counting the whole archive.
 | Database | MySQL / MariaDB (standard OJS setups) |
 | Journals | single- and multi-journal installations |
 | Themes | works on any OJS 3.4 / 3.5 theme — default or custom; see our themes: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Plugin version | 2.0.0.1 |
+| Plugin version | 2.0.0.2 |
 
 **Upgrading from OJS 3.3.** Settings, visibility choices and editor-declared
 metrics carry over; install the 2.x package after the OJS upgrade. One core
