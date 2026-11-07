@@ -254,6 +254,9 @@ msgstr "Updated"
 msgid "plugins.generic.journalMetrics.ui.metricsUpdated"
 msgstr "Metrics last updated"
 
+msgid "plugins.generic.journalMetrics.ui.droppedSpans"
+msgstr "left out (impossible dates)"
+
 msgid "plugins.generic.journalMetrics.ui.usagePending"
 msgstr "Usage statistics are being computed — they will appear after the next scheduled run."
 
@@ -363,6 +366,15 @@ msgstr "Transparent, up-to-date indicators of this journal's editorial performan
 
 msgid "plugins.generic.journalMetrics.public.noMetrics"
 msgstr "Metrics are being prepared. Please check back soon."
+
+msgid "plugins.generic.journalMetrics.public.noPublicMetrics"
+msgstr "No metrics have been made public yet."
+
+msgid "plugins.generic.journalMetrics.public.openSettings"
+msgstr "Open the Journal Metrics settings"
+
+msgid "plugins.generic.journalMetrics.public.closedNotice"
+msgstr "The public metrics page is switched off, so visitors get a \"page not found\" error at this address. Only managers see this note. Switch the page on under Settings → Public Page."
 
 msgid "plugins.generic.journalMetrics.public.autoNote"
 msgstr "Automatic metric values are computed directly from journal data and cannot be edited."
@@ -559,6 +571,9 @@ msgstr "Recompute failed. Please try again."
 
 msgid "plugins.generic.journalMetrics.settings.coverage"
 msgstr "Editorial statistics coverage"
+
+msgid "plugins.generic.journalMetrics.settings.importedNote"
+msgstr "{$num} imported articles (submission date later than the first publication date, the rule of OJS's own statistics) are left out of the editorial, turnaround and review metrics. Readership, publication output and author figures include them."
 
 msgid "plugins.generic.journalMetrics.settings.coverage.desc"
 msgstr "Optional. When a start year is set, editorial workflow statistics (submissions, decisions, turnaround times, completed reviews) cover that year onward — and this coverage is always openly declared on the dashboard and the public page. Leave empty to cover the whole archive. Usage statistics, publication output and community figures always cover the whole archive."

@@ -7,6 +7,22 @@
  *}
 {include file="frontend/components/header.tpl" pageTitleTranslated=$pageTitle}
 
+{if $jmxClosedNotice}
+{* The public page is switched off. Only managers get here (visitors get
+   a 404): tell them why the page is empty and where to switch it on. *}
+<div class="page jmx-public-page">
+	<link rel="stylesheet" href="{$pluginPath}/css/journalMetrics.css?v={$assetVersion|escape}" />
+	<header class="jmx-public-header">
+		<h2>{$pageTitle|escape}</h2>
+	</header>
+	<div class="jmx-dashboard">
+		<div class="jmx-section jmx-manager-note" role="status">
+			<p>{translate key="plugins.generic.journalMetrics.public.closedNotice"}</p>
+			<p><a class="jmx-btn jmx-btn-primary" href="{$settingsUrl|escape}">{translate key="plugins.generic.journalMetrics.public.openSettings"}</a></p>
+		</div>
+	</div>
+</div>
+{else}
 <div class="page jmx-public-page">
 
 	<link rel="stylesheet" href="{$pluginPath}/css/journalMetrics.css?v={$assetVersion|escape}" />
@@ -106,9 +122,17 @@
 		</div>
 		{/if}
 
-		{* Empty state: no public metrics or snapshot not ready *}
+		{* Empty state: no metric made public yet, or public metrics without
+		   enough data so far. Managers also get the way to the settings. *}
 		<div id="jmxEmptyState" class="jmx-section jmx-empty-state" style="display:none;">
-			{translate key="plugins.generic.journalMetrics.public.noMetrics"}
+			{if $jmxPublicCount}
+				{translate key="plugins.generic.journalMetrics.public.noMetrics"}
+			{else}
+				{translate key="plugins.generic.journalMetrics.public.noPublicMetrics"}
+			{/if}
+			{if $jmxCanManage}
+			<p class="jmx-empty-action"><a class="jmx-btn jmx-btn-primary" href="{$settingsUrl|escape}">{translate key="plugins.generic.journalMetrics.public.openSettings"}</a></p>
+			{/if}
 		</div>
 
 		{* Trust layer: methodology / source note *}
@@ -159,5 +183,6 @@
 	{rdelim})();
 </script>
 <script src="{$pluginPath}/js/journalMetrics.js?v={$assetVersion|escape}"></script>
+{/if}
 
 {include file="frontend/components/footer.tpl"}

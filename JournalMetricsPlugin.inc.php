@@ -790,4 +790,38 @@ class JournalMetricsPlugin extends GenericPlugin {
 		$this->import('classes.JournalMetricsCountryDAO');
 		return new JournalMetricsCountryDAO();
 	}
+
+	/**
+	 * Imported submissions of a journal — the ones every workflow metric
+	 * leaves out (JournalMetricsBaseProvider::importedCondition, OJS core's
+	 * rule). Shown on the settings page.
+	 *
+	 * @param int $contextId
+	 * @return int
+	 */
+	public function countImportedSubmissions($contextId) {
+		$this->import('classes.providers.JournalMetricsBaseProvider');
+		$result = DAORegistry::getDAO('UserDAO')->retrieve(
+			'SELECT COUNT(*) AS cnt FROM submissions s WHERE s.context_id = ? AND '
+				. JournalMetricsBaseProvider::importedCondition('s'),
+			array((int) $contextId)
+		);
+		$row = $result->current();
+		return $row ? (int) $row->cnt : 0;
+	}
+
+	/**
+	 * Does the current user manage this journal (journal manager or site
+	 * admin)? Used for manager-only notes on frontend pages.
+	 *
+	 * @param PKPRequest $request
+	 * @return bool
+	 */
+	public function canManage($request) {
+		$user = $request->getUser();
+		$context = $request->getContext();
+		if (!$user || !$context) return false;
+		import('lib.pkp.classes.security.Validation');
+		return $user->hasRole(array(ROLE_ID_MANAGER), $context->getId()) || Validation::isSiteAdmin();
+	}
 }

@@ -20,6 +20,11 @@
  * authors, role counts and author countries always cover the whole
  * archive — the archive enriches them by design.
  *
+ * POPULATION: completed reviews use the one workflow filter
+ * (JournalMetricsBaseProvider::workflowCondition) — reviews of imported
+ * or incomplete submissions are not counted. Authors, countries and role
+ * counts cover every published article, imported ones included.
+ *
  * BINDING RULE: "completed review" =
  * date_completed IS NOT NULL AND declined = 0 AND cancelled = 0 AND
  * date_notified IS NOT NULL — identical filter in yearly and total counts.
@@ -87,7 +92,7 @@ class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 				COUNT(*) AS completed
 			FROM review_assignments ra
 			JOIN submissions s ON s.submission_id = ra.submission_id
-			WHERE s.context_id = ?
+			WHERE s.context_id = ? AND " . self::workflowCondition('s') . "
 			  AND ra.date_completed IS NOT NULL AND ra.declined = 0
 			  AND ra.cancelled = 0 AND ra.date_notified IS NOT NULL{$covClause}
 			GROUP BY YEAR(ra.date_notified)
@@ -103,7 +108,7 @@ class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 				COUNT(DISTINCT ra.submission_id) AS reviewed_articles
 			FROM review_assignments ra
 			JOIN submissions s ON s.submission_id = ra.submission_id
-			WHERE s.context_id = ?
+			WHERE s.context_id = ? AND " . self::workflowCondition('s') . "
 			  AND ra.date_completed IS NOT NULL AND ra.declined = 0
 			  AND ra.cancelled = 0 AND ra.date_notified IS NOT NULL{$covClause}",
 			array_merge(array($contextId), $covParams)
