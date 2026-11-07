@@ -21,8 +21,10 @@ use APP\plugins\generic\journalMetrics\classes\JournalMetricsCompat;
 use APP\plugins\generic\journalMetrics\classes\JournalMetricsCountryDAO;
 use APP\plugins\generic\journalMetrics\classes\JournalMetricsSnapshotManager;
 use APP\plugins\generic\journalMetrics\classes\JournalMetricsSnapshotTask;
+use APP\plugins\generic\journalMetrics\classes\providers\JournalMetricsBaseProvider;
 use APP\plugins\generic\journalMetrics\classes\providers\JournalMetricsProviderRegistry;
 use APP\template\TemplateManager;
+use Illuminate\Support\Facades\DB;
 use PKP\config\Config;
 use PKP\core\PKPComponentRouter;
 use PKP\core\PKPPageRouter;
@@ -893,5 +895,36 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 	 */
 	public function getCountryDAO() {
 		return new JournalMetricsCountryDAO();
+	}
+
+	/**
+	 * Imported submissions of a journal — the ones every workflow metric
+	 * leaves out (JournalMetricsBaseProvider::importedCondition, OJS core's
+	 * rule). Shown on the settings page.
+	 *
+	 * @param int $contextId
+	 * @return int
+	 */
+	public function countImportedSubmissions($contextId) {
+		$rows = DB::select(
+			'SELECT COUNT(*) AS cnt FROM submissions s WHERE s.context_id = ? AND '
+				. JournalMetricsBaseProvider::importedCondition('s'),
+			array((int) $contextId)
+		);
+		return $rows ? (int) $rows[0]->cnt : 0;
+	}
+
+	/**
+	 * Does the current user manage this journal (journal manager or site
+	 * admin)? Used for manager-only notes on frontend pages.
+	 *
+	 * @param \PKP\core\PKPRequest $request
+	 * @return bool
+	 */
+	public function canManage($request) {
+		$user = $request->getUser();
+		$context = $request->getContext();
+		if (!$user || !$context) return false;
+		return $user->hasRole(array(Role::ROLE_ID_MANAGER), $context->getId()) || Validation::isSiteAdmin();
 	}
 }

@@ -254,6 +254,9 @@ msgstr "Güncelleme"
 msgid "plugins.generic.journalMetrics.ui.metricsUpdated"
 msgstr "Metriklerin son güncellenmesi"
 
+msgid "plugins.generic.journalMetrics.ui.droppedSpans"
+msgstr "dışarıda (tutarsız tarih)"
+
 msgid "plugins.generic.journalMetrics.ui.usagePending"
 msgstr "Kullanım istatistikleri hesaplanıyor — bir sonraki zamanlanmış çalıştırmadan sonra görünecek."
 
@@ -363,6 +366,15 @@ msgstr "Derginin editoryal performansına ve erişimine dair şeffaf, güncel g�
 
 msgid "plugins.generic.journalMetrics.public.noMetrics"
 msgstr "Metrikler hazırlanıyor. Lütfen daha sonra tekrar deneyin."
+
+msgid "plugins.generic.journalMetrics.public.noPublicMetrics"
+msgstr "Henüz herkese açık gösterge seçilmedi."
+
+msgid "plugins.generic.journalMetrics.public.openSettings"
+msgstr "Dergi Metrikleri ayarlarını aç"
+
+msgid "plugins.generic.journalMetrics.public.closedNotice"
+msgstr "Herkese açık metrik sayfası kapalı; ziyaretçiler bu adreste \"sayfa bulunamadı\" hatası görür. Bu notu yalnız yöneticiler görür. Sayfayı Ayarlar → Kamu Sayfası bölümünden açabilirsiniz."
 
 msgid "plugins.generic.journalMetrics.public.autoNote"
 msgstr "Otomatik metrik değerleri doğrudan dergi verisinden hesaplanır ve elle değiştirilemez."
@@ -559,6 +571,9 @@ msgstr "Yeniden hesaplama başarısız oldu. Lütfen tekrar deneyin."
 
 msgid "plugins.generic.journalMetrics.settings.coverage"
 msgstr "Editoryal istatistik kapsamı"
+
+msgid "plugins.generic.journalMetrics.settings.importedNote"
+msgstr "İçe aktarılmış {$num} makale (gönderi tarihi ilk yayın tarihinden sonra olanlar; OJS'nin kendi istatistiklerindeki kural) editoryal, süre ve hakemlik göstergelerinin dışında. Okunma, yayın çıktısı ve yazar göstergeleri bu makaleleri sayar."
 
 msgid "plugins.generic.journalMetrics.settings.coverage.desc"
 msgstr "İsteğe bağlı. Bir başlangıç yılı ayarlandığında editoryal iş akışı istatistikleri (başvurular, kararlar, süreç süreleri, tamamlanan hakem değerlendirmeleri) o yıldan itibaren hesaplanır — ve bu kapsam panoda ve kamuya açık sayfada her zaman açıkça beyan edilir. Tüm arşivi kapsamak için boş bırakın. Kullanım istatistikleri, yayın çıktısı ve topluluk sayıları her zaman tüm arşivi kapsar."

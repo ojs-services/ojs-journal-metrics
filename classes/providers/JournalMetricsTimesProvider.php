@@ -6,7 +6,18 @@
  * Distributed under the GNU GPL v3.
  *
  * @class JournalMetricsTimesProvider
- * @brief Turnaround-time metrics: avg / median / p80 / n for each span.
+ * @brief Turnaround-time metrics: avg / median / p80 / n / dropped for
+ *  each span.
+ *
+ * POPULATION: every query uses the one workflow filter
+ * (JournalMetricsBaseProvider::workflowCondition): complete, submitted,
+ * NOT imported submissions — the population of the core editorial
+ * statistics. Imported archives carry import-time submission and decision
+ * dates and would otherwise produce meaningless (even negative) spans.
+ *
+ * IMPOSSIBLE SPANS: a negative span (published before accepted, decided
+ * before submitted, report completed before the request) is dropped and
+ * counted in `dropped`; managers see that count on the dashboard.
  *
  * BINDING RULE: duration metrics that need an acceptance DATE use
  * MIN(date_decided) over the accept set of OJS 3.4+ core statistics:
@@ -14,8 +25,7 @@
  * dates use Decision::INITIAL_DECLINE and DECLINE. The editorial counters
  * (JournalMetricsEditorialProvider) always use the core service.
  * Decision codes were renumbered in OJS 3.4 — never write them as
- * literals. Complete submissions: submission_progress = '' (a string
- * column since 3.4; comparing it with 0 would match drafts too).
+ * literals.
  *
  * BINDING RULE: "completed review" everywhere =
  * date_completed IS NOT NULL AND declined = 0 AND cancelled = 0 AND
@@ -86,8 +96,6 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 
 	/**
 	 * Submission -> first editorial decision of ANY type.
-	 * Mirrors core's daysToDecision population (incomplete + imported
-	 * submissions excluded via the core date heuristic).
 	 */
 	private function _firstDecisionDays($contextId, $coverageYear) {
 		list($cov, $covParams) = $this->_coverageClause('s.date_submitted', $coverageYear);
@@ -96,15 +104,11 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 			FROM (
 				SELECT s.date_submitted,
 					(SELECT MIN(ed.date_decided) FROM edit_decisions ed
-						WHERE ed.submission_id = s.submission_id) AS first_decision,
-					(SELECT MIN(p.date_published) FROM publications p
-						WHERE p.submission_id = s.submission_id AND p.status = 3) AS first_pub
+						WHERE ed.submission_id = s.submission_id) AS first_decision
 				FROM submissions s
-				WHERE s.context_id = ? AND s.submission_progress = ''
-				  AND s.date_submitted IS NOT NULL{$cov}
+				WHERE s.context_id = ? AND " . self::workflowCondition('s') . "{$cov}
 			) t
 			WHERE t.first_decision IS NOT NULL
-			  AND (t.first_pub IS NULL OR CAST(t.date_submitted AS DATE) <= t.first_pub)
 		";
 		return $this->_daysStats($sql, array_merge(array((int) $contextId), $covParams));
 	}
@@ -122,8 +126,7 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 					(SELECT MIN(ed.date_decided) FROM edit_decisions ed
 						WHERE ed.submission_id = s.submission_id AND ed.decision IN ({$accept})) AS date_accepted
 				FROM submissions s
-				WHERE s.context_id = ? AND s.submission_progress = ''
-				  AND s.status <> 4 AND s.date_submitted IS NOT NULL{$cov}
+				WHERE s.context_id = ? AND s.status <> 4 AND " . self::workflowCondition('s') . "{$cov}
 			) t
 			WHERE t.date_accepted IS NOT NULL
 		";
@@ -144,8 +147,7 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 					(SELECT MIN(ed.date_decided) FROM edit_decisions ed
 						WHERE ed.submission_id = s.submission_id AND ed.decision IN ({$decline})) AS date_declined
 				FROM submissions s
-				WHERE s.context_id = ? AND s.submission_progress = ''
-				  AND s.status = 4 AND s.date_submitted IS NOT NULL{$cov}
+				WHERE s.context_id = ? AND s.status = 4 AND " . self::workflowCondition('s') . "{$cov}
 			) t
 			WHERE t.date_declined IS NOT NULL
 		";
@@ -167,7 +169,7 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 					(SELECT MIN(p.date_published) FROM publications p
 						WHERE p.submission_id = s.submission_id AND p.status = 3) AS date_published
 				FROM submissions s
-				WHERE s.context_id = ? AND s.submission_progress = '' AND s.status = 3{$cov}
+				WHERE s.context_id = ? AND s.status = 3 AND " . self::workflowCondition('s') . "{$cov}
 			) t
 			WHERE t.date_accepted IS NOT NULL AND t.date_published IS NOT NULL
 		";
@@ -175,8 +177,7 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 	}
 
 	/**
-	 * Submission -> first publication (total span), with the
-	 * core-style import exclusion (date_submitted <= first date_published).
+	 * Submission -> first publication (total span).
 	 */
 	private function _submissionToPublishDays($contextId, $coverageYear) {
 		list($cov, $covParams) = $this->_coverageClause('s.date_submitted', $coverageYear);
@@ -187,18 +188,17 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 					(SELECT MIN(p.date_published) FROM publications p
 						WHERE p.submission_id = s.submission_id AND p.status = 3) AS date_published
 				FROM submissions s
-				WHERE s.context_id = ? AND s.submission_progress = ''
-				  AND s.status = 3 AND s.date_submitted IS NOT NULL{$cov}
+				WHERE s.context_id = ? AND s.status = 3 AND " . self::workflowCondition('s') . "{$cov}
 			) t
 			WHERE t.date_published IS NOT NULL
-			  AND CAST(t.date_submitted AS DATE) <= t.date_published
 		";
 		return $this->_daysStats($sql, array_merge(array((int) $contextId), $covParams));
 	}
 
 	/**
 	 * Reviewer report time (date_notified -> date_completed) over all
-	 * completed reviews — the single completed-review definition above.
+	 * completed reviews of workflow submissions — the single
+	 * completed-review definition above.
 	 */
 	private function _reviewReportDays($contextId, $coverageYear) {
 		list($cov, $covParams) = $this->_coverageClause('ra.date_notified', $coverageYear);
@@ -206,7 +206,7 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 			SELECT DATEDIFF(ra.date_completed, ra.date_notified) AS days
 			FROM review_assignments ra
 			JOIN submissions s ON s.submission_id = ra.submission_id
-			WHERE s.context_id = ?
+			WHERE s.context_id = ? AND " . self::workflowCondition('s') . "
 			  AND ra.date_completed IS NOT NULL AND ra.declined = 0
 			  AND ra.cancelled = 0 AND ra.date_notified IS NOT NULL{$cov}
 		";
@@ -214,11 +214,12 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 	}
 
 	/**
-	 * Fetch the day list and aggregate to {avg, median, p80, n}.
+	 * Fetch the day list and aggregate to {avg, median, p80, n, dropped}.
 	 */
 	private function _daysStats($sql, $params) {
 		$days = array();
 		foreach ($this->selectRows($sql, $params) as $row) {
+			if ($row['days'] === null) continue;
 			$days[] = $row['days'];
 		}
 		return $this->aggregateDays($days);

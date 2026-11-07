@@ -209,6 +209,8 @@ class JournalMetricsHandler extends Handler {
 			'metricMatrix'  => $matrix,
 			'manualMaxRows' => 5,
 			'supportedLocales' => $supportedLocales,
+			// imported articles left out of every workflow metric (one rule)
+			'importedCount' => $plugin->countImportedSubmissions($contextId),
 			'publicPageTitleByLocale' => $titleByLocale,
 			'coverageStartYear' => $plugin->getCoverageStartYear($contextId),
 			'currentYear'       => (int) date('Y'),
@@ -485,7 +487,22 @@ class JournalMetricsHandler extends Handler {
 
 		$settings = $plugin->getAllSettings($contextId);
 		if (!$settings['enablePublicPage']) {
-			JournalMetricsCompat::notFound($request);
+			// Visitors: 404, as before. Managers: a short note with a link
+			// to the switch, so a closed page is not mistaken for a fault.
+			if (!$plugin->canManage($request)) {
+				JournalMetricsCompat::notFound($request);
+				return;
+			}
+			$this->_setupTemplate($request, false);
+			$templateMgr = TemplateManager::getManager($request);
+			$templateMgr->assign(array(
+				'pluginPath'   => $request->getBaseUrl() . '/' . $plugin->getPluginPath(),
+				'assetVersion' => $this->_assetVersion(),
+				'pageTitle'    => $plugin->localize($settings['publicPageTitle'], $context) ?: 'Journal Metrics',
+				'jmxClosedNotice' => true,
+				'settingsUrl'  => $request->getDispatcher()->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'settings'),
+			));
+			$templateMgr->display($plugin->getTemplateResource('publicpage.tpl'));
 			return;
 		}
 
@@ -508,6 +525,10 @@ class JournalMetricsHandler extends Handler {
 			'articleUrlBase' => $request->getDispatcher()->url($request, Application::ROUTE_PAGE, null, 'article', 'view'),
 			'showDeveloperCredit' => (bool) $settings['showDeveloperCredit'],
 			'pageTitle'    => $plugin->localize($settings['publicPageTitle'], $context) ?: 'Journal Metrics',
+			// empty page: why, and (managers only) where to change it
+			'jmxPublicCount' => count(array_filter($plugin->getVisibilityMap($contextId), function ($v) { return $v === 'public'; })),
+			'jmxCanManage' => $plugin->canManage($request),
+			'settingsUrl'  => $request->getDispatcher()->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'settings'),
 		));
 
 		$templateMgr->display($plugin->getTemplateResource('publicpage.tpl'));
@@ -791,6 +812,8 @@ class JournalMetricsHandler extends Handler {
 					'detail' => array(
 						'median' => isset($stat['median']) ? $stat['median'] : null,
 						'p80'    => isset($stat['p80']) ? $stat['p80'] : null,
+						// impossible (negative) spans left out — managers only
+						'dropped' => (!$forPublic && !empty($stat['dropped'])) ? (int) $stat['dropped'] : null,
 					),
 				), $nThreshold, $forPublic, $isPublic($key));
 				if ($card !== null) $cards[] = $card;
@@ -973,7 +996,7 @@ class JournalMetricsHandler extends Handler {
 			'topArticlesTitle', 'trendTitle', 'completedReviewsTitle', 'byYearTitle',
 			'articlesPerYearTitle', 'issuesPerYearTitle', 'since', 'totalIssues',
 			'avgPerArticle', 'deskReject', 'postReview', 'authorsDetail', 'readersDetail',
-			'noResults', 'source', 'lastUpdated', 'metricsUpdated', 'usagePending',
+			'noResults', 'source', 'lastUpdated', 'metricsUpdated', 'usagePending', 'droppedSpans',
 			'countrySectionTitle', 'searchCountry', 'country', 'authors', 'share',
 			'distribution', 'authorsByCountry', 'articlesByCountry', 'topCountries',
 			'authorDistribution', 'countriesWord', 'other', 'rank', 'yearTableNote',

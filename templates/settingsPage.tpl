@@ -100,6 +100,9 @@
 					value="{if $coverageStartYear}{$coverageStartYear|intval}{/if}"
 					class="jmx-num-input" placeholder="{translate key="plugins.generic.journalMetrics.settings.coverage.placeholder"}" />
 			</div>
+			{* One rule for every workflow metric: imported articles (submission
+			   date after first publication, OJS core's rule) are left out. *}
+			<p class="jmx-settings-hint jmx-imported-note" id="jmxImportedNote">{translate key="plugins.generic.journalMetrics.settings.importedNote" num=$importedCount|intval}</p>
 		</div>
 
 		{* ---------- Visibility matrix ---------- *}

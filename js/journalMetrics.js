@@ -92,6 +92,8 @@
           sub = t('median') + ': ' + fmt(card.detail.median) +
             ' · ' + t('p80') + ': ' + fmt(card.detail.p80) +
             ' · ' + t('n') + ' = ' + fmt(card.n);
+          // managers only (the server sends it on the dashboard only)
+          if (card.detail.dropped) sub += ' · ' + escHtml(t('droppedSpans')) + ': ' + fmt(card.detail.dropped);
         }
         break;
       case 'pair':

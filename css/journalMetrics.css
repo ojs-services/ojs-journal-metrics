@@ -431,7 +431,22 @@
 /*  Public page                                                        */
 /* ------------------------------------------------------------------ */
 
+/* Several themes (Immersion, Pragma, Classic, Health Sciences) wrap each
+   of their own pages in a content container and give plugin pages none,
+   so the page would run from edge to edge. Cap it at the common 1140px
+   container width and centre it; when the theme leaves no side margin
+   (page as wide as the window), keep a 16px gutter. Inside a theme's own
+   narrower column (Default and others) nothing changes: 100% wins. */
+.jmx-public-page {
+	box-sizing: border-box;
+	width: min(100%, calc(100vw - 32px), 1140px);
+	margin-left: auto;
+	margin-right: auto;
+}
 .jmx-public-page .jmx-dashboard { padding-top: 0; }
+.jmx-manager-note { background: #fffbeb; border-color: #fde68a; color: #1e293b; }
+.jmx-manager-note p { margin: 0 0 10px; }
+.jmx-manager-note p:last-child, .jmx-empty-action { margin: 12px 0 0; }
 .jmx-public-header { margin: 6px 0 18px; }
 .jmx-public-header h2 { font-size: 24px; font-weight: 800; margin: 0 0 6px; }
 .jmx-public-subtitle { color: #475569; font-size: 14px; margin: 0; }
