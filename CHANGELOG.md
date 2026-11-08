@@ -1,5 +1,23 @@
 # Changelog
 
+## 2.0.0.3 — 2026-11-08 · OJS 3.4–3.5
+
+### Fixed
+- The snapshot task can now be run by hand from a plain PHP script, not
+  only through OJS's scheduler (`lib/pkp/tools/scheduler.php` on 3.5,
+  `tools/runScheduledTasks.php` on 3.4) or the web task runner. Before,
+  such a run stopped with "Call to a member function getContext() on
+  null" because OJS core looked for a page request that a script does not
+  have. The task now sets that up itself, the way OJS's own command-line
+  tools do; each journal is still computed by its own id. If the plugin
+  still cannot be loaded, the task log says so in one clear line and names
+  the command to use instead.
+
+### Changed
+- The archive depth figure "Total issues" is now worked out from the same
+  per-year issue counts as the "Issues per year" chart, so the two always
+  agree. Results are unchanged.
+
 ## 2.0.0.2 — 2026-11-08 · OJS 3.4–3.5
 
 ### Fixed
