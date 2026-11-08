@@ -28,6 +28,20 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 	const LOCK_TIMEOUT = 600;
 
 	/**
+	 * The task never reads the request's journal: every work item carries
+	 * its own journal id. But OJS core does — the task log, the locale and
+	 * plugin loading all ask the request (router) for the current context.
+	 * OJS's own command-line tools and the web runner set that up; a
+	 * script that runs this task by hand may not, so do it here first.
+	 *
+	 * @param array $args
+	 */
+	public function __construct($args = array()) {
+		$this->_ensureRouter();
+		parent::__construct($args);
+	}
+
+	/**
 	 * @copydoc ScheduledTask::getName()
 	 */
 	public function getName() {
@@ -38,19 +52,32 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 	 * @copydoc ScheduledTask::executeActions()
 	 */
 	protected function executeActions() {
-		$plugin = PluginRegistry::getPlugin('generic', 'journalmetricsplugin');
-		if (!$plugin) {
-			// Lazy-load plugins are not in the registry during scheduled
-			// task runs; load the category to resolve it.
-			PluginRegistry::loadCategory('generic');
+		try {
 			$plugin = PluginRegistry::getPlugin('generic', 'journalmetricsplugin');
+			if (!$plugin) {
+				// Lazy-load plugins are not in the registry during scheduled
+				// task runs; load the category to resolve it.
+				PluginRegistry::loadCategory('generic');
+				$plugin = PluginRegistry::getPlugin('generic', 'journalmetricsplugin');
+			}
+		} catch (\Throwable $e) {
+			$this->addExecutionLogEntry(
+				'Journal Metrics: the plugin could not be loaded (' . $e->getMessage() . '). '
+				. 'Run the task through OJS: "php tools/runScheduledTasks.php plugins/generic/journalMetrics/scheduledTasks.xml".',
+				SCHEDULED_TASK_MESSAGE_TYPE_ERROR
+			);
+			return false;
 		}
 		// NOTE: no global $plugin->getEnabled() gate here — it resolves
 		// against the CURRENT request context (null in CLI/cron, one
 		// journal under acron) and would wrongly skip other journals'
 		// work. Enablement is enforced per journal in _getEnabledContextIds().
 		if (!$plugin) {
-			return true;
+			$this->addExecutionLogEntry(
+				'Journal Metrics: the plugin is not installed; nothing to do.',
+				SCHEDULED_TASK_MESSAGE_TYPE_ERROR
+			);
+			return false;
 		}
 
 		$manager = $plugin->getSnapshotManager();
@@ -164,6 +191,25 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 			SCHEDULED_TASK_MESSAGE_TYPE_COMPLETED
 		);
 		return true;
+	}
+
+	/**
+	 * Give the request a router (and the locale its request) when it has
+	 * none — a script that runs the task by hand.
+	 */
+	private function _ensureRouter() {
+		$application = Application::get();
+		$request = $application->getRequest();
+		if ($request->getRouter()) {
+			return;
+		}
+		// Same set-up as OJS's CliTool: a page router with no path
+		// resolves to "no journal", i.e. the site; then the locale.
+		import('classes.core.PageRouter');
+		$router = new PageRouter();
+		$router->setApplication($application);
+		$request->setRouter($router);
+		AppLocale::initialize($request);
 	}
 
 	/**
