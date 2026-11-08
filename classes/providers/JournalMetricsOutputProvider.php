@@ -64,18 +64,11 @@ class JournalMetricsOutputProvider extends JournalMetricsBaseProvider {
 			$issuesByYear[(string) $row['yr']] = (int) $row['issues'];
 		}
 
-		// Archive depth
-		$depth = $this->selectRow(
-			"SELECT MIN(YEAR(date_published)) AS first_year,
-				MAX(YEAR(date_published)) AS last_year,
-				COUNT(*) AS total_issues
-			FROM issues
-			WHERE journal_id = ? AND published = 1 AND date_published IS NOT NULL",
-			array($contextId)
-		);
-
-		$firstYear = ($depth && $depth['first_year'] !== null) ? (int) $depth['first_year'] : null;
-		$lastYear  = ($depth && $depth['last_year'] !== null) ? (int) $depth['last_year'] : null;
+		// Archive depth — derived from the per-year counts above, so the
+		// total always equals the sum of the chart (one source, no drift).
+		$years = array_map('intval', array_keys($issuesByYear));
+		$firstYear = $years ? min($years) : null;
+		$lastYear  = $years ? max($years) : null;
 
 		return array(
 			'articlesByYear'       => $articlesByYear,
@@ -83,7 +76,7 @@ class JournalMetricsOutputProvider extends JournalMetricsBaseProvider {
 			'firstPublicationYear' => $firstYear,
 			'archiveYears'         => ($firstYear !== null && $lastYear !== null)
 				? ($lastYear - $firstYear + 1) : null,
-			'totalIssues'          => $depth ? (int) $depth['total_issues'] : 0,
+			'totalIssues'          => (int) array_sum($issuesByYear),
 		);
 	}
 }

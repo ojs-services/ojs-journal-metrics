@@ -21,6 +21,7 @@
 namespace APP\plugins\generic\journalMetrics\classes;
 
 use APP\core\Application;
+use APP\core\PageRouter;
 use PKP\plugins\PluginRegistry;
 use PKP\scheduledTask\ScheduledTask;
 use PKP\scheduledTask\ScheduledTaskHelper;
@@ -34,6 +35,20 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 	const LOCK_TIMEOUT = 600;
 
 	/**
+	 * The task never reads the request's journal: every work item carries
+	 * its own journal id. But OJS core does — plugin loading asks the
+	 * request router for the current context. OJS's own command-line
+	 * tools and the web runner set that up; a script that runs this task
+	 * by hand may not, so do it here first.
+	 *
+	 * @param array $args
+	 */
+	public function __construct($args = []) {
+		$this->_ensureRouter();
+		parent::__construct($args);
+	}
+
+	/**
 	 * @copydoc ScheduledTask::getName()
 	 */
 	public function getName(): string {
@@ -44,19 +59,33 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 	 * @copydoc ScheduledTask::executeActions()
 	 */
 	protected function executeActions(): bool {
-		$plugin = PluginRegistry::getPlugin('generic', 'journalmetricsplugin');
-		if (!$plugin) {
-			// Lazy-load plugins are not in the registry during scheduled
-			// task runs; load the category to resolve it.
-			PluginRegistry::loadCategory('generic');
+		try {
 			$plugin = PluginRegistry::getPlugin('generic', 'journalmetricsplugin');
+			if (!$plugin) {
+				// Lazy-load plugins are not in the registry during scheduled
+				// task runs; load the category to resolve it.
+				PluginRegistry::loadCategory('generic');
+				$plugin = PluginRegistry::getPlugin('generic', 'journalmetricsplugin');
+			}
+		} catch (\Throwable $e) {
+			$this->addExecutionLogEntry(
+				'Journal Metrics: the plugin could not be loaded (' . $e->getMessage() . '). '
+				. 'Run the task through OJS: "php lib/pkp/tools/scheduler.php run" (OJS 3.5) '
+				. 'or "php tools/runScheduledTasks.php plugins/generic/journalMetrics/scheduledTasks.xml" (OJS 3.4).',
+				ScheduledTaskHelper::SCHEDULED_TASK_MESSAGE_TYPE_ERROR
+			);
+			return false;
 		}
 		// NOTE: no global $plugin->getEnabled() gate here — it resolves
 		// against the CURRENT request context (null in CLI/cron, one
 		// journal under acron) and would wrongly skip other journals'
 		// work. Enablement is enforced per journal in _getEnabledContextIds().
 		if (!$plugin) {
-			return true;
+			$this->addExecutionLogEntry(
+				'Journal Metrics: the plugin is not installed; nothing to do.',
+				ScheduledTaskHelper::SCHEDULED_TASK_MESSAGE_TYPE_ERROR
+			);
+			return false;
 		}
 
 		$manager = $plugin->getSnapshotManager();
@@ -171,6 +200,23 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 			ScheduledTaskHelper::SCHEDULED_TASK_MESSAGE_TYPE_COMPLETED
 		);
 		return true;
+	}
+
+	/**
+	 * Give the request a router when it has none (a script that runs the
+	 * task by hand), so OJS core can load plugins.
+	 */
+	private function _ensureRouter() {
+		$application = Application::get();
+		$request = $application->getRequest();
+		if ($request->getRouter()) {
+			return;
+		}
+		// Same set-up as OJS's CommandLineTool: a page router with no
+		// path resolves to "no journal", i.e. the site.
+		$router = new PageRouter();
+		$router->setApplication($application);
+		$request->setRouter($router);
 	}
 
 	/**
