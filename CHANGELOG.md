@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.0.3.4 — 2026-11-08 · OJS 3.3
+
+### Fixed
+- The snapshot task can now be run by hand from a plain PHP script, not
+  only through OJS's scheduled-task tool or the web task runner. Before,
+  such a run stopped with "Call to a member function ... on null" because
+  OJS core looked for a page request that a script does not have. The task
+  now sets that up itself, the way OJS's own command-line tools do; each
+  journal is still computed by its own id. If the plugin still cannot be
+  loaded, the task log says so in one clear line and names the command to
+  use instead.
+
+### Changed
+- The archive depth figure "Total issues" is now worked out from the same
+  per-year issue counts as the "Issues per year" chart, so the two always
+  agree. Results are unchanged.
+
 ## 1.0.3.3 — 2026-11-08 · OJS 3.3
 
 ### Fixed
