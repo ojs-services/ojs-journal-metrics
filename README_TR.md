@@ -108,7 +108,7 @@ metriklerden ayrı gösterilir ve her biri son güncelleme tarihiyle damgalanır
 ## Kurulum
 
 1. Web Sitesi Ayarları → Eklentiler → **Yeni Eklenti Yükle** ile
-   `journalMetrics-ojs3.3-1.0.3.3.tar.gz` dosyasını seçin.
+   `journalMetrics-ojs3.3-1.0.3.4.tar.gz` dosyasını seçin.
 2. Generic Eklentiler altında **Journal Metrics**'i etkinleştirin.
 3. Sol yönetim menüsünden **Dergi Metrikleri**'ni açın; hızlı metrik grupları
    ilk ziyarette hesaplanır.
@@ -165,7 +165,7 @@ kabul) ortalamalara girmez; kaç tane olduğu yöneticiye panoda gösterilir.
 | Veritabanı | MySQL / MariaDB (standart OJS kurulumları) |
 | Dergiler | tek ve çok dergili kurulumlar |
 | Temalar | her OJS 3.3 temasıyla çalışır — varsayılan veya özel; temalarımız: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Eklenti sürümü | 1.0.3.3 |
+| Eklenti sürümü | 1.0.3.4 |
 
 ## Lisans ve destek
 
