@@ -30,8 +30,8 @@ class JournalMetricsPlugin extends GenericPlugin {
 		$success = parent::register($category, $path, $mainContextId);
 
 		// Scheduled task registration must happen regardless of the enabled
-		// state so acron can (re)parse the crontab during installation.
-		// The callback itself checks getEnabled() (usageStats pattern).
+		// state so acron can (re)parse the crontab at site level and during
+		// installation. The callback checks every journal, not the request's.
 		HookRegistry::register('AcronPlugin::parseCronTab', array($this, 'callbackParseCronTab'));
 
 		if ($success && $this->getEnabled()) {
@@ -146,9 +146,35 @@ class JournalMetricsPlugin extends GenericPlugin {
 	 * @see AcronPlugin::parseCronTab()
 	 */
 	public function callbackParseCronTab($hookName, $args) {
-		if ($this->getEnabled() || !Config::getVar('general', 'installed')) {
+		// The plugin is enabled per journal, but acron rebuilds its task
+		// list for the whole site — from the site administration, on
+		// install/upgrade, or while another journal toggles a plugin.
+		// getEnabled() answers only for the request's journal (none at
+		// site level), so the task must not depend on it: it is listed
+		// while the plugin is enabled in ANY journal. The task itself
+		// skips journals where the plugin is off.
+		if (!Config::getVar('general', 'installed') || $this->_isEnabledInAnyContext()) {
 			$taskFilesPath =& $args[0]; // Reference needed.
-			$taskFilesPath[] = $this->getPluginPath() . DIRECTORY_SEPARATOR . 'scheduledTasks.xml';
+			// Several plugin instances may answer in one request (the plugin
+			// grid builds its own); list the file only once.
+			$file = $this->getPluginPath() . DIRECTORY_SEPARATOR . 'scheduledTasks.xml';
+			if (!in_array($file, $taskFilesPath, true)) {
+				$taskFilesPath[] = $file;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Is the plugin enabled in at least one journal (enabled or not)?
+	 * @return bool
+	 */
+	private function _isEnabledInAnyContext() {
+		$contexts = Application::getContextDAO()->getAll();
+		while ($context = $contexts->next()) {
+			if ($this->getSetting($context->getId(), 'enabled')) {
+				return true;
+			}
 		}
 		return false;
 	}
