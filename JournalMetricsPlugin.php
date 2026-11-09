@@ -57,7 +57,8 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 
 		// OJS 3.4: the nightly task goes through Acron. Registered
 		// regardless of the enabled state so Acron can (re)parse the
-		// crontab during installation; the callback checks getEnabled().
+		// crontab at site level and during installation; the callback
+		// checks every journal, not the request's.
 		// OJS 3.5 rejects this hook (it throws) — there the task is added
 		// by registerSchedules() below.
 		if (!JournalMetricsCompat::hasCoreScheduler()) {
@@ -189,9 +190,34 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 	 * @see AcronPlugin::parseCronTab()
 	 */
 	public function callbackParseCronTab($hookName, $args) {
-		if ($this->getEnabled() || !Config::getVar('general', 'installed')) {
+		// The plugin is enabled per journal, but Acron rebuilds its task
+		// list for the whole site — from the site administration, on
+		// install/upgrade, or while another journal toggles a plugin.
+		// getEnabled() answers only for the request's journal (none at
+		// site level), so the task must not depend on it: it is listed
+		// while the plugin is enabled in ANY journal. The task itself
+		// skips journals where the plugin is off.
+		if (!Config::getVar('general', 'installed') || $this->_isEnabledInAnyContext()) {
 			$taskFilesPath =& $args[0]; // Reference needed.
-			$taskFilesPath[] = $this->getPluginPath() . DIRECTORY_SEPARATOR . 'scheduledTasks.xml';
+			// Several plugin instances may answer in one request (the plugin
+			// grid builds its own); list the file only once.
+			$file = $this->getPluginPath() . DIRECTORY_SEPARATOR . 'scheduledTasks.xml';
+			if (!in_array($file, $taskFilesPath, true)) {
+				$taskFilesPath[] = $file;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Is the plugin enabled in at least one journal (enabled or not)?
+	 */
+	private function _isEnabledInAnyContext(): bool {
+		$contexts = Application::getContextDAO()->getAll();
+		while ($context = $contexts->next()) {
+			if ($this->getSetting($context->getId(), 'enabled')) {
+				return true;
+			}
 		}
 		return false;
 	}

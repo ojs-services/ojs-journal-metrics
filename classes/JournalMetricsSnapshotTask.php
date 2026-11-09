@@ -81,11 +81,13 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 		// journal under acron) and would wrongly skip other journals'
 		// work. Enablement is enforced per journal in _getEnabledContextIds().
 		if (!$plugin) {
+			// A task left in the task list after the plugin was removed:
+			// a warning, not a failure, so no error report on every run.
 			$this->addExecutionLogEntry(
 				'Journal Metrics: the plugin is not installed; nothing to do.',
-				ScheduledTaskHelper::SCHEDULED_TASK_MESSAGE_TYPE_ERROR
+				ScheduledTaskHelper::SCHEDULED_TASK_MESSAGE_TYPE_WARNING
 			);
-			return false;
+			return true;
 		}
 
 		$manager = $plugin->getSnapshotManager();
@@ -157,8 +159,11 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 		while (!empty($queue)) {
 			list($contextId, $group) = $queue[0];
 			$provider = $registry->getProvider($group);
-			if (!$provider) {
-				array_shift($queue); // unknown group (stale queue) — drop
+			if (!$provider || !$plugin->getSetting($contextId, 'enabled')) {
+				// unknown group, or the plugin was switched off in this
+				// journal after the item was queued — drop it
+				array_shift($queue);
+				$manager->saveQueue($queue);
 				continue;
 			}
 
