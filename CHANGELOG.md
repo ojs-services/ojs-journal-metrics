@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.3.6 — 2026-11-15 · OJS 3.3
+
+### Changed
+- The plugin now declares itself compatible with every OJS 3.3.0 release
+  (`3.3.0.x`) instead of a fixed list that ended at 3.3.0.22, so it is
+  accepted on newer 3.3 patch releases too. No code changes.
+
 ## 1.0.3.5 — 2026-11-09 · OJS 3.3
 
 ### Fixed
