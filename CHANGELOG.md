@@ -13,9 +13,8 @@
 - The nightly statistics task now stays in the Acron task list. The list
   is rebuilt for the whole site (for example with "Reload Scheduled Tasks"
   in the site administration), where the plugin is not enabled — it is
-  enabled per journal — so the task was left out and usage statistics
-  never appeared. The task is now listed while the plugin is enabled in
-  any journal, and only once.
+  enabled per journal — so the task could be left out. The task is now
+  listed while the plugin is enabled in any journal, and only once.
 - Work queued for a journal where the plugin has since been switched off
   is skipped.
 - A task left behind after the plugin was removed logs a warning instead
