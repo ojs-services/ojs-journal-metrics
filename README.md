@@ -106,7 +106,7 @@ stamped with its last update date.
 ## Installation
 
 1. Website Settings → Plugins → **Upload A New Plugin** and select
-   `journalMetrics-ojs3.3-1.0.3.5.tar.gz`.
+   `journalMetrics-ojs3.3-1.0.3.6.tar.gz`.
 2. Enable **Journal Metrics** under Generic Plugins.
 3. Open **Journal Metrics** from the left management menu; the fast metric
    groups are computed on first visit.
@@ -157,12 +157,12 @@ managers see how many on the dashboard.
 
 | | |
 |---|---|
-| OJS | 3.3.0-x (3.3.0.0 – 3.3.0.22) |
+| OJS | 3.3.0.x (every OJS 3.3.0 release) |
 | PHP | 7.4 – 8.1 |
 | Database | MySQL / MariaDB (standard OJS setups) |
 | Journals | single- and multi-journal installations |
 | Themes | works on any OJS 3.3 theme — default or custom; see our themes: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Plugin version | 1.0.3.5 |
+| Plugin version | 1.0.3.6 |
 
 ## License & support
 
