@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.0.5 — 2026-11-15 · OJS 3.4–3.5
+
+### Changed
+- The plugin now declares which OJS releases it supports: every OJS
+  3.4.0 and 3.5.0 release (`3.4.0.x`, `3.5.0.x`). Tools that check
+  compatibility before installing can now tell it apart from the OJS 3.3
+  line. No code changes.
+
 ## 2.0.0.4 — 2026-11-09 · OJS 3.4–3.5
 
 ### Fixed
