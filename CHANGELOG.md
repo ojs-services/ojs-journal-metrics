@@ -1,12 +1,13 @@
 # Changelog
 
-## 2.0.0.6 — 2026-11-20 · OJS 3.4–3.5
+## 2.0.0.7 — 2026-11-20 · OJS 3.4–3.5
 
 ### Changed
 - The public metrics page shows its title exactly once on every theme.
   Themes that print the page title in their own header keep theirs;
-  everywhere else the page prints the title itself, now as the page's
-  main heading (h1).
+  everywhere else the page prints the title itself — as the page's main
+  heading (h1), or as h2 where the theme header already has its own h1 —
+  so the page has one h1.
 
 ## 2.0.0.5 — 2026-11-15 · OJS 3.4–3.5
 
