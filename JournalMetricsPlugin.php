@@ -959,48 +959,52 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 	// ------------------------------------------------------------------
 
 	/**
-	 * Register the |jmx_has_heading modifier used by the public page.
+	 * Register the |jmx_title_heading modifier used by the public page.
 	 * If registration fails the page template still renders its own h1.
 	 *
 	 * @param TemplateManager $templateMgr
 	 */
 	public function registerHeadingModifier($templateMgr) {
 		try {
-			if (!isset($templateMgr->registered_plugins['modifier']['jmx_has_heading'])) {
-				$templateMgr->registerPlugin('modifier', 'jmx_has_heading', array($this, 'smartyHasHeading'));
+			if (!isset($templateMgr->registered_plugins['modifier']['jmx_title_heading'])) {
+				$templateMgr->registerPlugin('modifier', 'jmx_title_heading', array($this, 'smartyTitleHeading'));
 			}
 		} catch (\Throwable $e) {
-			error_log('Journal Metrics: could not register jmx_has_heading: ' . $e->getMessage());
+			error_log('Journal Metrics: could not register jmx_title_heading: ' . $e->getMessage());
 		}
 	}
 
 	/**
-	 * Smarty modifier: does this theme header HTML already show the page
-	 * title as a visible heading (h1–h6 with the same text)? Some themes
-	 * print the page title in their header, most do not. Any doubt — empty
-	 * header, no match, an error — answers false, so the public page then
-	 * prints the title itself as its h1 and is never left without one.
+	 * Smarty modifier: which heading should the public page print for its
+	 * title, given the theme header HTML? Some themes show the page title
+	 * in their header, some carry their own h1 (a site logo), most neither.
+	 *  0 — none: the header already shows the title as a visible heading;
+	 *  2 — h2: the header has another visible h1, so the page keeps one h1;
+	 *  1 — h1: everything else, and any doubt (empty header, an error), so
+	 *      the page is never left without a title.
 	 *
 	 * @param string $html  rendered theme header
 	 * @param string $title the page title
-	 * @return bool
+	 * @return int 0, 1 or 2
 	 */
-	public function smartyHasHeading($html, $title = '') {
+	public function smartyTitleHeading($html, $title = '') {
 		try {
 			$want = self::_normalizeHeadingText($title);
-			$html = (string) $html;
-			if ($want === '' || $html === '') return false;
+			$html = is_scalar($html) ? (string) $html : '';
+			if ($want === '' || $html === '') return 1;
 			if (!preg_match_all('#<h([1-6])\b([^>]*)>(.*?)</h\1\s*>#is', $html, $headings, PREG_SET_ORDER)) {
-				return false;
+				return 1;
 			}
+			$otherH1 = false;
 			foreach ($headings as $heading) {
 				if (self::_isHiddenHeading($heading[2])) continue;
-				if (self::_normalizeHeadingText($heading[3]) === $want) return true;
+				if (self::_normalizeHeadingText($heading[3]) === $want) return 0;
+				if ($heading[1] === '1') $otherH1 = true;
 			}
+			return $otherH1 ? 2 : 1;
 		} catch (\Throwable $e) {
-			// fall through: the page prints its own title
+			return 1;
 		}
-		return false;
 	}
 
 	/**

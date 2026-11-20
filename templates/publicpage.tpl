@@ -5,22 +5,24 @@
  * The view model handed to this page contains ONLY metrics whose
  * visibility is "public" (filtered server-side); nothing else is emitted.
  *}
-{* The theme header is captured, printed unchanged, and checked: some
-   themes show the page title there as a heading, most do not. The title
-   is shown exactly once — the theme's heading, or else ours as the page
-   h1. Any doubt (empty header, no match, an error) prints ours. *}
+{* The theme header is captured, printed unchanged, and checked, so the
+   title is shown exactly once and the page has one h1:
+   0 = the theme header already shows the title -> we print none;
+   2 = the theme header has its own h1 (e.g. a logo) -> we print an h2;
+   anything else (1, or any doubt or error) -> we print the title as h1. *}
 {capture assign="jmxThemeHeader"}{include file="frontend/components/header.tpl" pageTitleTranslated=$pageTitle}{/capture}
 {$jmxThemeHeader}
-{assign var="jmxThemeShowsTitle" value=$jmxThemeHeader|jmx_has_heading:$pageTitle}
+{assign var="jmxTitleHeading" value=$jmxThemeHeader|jmx_title_heading:$pageTitle}
+{capture assign="jmxTitleHtml"}{if $jmxTitleHeading === 0}{elseif $jmxTitleHeading === 2}<h2 class="jmx-public-title">{$pageTitle|escape}</h2>{else}<h1 class="jmx-public-title">{$pageTitle|escape}</h1>{/if}{/capture}
 
 {if $jmxClosedNotice}
 {* The public page is switched off. Only managers get here (visitors get
    a 404): tell them why the page is empty and where to switch it on. *}
 <div class="page jmx-public-page">
 	<link rel="stylesheet" href="{$pluginPath}/css/journalMetrics.css?v={$assetVersion|escape}" />
-	{if !$jmxThemeShowsTitle}
+	{if $jmxTitleHtml}
 	<header class="jmx-public-header">
-		<h1 class="jmx-public-title">{$pageTitle|escape}</h1>
+		{$jmxTitleHtml}
 	</header>
 	{/if}
 	<div class="jmx-dashboard">
@@ -36,7 +38,7 @@
 	<link rel="stylesheet" href="{$pluginPath}/css/journalMetrics.css?v={$assetVersion|escape}" />
 
 	<header class="jmx-public-header">
-		{if !$jmxThemeShowsTitle}<h1 class="jmx-public-title">{$pageTitle|escape}</h1>{/if}
+		{$jmxTitleHtml}
 		<p class="jmx-public-subtitle">{translate key="plugins.generic.journalMetrics.public.subtitle"}</p>
 	</header>
 
