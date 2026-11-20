@@ -953,4 +953,90 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 		if (!$user || !$context) return false;
 		return $user->hasRole(array(Role::ROLE_ID_MANAGER), $context->getId()) || Validation::isSiteAdmin();
 	}
+
+	// ------------------------------------------------------------------
+	//  Public page title: shown exactly once on any theme
+	// ------------------------------------------------------------------
+
+	/**
+	 * Register the |jmx_has_heading modifier used by the public page.
+	 * If registration fails the page template still renders its own h1.
+	 *
+	 * @param TemplateManager $templateMgr
+	 */
+	public function registerHeadingModifier($templateMgr) {
+		try {
+			if (!isset($templateMgr->registered_plugins['modifier']['jmx_has_heading'])) {
+				$templateMgr->registerPlugin('modifier', 'jmx_has_heading', array($this, 'smartyHasHeading'));
+			}
+		} catch (\Throwable $e) {
+			error_log('Journal Metrics: could not register jmx_has_heading: ' . $e->getMessage());
+		}
+	}
+
+	/**
+	 * Smarty modifier: does this theme header HTML already show the page
+	 * title as a visible heading (h1–h6 with the same text)? Some themes
+	 * print the page title in their header, most do not. Any doubt — empty
+	 * header, no match, an error — answers false, so the public page then
+	 * prints the title itself as its h1 and is never left without one.
+	 *
+	 * @param string $html  rendered theme header
+	 * @param string $title the page title
+	 * @return bool
+	 */
+	public function smartyHasHeading($html, $title = '') {
+		try {
+			$want = self::_normalizeHeadingText($title);
+			$html = (string) $html;
+			if ($want === '' || $html === '') return false;
+			if (!preg_match_all('#<h([1-6])\b([^>]*)>(.*?)</h\1\s*>#is', $html, $headings, PREG_SET_ORDER)) {
+				return false;
+			}
+			foreach ($headings as $heading) {
+				if (self::_isHiddenHeading($heading[2])) continue;
+				if (self::_normalizeHeadingText($heading[3]) === $want) return true;
+			}
+		} catch (\Throwable $e) {
+			// fall through: the page prints its own title
+		}
+		return false;
+	}
+
+	/**
+	 * Is a heading hidden from view (screen-reader-only class, the hidden
+	 * attribute or aria-hidden)? Such a heading does not count as shown.
+	 *
+	 * @param string $attributes the heading's attribute string
+	 * @return bool
+	 */
+	private static function _isHiddenHeading($attributes) {
+		if (preg_match('/aria-hidden\s*=\s*["\']?true/i', $attributes)) return true;
+		$classes = '';
+		if (preg_match('/\bclass\s*=\s*("([^"]*)"|\'([^\']*)\')/i', $attributes, $m)) {
+			$classes = isset($m[3]) ? $m[3] : $m[2];
+			$attributes = str_replace($m[0], '', $attributes);
+		}
+		if (preg_match('/(^|\s)hidden(\s|=|$)/i', $attributes)) return true;
+		foreach (preg_split('/\s+/', strtolower($classes), -1, PREG_SPLIT_NO_EMPTY) as $class) {
+			if (in_array($class, array('sr-only', 'visually-hidden', 'visuallyhidden', 'screen-reader-text', 'd-none'), true)
+					|| strpos($class, 'screen_reader') !== false || strpos($class, 'screen-reader') !== false) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Heading text for comparison: tags stripped, entities decoded,
+	 * whitespace collapsed, case folded.
+	 *
+	 * @param string $text
+	 * @return string
+	 */
+	private static function _normalizeHeadingText($text) {
+		$text = html_entity_decode(strip_tags((string) $text), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+		$text = trim((string) preg_replace('/\s+/u', ' ', $text)); // null on broken UTF-8
+		return function_exists('mb_strtolower') ? mb_strtolower($text, 'UTF-8') : strtolower($text);
+	}
 }

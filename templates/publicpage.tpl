@@ -5,16 +5,24 @@
  * The view model handed to this page contains ONLY metrics whose
  * visibility is "public" (filtered server-side); nothing else is emitted.
  *}
-{include file="frontend/components/header.tpl" pageTitleTranslated=$pageTitle}
+{* The theme header is captured, printed unchanged, and checked: some
+   themes show the page title there as a heading, most do not. The title
+   is shown exactly once — the theme's heading, or else ours as the page
+   h1. Any doubt (empty header, no match, an error) prints ours. *}
+{capture assign="jmxThemeHeader"}{include file="frontend/components/header.tpl" pageTitleTranslated=$pageTitle}{/capture}
+{$jmxThemeHeader}
+{assign var="jmxThemeShowsTitle" value=$jmxThemeHeader|jmx_has_heading:$pageTitle}
 
 {if $jmxClosedNotice}
 {* The public page is switched off. Only managers get here (visitors get
    a 404): tell them why the page is empty and where to switch it on. *}
 <div class="page jmx-public-page">
 	<link rel="stylesheet" href="{$pluginPath}/css/journalMetrics.css?v={$assetVersion|escape}" />
+	{if !$jmxThemeShowsTitle}
 	<header class="jmx-public-header">
-		<h2>{$pageTitle|escape}</h2>
+		<h1 class="jmx-public-title">{$pageTitle|escape}</h1>
 	</header>
+	{/if}
 	<div class="jmx-dashboard">
 		<div class="jmx-section jmx-manager-note" role="status">
 			<p>{translate key="plugins.generic.journalMetrics.public.closedNotice"}</p>
@@ -28,7 +36,7 @@
 	<link rel="stylesheet" href="{$pluginPath}/css/journalMetrics.css?v={$assetVersion|escape}" />
 
 	<header class="jmx-public-header">
-		<h2>{$pageTitle|escape}</h2>
+		{if !$jmxThemeShowsTitle}<h1 class="jmx-public-title">{$pageTitle|escape}</h1>{/if}
 		<p class="jmx-public-subtitle">{translate key="plugins.generic.journalMetrics.public.subtitle"}</p>
 	</header>
 

@@ -502,6 +502,7 @@ class JournalMetricsHandler extends Handler {
 				'jmxClosedNotice' => true,
 				'settingsUrl'  => $request->getDispatcher()->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'settings'),
 			));
+			$plugin->registerHeadingModifier($templateMgr);
 			$templateMgr->display($plugin->getTemplateResource('publicpage.tpl'));
 			return;
 		}
@@ -531,6 +532,7 @@ class JournalMetricsHandler extends Handler {
 			'settingsUrl'  => $request->getDispatcher()->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'settings'),
 		));
 
+		$plugin->registerHeadingModifier($templateMgr);
 		$templateMgr->display($plugin->getTemplateResource('publicpage.tpl'));
 	}
 
