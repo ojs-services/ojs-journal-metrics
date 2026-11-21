@@ -27,6 +27,12 @@
   the settings page, marked, and are not shown publicly.
 - Advanced (closed by default): sections left out of the publication
   counts, and a per-year split of the articles chart.
+- The sidebar block and `{journal_metric}` follow the public page: while
+  the "Editorial process" section is hidden there, its figures (for
+  example the acceptance rate and submission-to-publication time) do not
+  appear in the block or through `{journal_metric}` either.
+- In the sidebar block, durations carry their unit ("192.6 days"), as on
+  the public page.
 - After the update the figures are recomputed on the next dashboard visit
   or scheduled run.
 
@@ -52,6 +58,11 @@
   satırlar ayar sayfasında işaretli kalır, kamu sayfasında gösterilmez.
 - Gelişmiş (varsayılan kapalı): yayın sayılarına katılmayacak bölümler ve
   yıllara göre makale kırılımı.
+- Kenar çubuğu bloğu ve `{journal_metric}` kamu sayfasına uyar: "Editoryal
+  süreç" bölümü orada gizliyken o bölümün sayıları (ör. kabul oranı,
+  gönderiden yayına süre) blokta ve `{journal_metric}` ile de görünmez.
+- Kenar çubuğu bloğunda süreler birimiyle yazılır ("192,6 gün"), kamu
+  sayfasındaki gibi.
 - Güncellemeden sonra sayılar ilk pano ziyaretinde ya da ilk zamanlanmış
   çalıştırmada yeniden hesaplanır.
 

@@ -537,7 +537,7 @@ msgid "plugins.generic.journalMetrics.settings.block.metrics"
 msgstr "Metrics shown in the block"
 
 msgid "plugins.generic.journalMetrics.settings.block.metricsDesc"
-msgstr "Selected metrics still pass the visibility and small-sample filters: a metric that is not \"Public\" never appears in the block. With no selection the block renders nothing."
+msgstr "Selected metrics still pass the visibility and small-sample filters: a metric that is not \"Public\" never appears in the block. While the \"Editorial process\" section is hidden on the public page, its figures stay out of the block too. With no selection the block renders nothing."
 
 msgid "plugins.generic.journalMetrics.settings.publicPage"
 msgstr "Public Page"

@@ -187,7 +187,9 @@ Kamu sayfasında göstergeler iki başlık altında yer alır: **Yayınlar** ve
 **Editoryal süreç**. Karar olmadan eklenen makaleler varsa Editoryal süreç
 başlığının altında bunu sayılarla söyleyen tek bir cümle çıkar. Editoryal
 bölüm, 20 gönderi son editör kararını alınca kendiliğinden görünür (ya da
-her zaman / hiçbir zaman — tek ayar). Yöneticiler panoda ve ayar sayfasında
+her zaman / hiçbir zaman — tek ayar). Kenar çubuğu bloğu ve
+`{journal_metric}` aynı seçime uyar: bölüm gizliyken o bölümün sayıları
+orada da görünmez. Yöneticiler panoda ve ayar sayfasında
 hangi makalenin nerede sayıldığını sayılarla anlatan kısa bir kutu ve bu
 makalelerin listesini görür.
 

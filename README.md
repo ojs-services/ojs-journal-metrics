@@ -186,7 +186,9 @@ On the public page the figures appear under two headings, **Publications**
 and **Editorial process**. When articles were added without a decision, one
 sentence with the numbers says so under Editorial process. The editorial
 section appears automatically once 20 submissions have a final editor
-decision (or always / never — one setting). On the dashboard and the
+decision (or always / never — one setting). The sidebar block and
+`{journal_metric}` follow the same choice: while the section is hidden, its
+figures do not appear there either. On the dashboard and the
 settings page, managers see a short box with numbers that says which
 articles count where, with a list of those articles.
 

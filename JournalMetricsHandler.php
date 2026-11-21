@@ -1056,17 +1056,8 @@ class JournalMetricsHandler extends Handler {
 	 *  'editorialHidden' (null | 'auto' | 'setting')
 	 */
 	protected function _applySections($model, $snapshot, $settings, $forPublic) {
-		$allTime = isset($snapshot['editorial']['allTime']) ? $snapshot['editorial']['allTime'] : array();
-		$decided = (isset($allTime['submissionsAccepted']) ? (int) $allTime['submissionsAccepted'] : 0)
-			+ (isset($allTime['submissionsDeclined']) ? (int) $allTime['submissionsDeclined'] : 0);
-		$mode = in_array($settings['editorialSection'], array('auto', 'show', 'hide'), true) ? $settings['editorialSection'] : 'auto';
-
-		$hidden = null;
-		if ($mode === 'hide') {
-			$hidden = 'setting';
-		} elseif ($mode === 'auto' && $decided < JournalMetricsPlugin::EDITORIAL_SECTION_MIN_DECIDED) {
-			$hidden = 'auto';
-		}
+		$decided = JournalMetricsPlugin::decidedCount($snapshot);
+		$hidden = JournalMetricsPlugin::editorialSectionHidden($settings['editorialSection'], $snapshot);
 		$model['editorialHidden'] = $hidden;
 		$model['decidedCount'] = $decided;
 
