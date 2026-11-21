@@ -1,5 +1,60 @@
 # Changelog
 
+## 1.0.3.9 — 2026-11-21 · OJS 3.3
+
+### Changed — Publications and Editorial process
+- Every published article now counts in the publication figures, wherever
+  it came from. Journals that added articles straight to an issue (for
+  example after moving from another system) saw a "Published" card lower
+  than the articles-per-year chart; card, chart and total are now the same
+  number.
+- Received, accepted and declined submissions, rates and times now count
+  only submissions with at least one editor decision. Articles added to an
+  issue without a decision no longer raise "Received" or shorten
+  "Submission to publication". Submissions brought over from another
+  system together with their decisions now count in the counters and
+  rates; when their dates do not fit together they stay out of the times.
+- The public page groups the figures under two headings, "Publications"
+  and "Editorial process". When articles were added without a decision, a
+  sentence with the numbers says so. The editorial section appears
+  automatically once 20 submissions have a final decision; one setting
+  shows or hides it.
+- Managers see a short box on the dashboard and the settings page that
+  says, with numbers, which articles count where, with a list of them.
+- "Editor-declared metrics" are now "External indicators", each marked
+  "Entered by the editor". A new value named like a computed figure (for
+  example "Acceptance rate") is not saved; earlier rows like that stay on
+  the settings page, marked, and are not shown publicly.
+- Advanced (closed by default): sections left out of the publication
+  counts, and a per-year split of the articles chart.
+- After the update the figures are recomputed on the next dashboard visit
+  or scheduled run.
+
+### Değişti — Yayınlar ve Editoryal süreç
+- Yayımlanmış her makale, nereden gelirse gelsin, yayın sayılarına girer.
+  Makaleleri doğrudan sayıya ekleyen dergilerde (ör. başka bir sistemden
+  geçenlerde) "Yayımlanan" kartı yıllara göre makale grafiğinden düşük
+  görünüyordu; kart, grafik ve toplam artık aynı sayıdır.
+- Alınan, kabul edilen ve reddedilen gönderi, oranlar ve süreler yalnız en
+  az bir editör kararı almış gönderileri sayar. Karar olmadan sayıya
+  eklenen makaleler artık "Alınan gönderi"yi artırmaz, "Gönderimden yayına"
+  süresini kısaltmaz. Başka sistemden kararlarıyla taşınan gönderiler artık
+  sayaçlara ve oranlara girer; tarihleri tutarsızsa sürelere girmez.
+- Kamu sayfası göstergeleri iki başlık altında toplar: "Yayınlar" ve
+  "Editoryal süreç". Karar olmadan eklenen makale varsa bunu sayılarla
+  söyleyen bir cümle çıkar. Editoryal bölüm, 20 gönderi son kararını alınca
+  kendiliğinden görünür; tek bir ayarla gösterilir ya da gizlenir.
+- Yöneticiler panoda ve ayar sayfasında hangi makalenin nerede sayıldığını
+  sayılarla anlatan kısa bir kutu ve bu makalelerin listesini görür.
+- "Editör beyanı metrikler" artık "Dış göstergeler"; her kartta "Editör
+  tarafından girildi" yazar. Hesaplanan bir göstergenin adını taşıyan yeni
+  değer (ör. "Kabul oranı") kaydedilmez; daha önce kaydedilmiş böyle
+  satırlar ayar sayfasında işaretli kalır, kamu sayfasında gösterilmez.
+- Gelişmiş (varsayılan kapalı): yayın sayılarına katılmayacak bölümler ve
+  yıllara göre makale kırılımı.
+- Güncellemeden sonra sayılar ilk pano ziyaretinde ya da ilk zamanlanmış
+  çalıştırmada yeniden hesaplanır.
+
 ## 1.0.3.8 — 2026-11-20 · OJS 3.3
 
 ### Changed
