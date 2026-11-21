@@ -30,6 +30,11 @@
 - After the update the figures are recomputed on the next dashboard visit
   or scheduled run.
 
+### Fixed
+- The `{journal_metric}` template function is registered only once even
+  when OJS builds the plugin twice in one request (the same check as the
+  OJS 3.4–3.5 version).
+
 ### Değişti — Yayınlar ve Editoryal süreç
 - Yayımlanmış her makale, nereden gelirse gelsin, yayın sayılarına girer.
   Makaleleri doğrudan sayıya ekleyen dergilerde (ör. başka bir sistemden
@@ -54,6 +59,11 @@
   yıllara göre makale kırılımı.
 - Güncellemeden sonra sayılar ilk pano ziyaretinde ya da ilk zamanlanmış
   çalıştırmada yeniden hesaplanır.
+
+### Düzeltildi
+- `{journal_metric}` şablon işlevi, OJS eklentiyi aynı istekte iki kez
+  kursa da yalnız bir kez kaydedilir (OJS 3.4–3.5 sürümündeki denetimin
+  aynısı).
 
 ## 1.0.3.8 — 2026-11-20 · OJS 3.3
 

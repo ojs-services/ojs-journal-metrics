@@ -186,8 +186,10 @@ class JournalMetricsPlugin extends GenericPlugin {
 	public function callbackTemplateDisplay($hookName, $args) {
 		$templateMgr = $args[0];
 
-		// Register the Smarty function once per request
-		if (!$this->_smartyFunctionRegistered) {
+		// Register the Smarty function once per request. Registering it
+		// twice throws; a second instance of this class in the same request
+		// has its own flag, so ask Smarty as well.
+		if (!$this->_smartyFunctionRegistered && !isset($templateMgr->registered_plugins['function']['journal_metric'])) {
 			$templateMgr->registerPlugin('function', 'journal_metric', array($this, 'smartyJournalMetric'));
 			$this->_smartyFunctionRegistered = true;
 		}
