@@ -537,7 +537,7 @@ msgid "plugins.generic.journalMetrics.settings.block.metrics"
 msgstr "Blokta gösterilecek metrikler"
 
 msgid "plugins.generic.journalMetrics.settings.block.metricsDesc"
-msgstr "Seçilen metrikler yine görünürlük ve küçük örneklem filtrelerinden geçer: \"Kamuya açık\" olmayan bir metrik blokta asla görünmez. Hiç seçim yoksa blok hiçbir şey göstermez."
+msgstr "Seçilen metrikler yine görünürlük ve küçük örneklem filtrelerinden geçer: \"Kamuya açık\" olmayan bir metrik blokta asla görünmez. \"Editoryal süreç\" bölümü kamu sayfasında gizliyken o bölümün sayıları blokta da görünmez. Hiç seçim yoksa blok hiçbir şey göstermez."
 
 msgid "plugins.generic.journalMetrics.settings.publicPage"
 msgstr "Kamu Sayfası"

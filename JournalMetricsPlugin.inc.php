@@ -352,6 +352,11 @@ class JournalMetricsPlugin extends GenericPlugin {
 			if ($manager->getVisibility($snapshot, $key) !== 'public') {
 				return $default;
 			}
+			// hidden "Editorial process" section: its figures stay hidden here too
+			if ($this->isEditorialSectionMetric($key)
+					&& self::editorialSectionHidden($this->getSettingWithDefault($context->getId(), 'editorialSection'), $snapshot) !== null) {
+				return $default;
+			}
 			$nThreshold = (int) $this->getSettingWithDefault($context->getId(), 'rateNThreshold');
 			if ($manager->isSuppressed($snapshot, $key, $nThreshold)) {
 				return $default;
@@ -570,6 +575,48 @@ class JournalMetricsPlugin extends GenericPlugin {
 
 	/** Decided submissions needed before "auto" shows the editorial section. */
 	const EDITORIAL_SECTION_MIN_DECIDED = 20;
+
+	/**
+	 * Submissions with a final decision (accepted + declined), as the
+	 * editorial section counts them.
+	 *
+	 * @param array|null $snapshot
+	 * @return int
+	 */
+	public static function decidedCount($snapshot) {
+		$allTime = isset($snapshot['editorial']['allTime']) ? $snapshot['editorial']['allTime'] : array();
+		return (isset($allTime['submissionsAccepted']) ? (int) $allTime['submissionsAccepted'] : 0)
+			+ (isset($allTime['submissionsDeclined']) ? (int) $allTime['submissionsDeclined'] : 0);
+	}
+
+	/**
+	 * Is the "Editorial process" section hidden from visitors? One rule
+	 * for the public page, the sidebar block and {journal_metric}.
+	 *
+	 * @param string $mode the editorialSection setting (auto | show | hide)
+	 * @param array|null $snapshot
+	 * @return string|null null = shown, 'setting' = hidden by the editor,
+	 *  'auto' = too few decided submissions yet
+	 */
+	public static function editorialSectionHidden($mode, $snapshot) {
+		$mode = in_array($mode, array('auto', 'show', 'hide'), true) ? $mode : 'auto';
+		if ($mode === 'hide') return 'setting';
+		if ($mode === 'auto' && self::decidedCount($snapshot) < self::EDITORIAL_SECTION_MIN_DECIDED) return 'auto';
+		return null;
+	}
+
+	/**
+	 * Metric keys shown under "Editorial process" (editorial counters and
+	 * rates, turnaround times, reviewer figures).
+	 *
+	 * @param string $key
+	 * @return bool
+	 */
+	public function isEditorialSectionMetric($key) {
+		if (in_array($key, array('reviewerCount', 'completedReviews'), true)) return true;
+		$catalog = $this->getMetricCatalog();
+		return isset($catalog[$key]) && in_array($catalog[$key]['group'], array('editorial', 'times'), true);
+	}
 
 	/**
 	 * Sections left out of the publication counts (advanced setting),

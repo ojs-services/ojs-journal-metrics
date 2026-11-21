@@ -80,15 +80,24 @@ class JournalMetricsBlockPlugin extends BlockPlugin {
 		if (empty($selection)) return ''; // deliberate empty selection
 
 		$nThreshold = (int) $plugin->getSettingWithDefault($context->getId(), 'rateNThreshold');
+		// Same rule as the public page: when its "Editorial process"
+		// section is hidden, the block leaves those figures out too.
+		$editorialHidden = JournalMetricsPlugin::editorialSectionHidden(
+			$plugin->getSettingWithDefault($context->getId(), 'editorialSection'), $snapshot
+		) !== null;
 		$items = array();
 		foreach ($selection as $key) {
 			if ($key === 'archiveDepth') continue; // rendered in block.tpl
 			if ($manager->getVisibility($snapshot, $key) !== 'public') continue;
+			if ($editorialHidden && $plugin->isEditorialSectionMetric($key)) continue;
 			if ($manager->isSuppressed($snapshot, $key, $nThreshold)) continue;
 			$value = $manager->lookupMetricValue($snapshot, $key);
 			if ($value === null || $value === '') continue;
 			if ($key === 'acceptanceRate' || $key === 'declineRate') {
 				$value = JournalMetricsPlugin::formatRate($value);
+			} elseif (substr($key, -4) === 'Days' && is_numeric($value)) {
+				// durations carry their unit, as on the public page
+				$value = JournalMetricsPlugin::formatNumber($value) . ' ' . __('plugins.generic.journalMetrics.ui.days');
 			} elseif (is_numeric($value)) {
 				$value = JournalMetricsPlugin::formatNumber($value);
 			}
