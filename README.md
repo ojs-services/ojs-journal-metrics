@@ -82,7 +82,8 @@ stamped with its last update date.
 
 - Automatic values are **computed, never edited**. Editors decide what is
   shown or hidden — they cannot change a number.
-- Editor-declared metrics are kept visibly separate from automatic ones.
+- Values the editor enters by hand (external indicators) are marked
+  "Entered by the editor" and can never stand in for a computed figure.
 - Every public page carries a **"Metrics last updated"** stamp, and every rate
   and time metric explains its methodology in a tooltip.
 - Small samples are handled honestly: rates and times based on fewer records
@@ -96,9 +97,10 @@ stamped with its last update date.
 
 - **Journals managing the full workflow in OJS** get the complete catalogue
   automatically — editorial counters, rates and all turnaround times included.
-- **Journals that import articles directly** (XML import, back-issue uploads)
-  simply hide the editorial group and run the same professional page on usage,
-  community, output and editor-declared metrics.
+- **Journals that add articles directly** (back issues, XML import, articles
+  added to an issue without a decision) see every published article in the
+  publication figures; the editorial section appears once enough submissions
+  have an editor decision. No setting is needed for this.
 - Every metric has its own visibility switch: **Hidden**, **Dashboard**
   (managers only, the default) or **Public**. Nothing is published unless an
   editor deliberately opens it.
@@ -106,7 +108,7 @@ stamped with its last update date.
 ## Installation
 
 1. Website Settings → Plugins → **Upload A New Plugin** and select
-   `journalMetrics-ojs3.4-3.5-2.0.0.7.tar.gz`.
+   `journalMetrics-ojs3.4-3.5-2.0.0.8.tar.gz`.
 2. Enable **Journal Metrics** under Generic Plugins.
 3. Open **Journal Metrics** from the left management menu; the fast metric
    groups are computed on first visit.
@@ -134,31 +136,65 @@ No `config.inc.php` changes and no FTP access are required.
 ## Configuration
 
 Everything lives on one settings page (Journal Metrics → **Settings**):
-the public page switch and title, the per-metric visibility matrix,
-editor-declared metrics, author de-duplication strategy, display options,
-the small-sample threshold and a "Recompute now" button. The
+the public page switch and title, the "Editorial process" section
+(automatic / always / hide), the per-metric visibility matrix, external
+indicators, author de-duplication strategy, display options, the
+small-sample threshold and a "Recompute now" button. The
 "Developed by ojs-services.com" credit link on the public page can also be
 turned off there.
 
-**Editorial statistics coverage** — many journals moved to OJS mid-life:
-the early volumes were imported in bulk, so submission dates and editorial
-decisions only exist for recent years. For exactly this case the settings
-page offers a coverage start year. Editorial counters, rates, turnaround
-times and completed peer-review figures then cover that year onward, yearly
-averages use only the covered full years, and the pages openly declare
-"Editorial statistics cover {year}–present." next to the last-updated
-stamp — narrowed scope is always declared, never silent. Usage, publication
-output and community figures keep counting the whole archive.
-**Imported articles** — archives loaded into OJS (for example with the
-Native XML import) get their submission and decision dates on the day of
-the import, after their publication date. Such articles are left out of
-every workflow metric: editorial counters and rates, turnaround times and
-completed reviews, with the same rule OJS's own statistics use (submission
-date later than the first publication date). The settings page shows how
-many articles this concerns. Readership, publication output and author
-figures still count them. Impossible spans that remain (for example an
-acceptance recorded after publication) are left out of the averages, and
-managers see how many on the dashboard.
+**Advanced** (closed by default; not needed for correct figures):
+- **Start year** — many journals moved to OJS mid-life, so submission dates
+  and editor decisions only exist for recent years. With a start year, the
+  editorial figures (counters, rates, times, completed reviews) cover that
+  year onward and the pages say so next to the last-updated stamp. The
+  system never guesses this year.
+- **Sections left out of the publication counts** — for example Editorial
+  or Erratum.
+- **Articles-per-year split** — a small table under the chart: articles
+  through the editorial process / added directly.
+
+## How the metrics are calculated
+
+Every figure follows the same few rules.
+
+1. **Publication figures** — published articles, articles and issues per
+   year, authors, countries, views and downloads — count every published
+   article, wherever it came from: submitted through OJS, added straight to
+   an issue, or imported. The "Published articles" card always equals the
+   total of the articles-per-year chart.
+2. **Editorial figures** — received, accepted and declined submissions,
+   acceptance and rejection rates — count only submissions that went
+   through the editorial process: a completed submission with at least one
+   editor decision (recommendations do not count). A rate is accepted (or
+   declined) divided by all decided submissions; rejections before and
+   after review are shown separately.
+3. **Times** — first decision, acceptance, rejection, acceptance to
+   publication, submission to publication, review time — use the same
+   submissions, and only when their dates fit together. A submission dated
+   after its own publication (typical for imported archives) counts in the
+   figures above, not in times.
+4. An article added to an issue without any editor decision counts as a
+   publication only — never as a received submission, in a rate or in a
+   time. This is decided per article, whenever it was added; the system
+   never guesses a date.
+5. Every rate and time card shows **n**, the number of submissions behind
+   it. A figure resting on too few submissions is not shown publicly
+   rather than shown as a misleading 0 %.
+
+On the public page the figures appear under two headings, **Publications**
+and **Editorial process**. When articles were added without a decision, one
+sentence with the numbers says so under Editorial process. The editorial
+section appears automatically once 20 submissions have a final editor
+decision (or always / never — one setting). On the dashboard and the
+settings page, managers see a short box with numbers that says which
+articles count where, with a list of those articles.
+
+**External indicators** — up to five values OJS cannot calculate, such as
+indexing coverage or an external impact score, each marked "Entered by the
+editor". A value named like a computed figure (for example "Acceptance
+rate") cannot be saved: rates, times and article counts always come from
+the journal's own data.
 
 
 ## Compatibility
@@ -170,7 +206,7 @@ managers see how many on the dashboard.
 | Database | MySQL / MariaDB (standard OJS setups) |
 | Journals | single- and multi-journal installations |
 | Themes | works on any OJS 3.4 / 3.5 theme — default or custom; see our themes: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Plugin version | 2.0.0.7 |
+| Plugin version | 2.0.0.8 |
 
 **Upgrading from OJS 3.3.** Settings, visibility choices and editor-declared
 metrics carry over; install the 2.x package after the OJS upgrade. One core

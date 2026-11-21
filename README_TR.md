@@ -84,7 +84,9 @@ metriklerden ayrı gösterilir ve her biri son güncelleme tarihiyle damgalanır
 
 - Otomatik değerler **hesaplanır, asla elle değiştirilemez**. Editörler neyin
   gösterilip gizleneceğine karar verir — sayıyı değiştiremez.
-- Editör beyanı metrikler otomatik olanlardan görünür biçimde ayrıdır.
+- Editörün elle girdiği değerler (dış göstergeler) "Editör tarafından
+  girildi" işaretini taşır ve hiçbir zaman hesaplanan bir göstergenin yerini
+  tutamaz.
 - Her kamu sayfasında **"Metriklerin son güncellenmesi"** damgası bulunur;
   her oran ve süre metriği metodolojisini ipucu balonuyla açıklar.
 - Küçük örneklemler dürüstçe ele alınır: ayarlanabilir eşiğin altında kayda
@@ -98,9 +100,10 @@ metriklerden ayrı gösterilir ve her biri son güncelleme tarihiyle damgalanır
 
 - **İş akışını tamamen OJS'de yürüten dergiler** kataloğun tamamını otomatik
   alır — editoryal sayaçlar, oranlar ve tüm süreç süreleri dahil.
-- **Makaleleri doğrudan yükleyen dergiler** (XML aktarımı, geçmiş sayı
-  yüklemeleri) editoryal grubu gizleyip aynı profesyonel sayfayı kullanım,
-  topluluk, çıktı ve editör beyanı metrikleriyle çalıştırır.
+- **Makaleleri doğrudan ekleyen dergiler** (geçmiş sayılar, XML aktarımı,
+  karar olmadan sayıya eklenen makaleler) yayımlanmış her makaleyi yayın
+  sayılarında görür; editoryal bölüm, yeterli sayıda gönderi editör kararı
+  alınca kendiliğinden görünür. Bunun için ayar gerekmez.
 - Her metriğin kendi görünürlük anahtarı vardır: **Gizli**, **Pano** (yalnız
   yöneticiler; varsayılan) veya **Kamuya açık**. Editör bilinçli olarak
   açmadıkça hiçbir şey yayınlanmaz.
@@ -108,7 +111,7 @@ metriklerden ayrı gösterilir ve her biri son güncelleme tarihiyle damgalanır
 ## Kurulum
 
 1. Web Sitesi Ayarları → Eklentiler → **Yeni Eklenti Yükle** ile
-   `journalMetrics-ojs3.4-3.5-2.0.0.7.tar.gz` dosyasını seçin.
+   `journalMetrics-ojs3.4-3.5-2.0.0.8.tar.gz` dosyasını seçin.
 2. Generic Eklentiler altında **Journal Metrics**'i etkinleştirin.
 3. Sol yönetim menüsünden **Dergi Metrikleri**'ni açın; hızlı metrik grupları
    ilk ziyarette hesaplanır.
@@ -136,32 +139,63 @@ zamanlayıcısı üzerinden. Büyük kurulumlarda gerçek bir cron görevi
 ## Yapılandırma
 
 Her şey tek ayar sayfasındadır (Dergi Metrikleri → **Ayarlar**): kamu sayfası
-anahtarı ve başlığı, metrik bazlı görünürlük matrisi, editör beyanı metrikler,
-yazar benzersizleştirme stratejisi, görünüm seçenekleri, küçük örneklem eşiği
-ve "Şimdi yeniden hesapla" düğmesi. Kamu sayfasındaki "ojs-services.com
-tarafından geliştirilmiştir" bağlantısı da buradan kapatılabilir.
+anahtarı ve başlığı, "Editoryal süreç" bölümü (otomatik / her zaman / gizle),
+metrik bazlı görünürlük matrisi, dış göstergeler, yazar benzersizleştirme
+stratejisi, görünüm seçenekleri, küçük örneklem eşiği ve "Şimdi yeniden
+hesapla" düğmesi. Kamu sayfasındaki "ojs-services.com tarafından
+geliştirilmiştir" bağlantısı da buradan kapatılabilir.
 
-**Editoryal istatistik kapsamı** — birçok dergi OJS'ye yayın hayatının
-ortasında geçer: eski ciltler toplu aktarıldığı için başvuru tarihleri ve
-editoryal kararlar yalnız son yıllarda mevcuttur. Tam bu durum için ayar
-sayfasında bir kapsam başlangıç yılı vardır. Ayarlandığında editoryal
-sayaçlar, oranlar, süreç süreleri ve tamamlanan hakem değerlendirmesi
-sayıları o yıldan itibaren hesaplanır; yıllık ortalamalar yalnız kapsanan
-tam yıllardan alınır ve sayfalar "Editoryal istatistikler {yıl}–günümüz
-dönemini kapsar." beyanını son güncelleme damgasının yanında açıkça taşır —
-kapsam daraltıldığında bu her zaman sayfada açıkça beyan edilir, asla sessiz
-kalınmaz. Kullanım, yayın çıktısı ve topluluk sayıları tüm arşivi saymaya
-devam eder.
-**İçe aktarılan makaleler** — OJS'ye sonradan yüklenen arşivlerin (örneğin
-Native XML içe aktarma ile) gönderi ve karar tarihleri, yükleme gününe ve
-yayın tarihinden sonraya düşer. Bu makaleler bütün iş akışı göstergelerinin
-dışında tutulur: editoryal sayaçlar ve oranlar, süreç süreleri ve
-tamamlanan hakem değerlendirmeleri. Kural OJS'nin kendi istatistikleriyle
-aynıdır: gönderi tarihi ilk yayın tarihinden sonraysa makale içe
-aktarılmış sayılır. Ayar sayfası bunun kaç makaleyi kapsadığını gösterir.
-Okunma, yayın çıktısı ve yazar göstergeleri bu makaleleri saymaya devam
-eder. Geriye kalan imkânsız süreler (örneğin yayından sonra kaydedilmiş bir
-kabul) ortalamalara girmez; kaç tane olduğu yöneticiye panoda gösterilir.
+**Gelişmiş** (varsayılan olarak kapalı; doğru sayılar için gerekmez):
+- **Başlangıç yılı** — birçok dergi OJS'ye yayın hayatının ortasında geçer;
+  gönderi tarihleri ve editör kararları yalnız son yıllarda vardır. Başlangıç
+  yılı girilirse editoryal göstergeler (sayaçlar, oranlar, süreler,
+  tamamlanan hakemlikler) o yıldan itibaren hesaplanır ve sayfa bunu son
+  güncelleme damgasının yanında söyler. Sistem bu yılı tahmin etmez.
+- **Yayın sayılarına katılmayacak bölümler** — ör. Editöryal ya da Erratum.
+- **Yıllara göre makale kırılımı** — grafiğin altında küçük bir tablo:
+  editoryal süreçten geçen / doğrudan eklenen makaleler.
+
+## Metrikler nasıl hesaplanır
+
+Bütün göstergeler aynı birkaç kurala uyar.
+
+1. **Yayın göstergeleri** — yayımlanan makale, yıllara göre makale ve sayı,
+   yazarlar, ülkeler, görüntüleme ve indirme — yayımlanmış her makaleyi
+   sayar; makalenin nereden geldiğine bakılmaz: OJS üzerinden gönderilmiş,
+   doğrudan sayıya eklenmiş ya da içe aktarılmış olabilir. "Yayımlanan
+   makale" kartı her zaman yıllara göre makale grafiğinin toplamına eşittir.
+2. **Editoryal göstergeler** — alınan, kabul edilen ve reddedilen gönderi,
+   kabul ve ret oranı — yalnız editoryal süreçten geçen gönderileri sayar:
+   tamamlanmış ve en az bir editör kararı almış gönderi (öneriler karar
+   sayılmaz). Oran, kabul (ya da ret) sayısının karar verilmiş bütün
+   gönderilere bölümüdür; değerlendirme öncesi ve hakem sonrası ret ayrı
+   gösterilir.
+3. **Süreler** — ilk karar, kabul, ret, kabulden yayına, gönderimden yayına,
+   hakem süresi — aynı gönderileri, yalnız tarihleri birbiriyle tutarlıysa
+   kullanır. Kendi yayınından sonra gönderilmiş görünen bir makale (içe
+   aktarılan arşivlerde sık görülür) yukarıdaki sayılara girer, sürelere
+   girmez.
+4. Editör kararı olmadan doğrudan sayıya eklenen makale yalnız yayın olarak
+   sayılır — alınan gönderi, oran ya da süre olarak asla. Bu, ne zaman
+   eklendiğine bakılmaksızın her makale için ayrı ayrı belirlenir; sistem
+   tarih tahmin etmez.
+5. Her oran ve süre kartı, dayandığı gönderi sayısını (**n**) gösterir. Çok
+   az gönderiye dayanan bir gösterge, yanıltıcı bir %0 olarak gösterilmek
+   yerine kamu sayfasında gösterilmez.
+
+Kamu sayfasında göstergeler iki başlık altında yer alır: **Yayınlar** ve
+**Editoryal süreç**. Karar olmadan eklenen makaleler varsa Editoryal süreç
+başlığının altında bunu sayılarla söyleyen tek bir cümle çıkar. Editoryal
+bölüm, 20 gönderi son editör kararını alınca kendiliğinden görünür (ya da
+her zaman / hiçbir zaman — tek ayar). Yöneticiler panoda ve ayar sayfasında
+hangi makalenin nerede sayıldığını sayılarla anlatan kısa bir kutu ve bu
+makalelerin listesini görür.
+
+**Dış göstergeler** — OJS'in hesaplayamadığı en fazla beş değer (dizin
+kapsamı, dış etki puanı gibi); her birinde "Editör tarafından girildi"
+yazar. Hesaplanan bir göstergenin adını taşıyan değer (ör. "Kabul oranı")
+kaydedilemez: oranlar, süreler ve makale sayıları her zaman derginin kendi
+verisinden gelir.
 
 
 ## Uyumluluk
@@ -173,7 +207,7 @@ kabul) ortalamalara girmez; kaç tane olduğu yöneticiye panoda gösterilir.
 | Veritabanı | MySQL / MariaDB (standart OJS kurulumları) |
 | Dergiler | tek ve çok dergili kurulumlar |
 | Temalar | her OJS 3.4 / 3.5 temasıyla çalışır — varsayılan veya özel; temalarımız: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Eklenti sürümü | 2.0.0.7 |
+| Eklenti sürümü | 2.0.0.8 |
 
 **OJS 3.3'ten yükseltme.** Ayarlar, görünürlük seçimleri ve editörün
 girdiği metrikler korunur; OJS yükseltmesinden sonra 2.x paketini kurun.
