@@ -122,8 +122,10 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 			// older than ~20 hours — the task itself fires hourly so that
 			// unfinished cycles can progress, but a full recomputation
 			// happens once per day.
+			// After an update that changed how figures are counted, older
+			// snapshots are refreshed on the next run, not a day later.
 			$lastCycle = $plugin->getSetting(0, 'snapshotCycleCompletedAt');
-			if ($lastCycle && (time() - strtotime($lastCycle)) < 20 * 3600) {
+			if ($lastCycle && (time() - strtotime($lastCycle)) < 20 * 3600 && !$this->_hasOutdatedSnapshot($plugin, $manager)) {
 				return true;
 			}
 			$queue = $manager->buildQueue(
@@ -215,6 +217,17 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 		$router->setApplication($application);
 		$request->setRouter($router);
 		AppLocale::initialize($request);
+	}
+
+	/**
+	 * Does any journal with the plugin enabled still hold a snapshot from
+	 * an older version (see JournalMetricsSnapshotManager::isOutdated)?
+	 */
+	private function _hasOutdatedSnapshot($plugin, $manager) {
+		foreach ($this->_getEnabledContextIds($plugin) as $contextId) {
+			if ($manager->isOutdated($manager->getSnapshot($contextId))) return true;
+		}
+		return false;
 	}
 
 	/**

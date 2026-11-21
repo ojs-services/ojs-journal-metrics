@@ -51,7 +51,7 @@ msgid "plugins.generic.journalMetrics.group.output"
 msgstr "Yayın Çıktısı"
 
 msgid "plugins.generic.journalMetrics.group.manual"
-msgstr "Editör Beyanı Metrikler"
+msgstr "Dış göstergeler"
 
 # ---------------------------------------------------------------- Metrikler
 
@@ -71,7 +71,7 @@ msgid "plugins.generic.journalMetrics.metric.declineRate"
 msgstr "Ret oranı"
 
 msgid "plugins.generic.journalMetrics.metric.submissionsPublished"
-msgstr "Yayınlanan"
+msgstr "Yayımlanan makale"
 
 msgid "plugins.generic.journalMetrics.metric.firstDecisionDays"
 msgstr "İlk karar süresi (gün)"
@@ -142,13 +142,13 @@ msgstr "Editör beyanı metrikler"
 # ---------------------------------------------------------------- Metodoloji ipuçları
 
 msgid "plugins.generic.journalMetrics.tooltip.acceptanceRate"
-msgstr "Kabul edilen gönderilerin karar verilmiş tüm gönderilere (kabul + ret) oranıdır; sayılar OJS çekirdek istatistik motorundan alınır. İncelemesi süren gönderiler dahil değildir."
+msgstr "Kabul edilen gönderilerin karar verilmiş tüm gönderilere (kabul + ret) oranıdır. Yalnız editör kararı almış gönderiler sayılır; doğrudan yayına eklenen makaleler ve incelemesi süren gönderiler dahil değildir."
 
 msgid "plugins.generic.journalMetrics.tooltip.declineRate"
-msgstr "Reddedilen gönderilerin (masa + hakem sonrası) karar verilmiş tüm gönderilere (kabul + ret) oranıdır; sayılar OJS çekirdek istatistik motorundan alınır. İncelemesi süren gönderiler dahil değildir."
+msgstr "Reddedilen gönderilerin (masa + hakem sonrası) karar verilmiş tüm gönderilere (kabul + ret) oranıdır. Yalnız editör kararı almış gönderiler sayılır; doğrudan yayına eklenen makaleler ve incelemesi süren gönderiler dahil değildir."
 
 msgid "plugins.generic.journalMetrics.tooltip.firstDecisionDays"
-msgstr "Gönderiden herhangi bir ilk editoryal karara kadar geçen ortalama gün. Tamamlanmamış ve içe aktarılmış gönderiler hariçtir."
+msgstr "Gönderiden herhangi bir ilk editör kararına kadar geçen ortalama gün. Yalnız editör kararı almış ve tarihleri tutarlı gönderiler ölçülür."
 
 msgid "plugins.generic.journalMetrics.tooltip.submissionToAcceptDays"
 msgstr "Gönderiden ilk kabul kararına kadar geçen ortalama gün. Yanında medyan ve %80 dilimi (makalelerin %80'inin altında kaldığı değer) gösterilir; n ölçülen makale sayısıdır."
@@ -300,7 +300,7 @@ msgid "plugins.generic.journalMetrics.ui.rank"
 msgstr "#"
 
 msgid "plugins.generic.journalMetrics.ui.yearTableNote"
-msgstr "Not: \"Alınan\" gönderileri gönderi tarihine göre; \"Kabul edilen\", \"Reddedilen\" ve oranlar karar tarihine göre; \"Yayınlanan\" ilk yayın tarihine göre sayar. Bir yıl içinde alınan gönderi, kararını veya yayınını başka bir yılda alabilir."
+msgstr "Not: \"Alınan\" gönderileri gönderi tarihine göre; \"Kabul edilen\", \"Reddedilen\" ve oranlar karar tarihine göre sayar. Bir yıl içinde alınan gönderi, kararını başka bir yılda alabilir."
 
 # ---------------------------------------------------------------- Pano
 
@@ -320,7 +320,7 @@ msgid "plugins.generic.journalMetrics.settings.pageTitle"
 msgstr "Dergi Metrikleri — Ayarlar"
 
 msgid "plugins.generic.journalMetrics.settings.pageSubtitle"
-msgstr "Görünürlük, editör beyanı metrikler, benzersizleştirme, eşikler ve kamu sayfası — eklentinin tüm ayarları bu sayfadadır."
+msgstr "Görünürlük, dış göstergeler, benzersizleştirme, eşikler ve kamu sayfası — eklentinin tüm ayarları bu sayfadadır."
 
 msgid "plugins.generic.journalMetrics.settings.saved"
 msgstr "Ayarlar kaydedildi."
@@ -354,7 +354,7 @@ msgid "plugins.generic.journalMetrics.note.snapshot"
 msgstr "Değerler gece hesaplanan snapshot'tan gelir; güncel rakamlar için \"Şimdi yeniden hesapla\"yı kullanın."
 
 msgid "plugins.generic.journalMetrics.note.coreConsistency"
-msgstr "Editoryal sayaçlar OJS çekirdek İstatistikler ekranıyla birebir aynıdır; oranlar yalnız karar verilmiş gönderiler üzerinden hesaplanır."
+msgstr "Editoryal göstergeler yalnız editör kararı almış gönderileri sayar; yayın göstergeleri yayımlanmış her makaleyi sayar. Oranlar yalnız karar verilmiş gönderiler üzerinden hesaplanır."
 
 msgid "plugins.generic.journalMetrics.note.uniqueBy"
 msgstr "Yazarlar {$strategy} ölçütüyle benzersizleştirildi."
@@ -423,10 +423,10 @@ msgid "plugins.generic.journalMetrics.settings.visibility.public"
 msgstr "Kamuya açık"
 
 msgid "plugins.generic.journalMetrics.settings.manual"
-msgstr "Editör Beyanı Metrikler"
+msgstr "Dış göstergeler"
 
 msgid "plugins.generic.journalMetrics.settings.manual.desc"
-msgstr "Değeri OJS'den gelmeyen en fazla 5 metrik (ör. CiteScore, dizin kapsamı). \"Editör beyanı\" rozetiyle kart olarak gösterilir, asla grafiklenmez. Bir satır değiştiğinde güncelleme tarihi otomatik damgalanır."
+msgstr "OJS'in hesaplayamadığı en fazla 5 değer: ör. dizin kapsamı ya da dış etki puanı (CiteScore, SJR). Her kartta \"Editör tarafından girildi\" yazar. Oranlar, süreler ve makale sayıları derginin verisinden hesaplanır; burada girilemez."
 
 msgid "plugins.generic.journalMetrics.settings.manual.title"
 msgstr "Başlık"
@@ -576,7 +576,7 @@ msgid "plugins.generic.journalMetrics.settings.importedNote"
 msgstr "İçe aktarılmış {$num} makale (gönderi tarihi ilk yayın tarihinden sonra olanlar; OJS'nin kendi istatistiklerindeki kural) editoryal, süre ve hakemlik göstergelerinin dışında. Okunma, yayın çıktısı ve yazar göstergeleri bu makaleleri sayar."
 
 msgid "plugins.generic.journalMetrics.settings.coverage.desc"
-msgstr "İsteğe bağlı. Bir başlangıç yılı ayarlandığında editoryal iş akışı istatistikleri (başvurular, kararlar, süreç süreleri, tamamlanan hakem değerlendirmeleri) o yıldan itibaren hesaplanır — ve bu kapsam panoda ve kamuya açık sayfada her zaman açıkça beyan edilir. Tüm arşivi kapsamak için boş bırakın. Kullanım istatistikleri, yayın çıktısı ve topluluk sayıları her zaman tüm arşivi kapsar."
+msgstr "İsteğe bağlı. Editoryal süreç verileri (gönderiler, kararlar, süreler, tamamlanan hakemlikler) bu yıldan itibaren sayılır ve sayfada belirtilir. Sistem başlangıç tarihi tahmin etmez. Boş bırakılırsa bütün yıllar sayılır."
 
 msgid "plugins.generic.journalMetrics.settings.coverage.year"
 msgstr "Başlangıç yılı"
@@ -604,3 +604,144 @@ msgstr "Tümünü Pano yap"
 
 msgid "plugins.generic.journalMetrics.settings.bulk.public"
 msgstr "Tümünü Public yap"
+
+msgid "plugins.generic.journalMetrics.section.publications"
+msgstr "Yayınlar"
+
+msgid "plugins.generic.journalMetrics.section.editorial"
+msgstr "Editoryal süreç"
+
+msgid "plugins.generic.journalMetrics.section.external"
+msgstr "Dış göstergeler"
+
+msgid "plugins.generic.journalMetrics.section.editorial.note"
+msgstr "Editoryal süreç verileri, dergi sistemi üzerinden alınıp editör kararı verilen {$process} gönderiye dayanır. Doğrudan yayına eklenen {$direct} makale yayın sayılarına dahildir, bu oran ve sürelere dahil değildir."
+
+msgid "plugins.generic.journalMetrics.group.review"
+msgstr "Hakem değerlendirmesi"
+
+msgid "plugins.generic.journalMetrics.settings.manual.rejected"
+msgstr "Kaydedilmedi: \"{$titles}\". Bu ad, derginin verisinden hesaplanan bir göstergeye ait; elle girilemez."
+
+msgid "plugins.generic.journalMetrics.ui.manualConflict"
+msgstr "Kamu sayfasında gösterilmiyor: bu adla bir gösterge derginin verisinden hesaplanıyor. Adı değiştirin ya da satırı silin."
+
+msgid "plugins.generic.journalMetrics.ui.enteredByEditor"
+msgstr "Editör tarafından girildi"
+
+msgid "plugins.generic.journalMetrics.ui.splitTitle"
+msgstr "Yıllara göre makale: editoryal süreçten geçen / doğrudan eklenen"
+
+msgid "plugins.generic.journalMetrics.ui.processArticles"
+msgstr "Editoryal süreçten geçen"
+
+msgid "plugins.generic.journalMetrics.ui.directArticles"
+msgstr "Doğrudan eklenen"
+
+msgid "plugins.generic.journalMetrics.ui.editorialHiddenAuto"
+msgstr "Kamu sayfasında henüz gösterilmiyor: son editör kararı verilmiş gönderi sayısı 20'nin altında."
+
+msgid "plugins.generic.journalMetrics.ui.editorialHiddenSetting"
+msgstr "Kamu sayfasında gizli (ayar)."
+
+msgid "plugins.generic.journalMetrics.editorBox.title"
+msgstr "Bu sayfadaki sayılar neden farklı?"
+
+msgid "plugins.generic.journalMetrics.editorBox.published"
+msgstr "Derginizde {$published} yayımlanmış makale var."
+
+msgid "plugins.generic.journalMetrics.editorBox.process"
+msgstr "Bunların {$count} tanesi dergi sistemi üzerinden gönderildi ve editör kararı aldı. Kabul oranı ve süreler bu tür gönderilerden hesaplanır."
+
+msgid "plugins.generic.journalMetrics.editorBox.direct"
+msgstr "{$count} makale editör kararı olmadan doğrudan yayına eklendi. Yayın sayılarında var; karar ve tarih bilgileri olmadığı için oran ve sürelere katılamaz."
+
+msgid "plugins.generic.journalMetrics.editorBox.inconsistent"
+msgstr "{$count} makale tarih tutarsızlığı nedeniyle (yayından sonra gönderilmiş görünüyor) süre hesaplarına katılmadı."
+
+msgid "plugins.generic.journalMetrics.editorBox.awaiting"
+msgstr "Henüz kararı verilmemiş {$count} gönderi, karar verilince hesaba girecek."
+
+msgid "plugins.generic.journalMetrics.editorBox.hiddenAuto"
+msgstr "\"Editoryal süreç\" bölümü kamu sayfasında henüz görünmüyor: son kararı verilmiş gönderi sayısı {$count}; {$min} olunca görünür."
+
+msgid "plugins.generic.journalMetrics.editorBox.hiddenSetting"
+msgstr "\"Editoryal süreç\" bölümü kamu sayfasında ayarlardan gizlendi."
+
+msgid "plugins.generic.journalMetrics.editorBox.list"
+msgstr "Liste"
+
+msgid "plugins.generic.journalMetrics.editorBox.actions"
+msgstr "Ne yapabilirsiniz:"
+
+msgid "plugins.generic.journalMetrics.editorBox.actionSection"
+msgstr "editoryal bölümü gösterin ya da gizleyin"
+
+msgid "plugins.generic.journalMetrics.editorBox.actionStartYear"
+msgstr "başlangıç yılı girin"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection"
+msgstr "Kamu sayfasında \"Editoryal süreç\" bölümü"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection.auto"
+msgstr "Otomatik (önerilen)"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection.show"
+msgstr "Her zaman göster"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection.hide"
+msgstr "Gizle"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection.desc"
+msgstr "Otomatik: 20 gönderi son editör kararını aldığında bölüm görünür; karar olmadan eklenen makale varsa kısa bir açıklama eklenir."
+
+msgid "plugins.generic.journalMetrics.settings.advanced"
+msgstr "Gelişmiş"
+
+msgid "plugins.generic.journalMetrics.settings.advanced.desc"
+msgstr "Doğru sayılar için gerekmez; yalnız dergi ihtiyaç duyarsa değiştirin."
+
+msgid "plugins.generic.journalMetrics.settings.excludedSections"
+msgstr "Bu bölümleri yayın sayılarına katma"
+
+msgid "plugins.generic.journalMetrics.settings.excludedSections.desc"
+msgstr "Ör. Editöryal ya da Erratum. Yayımlanan makaleler, yazarlar ve ülkeler için geçerlidir; editoryal süreç etkilenmez."
+
+msgid "plugins.generic.journalMetrics.settings.yearBreakdown"
+msgstr "Yıllara göre makale grafiğini ayır: editoryal süreçten geçen / doğrudan eklenen"
+
+msgid "plugins.generic.journalMetrics.settings.yearBreakdown.desc"
+msgstr "Grafiğin altına küçük bir tablo ekler."
+
+msgid "plugins.generic.journalMetrics.articles.directTitle"
+msgstr "Editör kararı olmadan eklenen makaleler"
+
+msgid "plugins.generic.journalMetrics.articles.directDesc"
+msgstr "Yayın sayılarına dahildir; oran ve sürelere dahil değildir."
+
+msgid "plugins.generic.journalMetrics.articles.inconsistentTitle"
+msgstr "Süre hesaplarına katılmayan makaleler"
+
+msgid "plugins.generic.journalMetrics.articles.inconsistentDesc"
+msgstr "Gönderim tarihleri yayın tarihlerinden sonra; bu yüzden süre hesaplanamıyor."
+
+msgid "plugins.generic.journalMetrics.articles.none"
+msgstr "Böyle bir makale yok."
+
+msgid "plugins.generic.journalMetrics.articles.byYear"
+msgstr "Yıllara göre"
+
+msgid "plugins.generic.journalMetrics.articles.list"
+msgstr "Makaleler"
+
+msgid "plugins.generic.journalMetrics.articles.titleCol"
+msgstr "Başlık"
+
+msgid "plugins.generic.journalMetrics.articles.publishedCol"
+msgstr "Yayın tarihi"
+
+msgid "plugins.generic.journalMetrics.articles.submittedCol"
+msgstr "Gönderim tarihi"
+
+msgid "plugins.generic.journalMetrics.articles.truncated"
+msgstr "Yalnız en yeni {$limit} makale listelendi."

@@ -51,7 +51,7 @@ msgid "plugins.generic.journalMetrics.group.output"
 msgstr "Publication Output"
 
 msgid "plugins.generic.journalMetrics.group.manual"
-msgstr "Editor-Declared Metrics"
+msgstr "External indicators"
 
 # ---------------------------------------------------------------- Metrics
 
@@ -71,7 +71,7 @@ msgid "plugins.generic.journalMetrics.metric.declineRate"
 msgstr "Rejection rate"
 
 msgid "plugins.generic.journalMetrics.metric.submissionsPublished"
-msgstr "Published"
+msgstr "Published articles"
 
 msgid "plugins.generic.journalMetrics.metric.firstDecisionDays"
 msgstr "Days to first decision"
@@ -142,13 +142,13 @@ msgstr "Editor-declared metrics"
 # ---------------------------------------------------------------- Tooltips (methodology)
 
 msgid "plugins.generic.journalMetrics.tooltip.acceptanceRate"
-msgstr "Accepted submissions divided by all decided submissions (accepted + declined), using the counts of the OJS core statistics engine. Submissions still under review are not included."
+msgstr "Accepted submissions divided by all decided submissions (accepted + declined). Only submissions with an editor decision count; articles added directly to issues and submissions still under review do not."
 
 msgid "plugins.generic.journalMetrics.tooltip.declineRate"
-msgstr "Declined submissions (desk + post-review) divided by all decided submissions (accepted + declined), using the counts of the OJS core statistics engine. Submissions still under review are not included."
+msgstr "Declined submissions (desk + post-review) divided by all decided submissions (accepted + declined). Only submissions with an editor decision count; articles added directly to issues and submissions still under review do not."
 
 msgid "plugins.generic.journalMetrics.tooltip.firstDecisionDays"
-msgstr "Average days from submission to the first editorial decision of any kind. Incomplete and imported submissions are excluded."
+msgstr "Average days from submission to the first editor decision of any kind. Only submissions with an editor decision and consistent dates are measured."
 
 msgid "plugins.generic.journalMetrics.tooltip.submissionToAcceptDays"
 msgstr "Average days from submission to the first acceptance decision. Median and the 80th percentile (the value 80% of articles stay under) are shown alongside; n is the number of articles measured."
@@ -300,7 +300,7 @@ msgid "plugins.generic.journalMetrics.ui.rank"
 msgstr "#"
 
 msgid "plugins.generic.journalMetrics.ui.yearTableNote"
-msgstr "Note: \"Received\" counts submissions by their submission date; \"Accepted\", \"Declined\" and the rates follow the decision date; \"Published\" follows the first publication date. A submission received in one year may therefore be decided or published in another."
+msgstr "Note: \"Received\" counts submissions by their submission date; \"Accepted\", \"Declined\" and the rates follow the decision date. A submission received in one year may therefore be decided in another."
 
 # ---------------------------------------------------------------- Dashboard
 
@@ -320,7 +320,7 @@ msgid "plugins.generic.journalMetrics.settings.pageTitle"
 msgstr "Journal Metrics — Settings"
 
 msgid "plugins.generic.journalMetrics.settings.pageSubtitle"
-msgstr "Visibility, editor-declared metrics, deduplication, thresholds and the public page — all plugin settings live on this page."
+msgstr "Visibility, external indicators, deduplication, thresholds and the public page — all plugin settings live on this page."
 
 msgid "plugins.generic.journalMetrics.settings.saved"
 msgstr "Settings saved."
@@ -354,7 +354,7 @@ msgid "plugins.generic.journalMetrics.note.snapshot"
 msgstr "Values come from a nightly snapshot; use \"Recompute now\" for fresh figures."
 
 msgid "plugins.generic.journalMetrics.note.coreConsistency"
-msgstr "Editorial counters match the OJS core Statistics screen exactly; rates are calculated over decided submissions only."
+msgstr "Editorial figures count only submissions with an editor decision; publication figures count every published article. Rates are calculated over decided submissions only."
 
 msgid "plugins.generic.journalMetrics.note.uniqueBy"
 msgstr "Authors deduplicated by {$strategy}."
@@ -423,10 +423,10 @@ msgid "plugins.generic.journalMetrics.settings.visibility.public"
 msgstr "Public"
 
 msgid "plugins.generic.journalMetrics.settings.manual"
-msgstr "Editor-Declared Metrics"
+msgstr "External indicators"
 
 msgid "plugins.generic.journalMetrics.settings.manual.desc"
-msgstr "Up to 5 metrics whose values do not come from OJS (e.g. CiteScore, indexing coverage). They are shown as cards with an \"Editor-declared\" badge and are never charted. The update date is stamped automatically when a row changes."
+msgstr "Up to 5 values that OJS cannot calculate, such as indexing coverage or an external impact score (CiteScore, SJR). Each card is marked \"Entered by the editor\". Rates, times and article counts are calculated from the journal's data and cannot be entered here."
 
 msgid "plugins.generic.journalMetrics.settings.manual.title"
 msgstr "Title"
@@ -576,7 +576,7 @@ msgid "plugins.generic.journalMetrics.settings.importedNote"
 msgstr "{$num} imported articles (submission date later than the first publication date, the rule of OJS's own statistics) are left out of the editorial, turnaround and review metrics. Readership, publication output and author figures include them."
 
 msgid "plugins.generic.journalMetrics.settings.coverage.desc"
-msgstr "Optional. When a start year is set, editorial workflow statistics (submissions, decisions, turnaround times, completed reviews) cover that year onward — and this coverage is always openly declared on the dashboard and the public page. Leave empty to cover the whole archive. Usage statistics, publication output and community figures always cover the whole archive."
+msgstr "Optional. Editorial process figures (submissions, decisions, times, completed reviews) are counted from this year on, and the page says so. The system never guesses a start date. Leave empty to include all years."
 
 msgid "plugins.generic.journalMetrics.settings.coverage.year"
 msgstr "Start year"
@@ -604,3 +604,144 @@ msgstr "Set all to Dashboard"
 
 msgid "plugins.generic.journalMetrics.settings.bulk.public"
 msgstr "Set all to Public"
+
+msgid "plugins.generic.journalMetrics.section.publications"
+msgstr "Publications"
+
+msgid "plugins.generic.journalMetrics.section.editorial"
+msgstr "Editorial process"
+
+msgid "plugins.generic.journalMetrics.section.external"
+msgstr "External indicators"
+
+msgid "plugins.generic.journalMetrics.section.editorial.note"
+msgstr "The editorial process figures are based on {$process} submissions received through the journal system that received an editor decision. {$direct} articles added directly to issues are included in the publication figures, not in these rates and times."
+
+msgid "plugins.generic.journalMetrics.group.review"
+msgstr "Peer review"
+
+msgid "plugins.generic.journalMetrics.settings.manual.rejected"
+msgstr "Not saved: \"{$titles}\". This name belongs to a figure that is calculated from the journal's data, so it cannot be entered by hand."
+
+msgid "plugins.generic.journalMetrics.ui.manualConflict"
+msgstr "Not shown on the public page: a figure with this name is calculated from the journal's data. Change the name or delete the row."
+
+msgid "plugins.generic.journalMetrics.ui.enteredByEditor"
+msgstr "Entered by the editor"
+
+msgid "plugins.generic.journalMetrics.ui.splitTitle"
+msgstr "Articles per year: through the editorial process / added directly"
+
+msgid "plugins.generic.journalMetrics.ui.processArticles"
+msgstr "Through the editorial process"
+
+msgid "plugins.generic.journalMetrics.ui.directArticles"
+msgstr "Added directly"
+
+msgid "plugins.generic.journalMetrics.ui.editorialHiddenAuto"
+msgstr "Not shown on the public page yet: fewer than 20 submissions have a final editor decision."
+
+msgid "plugins.generic.journalMetrics.ui.editorialHiddenSetting"
+msgstr "Hidden on the public page (setting)."
+
+msgid "plugins.generic.journalMetrics.editorBox.title"
+msgstr "Why do the numbers on this page differ?"
+
+msgid "plugins.generic.journalMetrics.editorBox.published"
+msgstr "Your journal has {$published} published articles."
+
+msgid "plugins.generic.journalMetrics.editorBox.process"
+msgstr "{$count} of them were submitted through the journal system and received an editor decision. Acceptance rates and times are calculated from submissions like these."
+
+msgid "plugins.generic.journalMetrics.editorBox.direct"
+msgstr "{$count} articles were added directly to issues without an editor decision. They count in the publication figures; with no decision and no dates of their own, they cannot count in rates and times."
+
+msgid "plugins.generic.journalMetrics.editorBox.inconsistent"
+msgstr "{$count} articles were left out of the times because their dates do not fit together (submitted after publication)."
+
+msgid "plugins.generic.journalMetrics.editorBox.awaiting"
+msgstr "{$count} submissions are still waiting for a first decision; they will count once decided."
+
+msgid "plugins.generic.journalMetrics.editorBox.hiddenAuto"
+msgstr "The \"Editorial process\" section is not shown on the public page yet: {$count} submissions have a final decision; it appears from {$min}."
+
+msgid "plugins.generic.journalMetrics.editorBox.hiddenSetting"
+msgstr "The \"Editorial process\" section is hidden on the public page (setting)."
+
+msgid "plugins.generic.journalMetrics.editorBox.list"
+msgstr "List"
+
+msgid "plugins.generic.journalMetrics.editorBox.actions"
+msgstr "What you can do:"
+
+msgid "plugins.generic.journalMetrics.editorBox.actionSection"
+msgstr "show or hide the editorial section"
+
+msgid "plugins.generic.journalMetrics.editorBox.actionStartYear"
+msgstr "enter a start year"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection"
+msgstr "\"Editorial process\" section on the public page"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection.auto"
+msgstr "Automatic (recommended)"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection.show"
+msgstr "Always show"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection.hide"
+msgstr "Hide"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection.desc"
+msgstr "Automatic shows the section once 20 submissions have a final editor decision, with a short note when articles were added without a decision."
+
+msgid "plugins.generic.journalMetrics.settings.advanced"
+msgstr "Advanced"
+
+msgid "plugins.generic.journalMetrics.settings.advanced.desc"
+msgstr "Not needed for correct figures; change only if your journal needs it."
+
+msgid "plugins.generic.journalMetrics.settings.excludedSections"
+msgstr "Leave these sections out of the publication counts"
+
+msgid "plugins.generic.journalMetrics.settings.excludedSections.desc"
+msgstr "For example Editorial or Erratum. Applies to published articles, authors and countries; the editorial process is not affected."
+
+msgid "plugins.generic.journalMetrics.settings.yearBreakdown"
+msgstr "Split the articles-per-year chart: through the editorial process / added directly"
+
+msgid "plugins.generic.journalMetrics.settings.yearBreakdown.desc"
+msgstr "Adds a small table under the chart."
+
+msgid "plugins.generic.journalMetrics.articles.directTitle"
+msgstr "Articles added without an editor decision"
+
+msgid "plugins.generic.journalMetrics.articles.directDesc"
+msgstr "They count in the publication figures, not in rates and times."
+
+msgid "plugins.generic.journalMetrics.articles.inconsistentTitle"
+msgstr "Articles left out of the times"
+
+msgid "plugins.generic.journalMetrics.articles.inconsistentDesc"
+msgstr "Their submission date lies after their publication date, so no time can be calculated."
+
+msgid "plugins.generic.journalMetrics.articles.none"
+msgstr "There are no such articles."
+
+msgid "plugins.generic.journalMetrics.articles.byYear"
+msgstr "By year"
+
+msgid "plugins.generic.journalMetrics.articles.list"
+msgstr "Articles"
+
+msgid "plugins.generic.journalMetrics.articles.titleCol"
+msgstr "Title"
+
+msgid "plugins.generic.journalMetrics.articles.publishedCol"
+msgstr "Published"
+
+msgid "plugins.generic.journalMetrics.articles.submittedCol"
+msgstr "Submitted"
+
+msgid "plugins.generic.journalMetrics.articles.truncated"
+msgstr "Only the newest {$limit} are listed."

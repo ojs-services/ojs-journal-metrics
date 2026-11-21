@@ -41,6 +41,9 @@
 		</div>
 	</div>
 
+	{include file=$editorBoxTemplate}
+
+
 	{* Metric groups (rendered by JS) *}
 	<div id="jmxGroups"></div>
 

@@ -20,10 +20,11 @@
  * authors, role counts and author countries always cover the whole
  * archive — the archive enriches them by design.
  *
- * POPULATION: completed reviews use the one workflow filter
- * (JournalMetricsBaseProvider::workflowCondition) — reviews of imported
- * or incomplete submissions are not counted. Authors, countries and role
- * counts cover every published article, imported ones included.
+ * POPULATION: completed reviews use JournalMetricsBaseProvider::
+ * durationCondition() (editorial process, consistent dates) — they are
+ * counted per year, so import-time dates would put them in the wrong
+ * year. Authors and countries count every published article
+ * (publishedCondition, minus excluded sections); role counts are members.
  *
  * BINDING RULE: "completed review" =
  * date_completed IS NOT NULL AND declined = 0 AND cancelled = 0 AND
@@ -53,9 +54,10 @@ class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 		$covParams = $coverageYear > 0 ? array($coverageYear . '-01-01') : array();
 
 		// Unique authors + country distribution (countryStats deduplication)
-		$totals = $dao->getTotals($contextId, $settings['uniqueStrategy'], $settings['orcidFallback']);
-		$authorsByCountry = $dao->getAuthorsByCountry($contextId, $settings['uniqueStrategy'], $settings['orcidFallback']);
-		$articlesByCountry = $dao->getArticlesByCountry($contextId);
+		$excluded = $this->_plugin->getExcludedSectionIds($contextId);
+		$totals = $dao->getTotals($contextId, $settings['uniqueStrategy'], $settings['orcidFallback'], null, null, $excluded);
+		$authorsByCountry = $dao->getAuthorsByCountry($contextId, $settings['uniqueStrategy'], $settings['orcidFallback'], null, null, $excluded);
+		$articlesByCountry = $dao->getArticlesByCountry($contextId, null, null, $excluded);
 
 		$topCountries = array();
 		foreach (array_slice($authorsByCountry, 0, 10) as $row) {
@@ -92,7 +94,7 @@ class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 				COUNT(*) AS completed
 			FROM review_assignments ra
 			JOIN submissions s ON s.submission_id = ra.submission_id
-			WHERE s.context_id = ? AND " . self::workflowCondition('s') . "
+			WHERE s.context_id = ? AND " . self::durationCondition('s') . "
 			  AND ra.date_completed IS NOT NULL AND ra.declined = 0
 			  AND ra.cancelled = 0 AND ra.date_notified IS NOT NULL{$covClause}
 			GROUP BY YEAR(ra.date_notified)
@@ -108,7 +110,7 @@ class JournalMetricsCommunityProvider extends JournalMetricsBaseProvider {
 				COUNT(DISTINCT ra.submission_id) AS reviewed_articles
 			FROM review_assignments ra
 			JOIN submissions s ON s.submission_id = ra.submission_id
-			WHERE s.context_id = ? AND " . self::workflowCondition('s') . "
+			WHERE s.context_id = ? AND " . self::durationCondition('s') . "
 			  AND ra.date_completed IS NOT NULL AND ra.declined = 0
 			  AND ra.cancelled = 0 AND ra.date_notified IS NOT NULL{$covClause}",
 			array_merge(array($contextId), $covParams)

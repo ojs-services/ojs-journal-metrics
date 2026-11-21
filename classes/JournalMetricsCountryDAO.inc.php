@@ -23,7 +23,7 @@ class JournalMetricsCountryDAO extends DAO {
 	 * @param string $dateEnd         Optional end date (Y-m-d)
 	 * @return array  [ ['country'=>'TR', 'author_count'=>123], ... ]
 	 */
-	public function getAuthorsByCountry($contextId, $uniqueStrategy = 'orcid', $orcidFallback = 'email_name', $dateStart = null, $dateEnd = null) {
+	public function getAuthorsByCountry($contextId, $uniqueStrategy = 'orcid', $orcidFallback = 'email_name', $dateStart = null, $dateEnd = null, $excludedSectionIds = array()) {
 		$params = array((int)$contextId);
 
 		// Build the unique identifier expression based on strategy
@@ -44,7 +44,7 @@ class JournalMetricsCountryDAO extends DAO {
 				LEFT JOIN author_settings orcid ON (a.author_id = orcid.author_id AND orcid.setting_name = 'orcid')
 				LEFT JOIN author_settings gn ON (a.author_id = gn.author_id AND gn.setting_name = 'givenName' AND gn.locale = s.locale)
 				LEFT JOIN author_settings fn ON (a.author_id = fn.author_id AND fn.setting_name = 'familyName' AND fn.locale = s.locale)
-				WHERE s.status = " . self::STATUS_PUBLISHED . "
+				WHERE " . self::publishedSql($excludedSectionIds) . "
 				  AND s.context_id = ?
 				  AND p.publication_id = s.current_publication_id
 				  {$dateWhere}
@@ -68,7 +68,7 @@ class JournalMetricsCountryDAO extends DAO {
 	 * @param string $dateEnd
 	 * @return array  [ ['country'=>'TR', 'article_count'=>99], ... ]
 	 */
-	public function getArticlesByCountry($contextId, $dateStart = null, $dateEnd = null) {
+	public function getArticlesByCountry($contextId, $dateStart = null, $dateEnd = null, $excludedSectionIds = array()) {
 		$params = array((int)$contextId);
 		$dateWhere = $this->_buildDateWhere($dateStart, $dateEnd, $params);
 
@@ -80,7 +80,7 @@ class JournalMetricsCountryDAO extends DAO {
 			JOIN publications p ON (a.publication_id = p.publication_id)
 			JOIN submissions s ON (p.submission_id = s.submission_id)
 			JOIN author_settings c ON (a.author_id = c.author_id AND c.setting_name = 'country')
-			WHERE s.status = " . self::STATUS_PUBLISHED . "
+			WHERE " . self::publishedSql($excludedSectionIds) . "
 			  AND s.context_id = ?
 			  AND p.publication_id = s.current_publication_id
 			  AND c.setting_value IS NOT NULL
@@ -104,7 +104,7 @@ class JournalMetricsCountryDAO extends DAO {
 	 * @param string $dateEnd
 	 * @return array ['totalArticles'=>int, 'totalAuthors'=>int, 'totalCountries'=>int]
 	 */
-	public function getTotals($contextId, $uniqueStrategy = 'orcid', $orcidFallback = 'email_name', $dateStart = null, $dateEnd = null) {
+	public function getTotals($contextId, $uniqueStrategy = 'orcid', $orcidFallback = 'email_name', $dateStart = null, $dateEnd = null, $excludedSectionIds = array()) {
 		// Total published articles
 		$params1 = array((int)$contextId);
 		$dateWhere1 = $this->_buildDateWhere($dateStart, $dateEnd, $params1);
@@ -113,7 +113,7 @@ class JournalMetricsCountryDAO extends DAO {
 			SELECT COUNT(DISTINCT s.submission_id) AS cnt
 			FROM submissions s
 			JOIN publications p ON (p.submission_id = s.submission_id AND p.publication_id = s.current_publication_id)
-			WHERE s.status = " . self::STATUS_PUBLISHED . "
+			WHERE " . self::publishedSql($excludedSectionIds) . "
 			  AND s.context_id = ?
 			  {$dateWhere1}
 		";
@@ -141,7 +141,7 @@ class JournalMetricsCountryDAO extends DAO {
 				LEFT JOIN author_settings orcid ON (a.author_id = orcid.author_id AND orcid.setting_name = 'orcid')
 				LEFT JOIN author_settings gn ON (a.author_id = gn.author_id AND gn.setting_name = 'givenName' AND gn.locale = s.locale)
 				LEFT JOIN author_settings fn ON (a.author_id = fn.author_id AND fn.setting_name = 'familyName' AND fn.locale = s.locale)
-				WHERE s.status = " . self::STATUS_PUBLISHED . "
+				WHERE " . self::publishedSql($excludedSectionIds) . "
 				  AND s.context_id = ?
 				  AND p.publication_id = s.current_publication_id
 				  {$dateWhere2}
@@ -194,6 +194,15 @@ class JournalMetricsCountryDAO extends DAO {
 						)";
 				}
 		}
+	}
+
+	/**
+	 * The published-article condition shared with every other count of
+	 * published articles (card, chart, totals), minus excluded sections.
+	 */
+	private static function publishedSql($excludedSectionIds) {
+		import('plugins.generic.journalMetrics.classes.providers.JournalMetricsBaseProvider');
+		return JournalMetricsBaseProvider::publishedCondition('s', $excludedSectionIds);
 	}
 
 	/**

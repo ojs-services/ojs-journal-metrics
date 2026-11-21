@@ -471,7 +471,8 @@ class JournalMetricsPlugin extends GenericPlugin {
 			'submissionsDeclined'      => array('group' => 'editorial'),
 			'acceptanceRate'           => array('group' => 'editorial'),
 			'declineRate'              => array('group' => 'editorial'),
-			'submissionsPublished'     => array('group' => 'editorial'),
+			// Publications: every published article (card = chart total)
+			'submissionsPublished'     => array('group' => 'output'),
 			// Turnaround times
 			'firstDecisionDays'        => array('group' => 'times'),
 			'submissionToAcceptDays'   => array('group' => 'times'),
@@ -554,7 +555,39 @@ class JournalMetricsPlugin extends GenericPlugin {
 			// when set, the public page automatically shows
 			// "Editorial statistics cover YYYY–present".
 			'statsCoverageStartYear' => 0,
+			// The "Editorial process" section of the public page:
+			// auto = shown once EDITORIAL_SECTION_MIN_DECIDED submissions
+			// have a final decision; show | hide = always / never.
+			'editorialSection' => 'auto',
+			// Advanced: split the articles-per-year chart into articles
+			// that went through the editorial process and articles added
+			// without an editor decision.
+			'yearBreakdown'    => 0,
 		);
+	}
+
+	/** Decided submissions needed before "auto" shows the editorial section. */
+	const EDITORIAL_SECTION_MIN_DECIDED = 20;
+
+	/**
+	 * Sections left out of the publication counts (advanced setting),
+	 * limited to sections that still exist in this journal.
+	 *
+	 * @param int $contextId
+	 * @return int[]
+	 */
+	public function getExcludedSectionIds($contextId) {
+		$stored = $this->getSetting((int) $contextId, 'excludedSections');
+		if (!is_array($stored) || empty($stored)) return array();
+		$ids = array_values(array_unique(array_filter(array_map('intval', $stored))));
+		if (empty($ids)) return array();
+		$result = DAORegistry::getDAO('UserDAO')->retrieve(
+			'SELECT section_id FROM sections WHERE journal_id = ? AND section_id IN (' . implode(',', $ids) . ')',
+			array((int) $contextId)
+		);
+		$valid = array();
+		foreach ($result as $row) $valid[] = (int) $row->section_id;
+		return $valid;
 	}
 
 	/**
@@ -652,6 +685,46 @@ class JournalMetricsPlugin extends GenericPlugin {
 	 *
 	 * @return array [ ['title'=>, 'value'=>, 'source'=>, 'description'=>, 'lastUpdated'=>], ... ]
 	 */
+	/**
+	 * Is this a computed metric's name? A value the editor enters by hand
+	 * must not stand in for (or contradict) a figure the plugin computes:
+	 * rates and durations always come from the journal's own data.
+	 * Compared against the metric names in every language the plugin
+	 * ships, ignoring case, spacing, punctuation and Turkish letters.
+	 *
+	 * @param string|array $title a plain title or locale => title
+	 * @return bool
+	 */
+	public function isComputedMetricTitle($title) {
+		static $names = null;
+		if ($names === null) {
+			$names = array();
+			foreach (glob($this->getPluginPath() . '/locale/*/locale.po') ?: array() as $file) {
+				$po = (string) file_get_contents($file);
+				if (preg_match_all('/msgid "plugins\.generic\.journalMetrics\.metric\.(\w+)"\s*\nmsgstr "((?:[^"\\\\]|\\\\.)*)"/', $po, $m, PREG_SET_ORDER)) {
+					foreach ($m as $entry) {
+						if ($entry[1] === 'manualMetrics') continue;
+						$name = self::_normalizeMetricName(stripcslashes($entry[2]));
+						if ($name !== '') $names[$name] = true;
+					}
+				}
+			}
+		}
+		foreach ((array) $title as $value) {
+			if (is_string($value) && isset($names[self::_normalizeMetricName($value)])) return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Lower case, Turkish letters folded, punctuation and spacing removed.
+	 */
+	private static function _normalizeMetricName($text) {
+		$text = function_exists('mb_strtolower') ? mb_strtolower((string) $text, 'UTF-8') : strtolower((string) $text);
+		$text = strtr($text, array('ı' => 'i', 'i̇' => 'i', 'ş' => 's', 'ğ' => 'g', 'ü' => 'u', 'ö' => 'o', 'ç' => 'c', 'â' => 'a', 'î' => 'i', 'û' => 'u'));
+		return trim((string) preg_replace('/[^a-z0-9]+/', ' ', $text));
+	}
+
 	public function getManualMetrics($contextId) {
 		$rows = $this->getSetting($contextId, 'manualMetrics');
 		return is_array($rows) ? array_slice(array_values($rows), 0, 5) : array();
