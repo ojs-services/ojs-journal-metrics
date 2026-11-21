@@ -27,6 +27,13 @@
 		&#x2713; {translate key="plugins.generic.journalMetrics.settings.saved"}
 	</div>
 	{/if}
+	{if $manualRejected}
+	<div class="jmx-section jmx-manager-note" role="alert" id="jmxManualRejected">
+		<p>{translate key="plugins.generic.journalMetrics.settings.manual.rejected" titles=$manualRejected|escape}</p>
+	</div>
+	{/if}
+
+	{include file=$editorBoxTemplate}
 
 	<form method="post" action="{$saveUrl|escape}" id="jmxSettingsForm">
 		{csrf}
@@ -57,6 +64,15 @@
 					</div>
 					<p class="jmx-settings-hint">{translate key="plugins.generic.journalMetrics.settings.publicPageUrl.desc"}</p>
 				</div>
+			</div>
+			<div class="jmx-form-field" style="max-width:420px;margin-top:10px;">
+				<label for="jmxEditorialSection">{translate key="plugins.generic.journalMetrics.settings.editorialSection"}</label>
+				<select name="editorialSection" id="jmxEditorialSection" class="jmx-filter-select">
+					<option value="auto" {if $jmxSettings.editorialSection == 'auto'}selected{/if}>{translate key="plugins.generic.journalMetrics.settings.editorialSection.auto"}</option>
+					<option value="show" {if $jmxSettings.editorialSection == 'show'}selected{/if}>{translate key="plugins.generic.journalMetrics.settings.editorialSection.show"}</option>
+					<option value="hide" {if $jmxSettings.editorialSection == 'hide'}selected{/if}>{translate key="plugins.generic.journalMetrics.settings.editorialSection.hide"}</option>
+				</select>
+				<p class="jmx-settings-hint">{translate key="plugins.generic.journalMetrics.settings.editorialSection.desc"}</p>
 			</div>
 			<div class="jmx-check-list" style="margin-top:10px;">
 				<label><input type="checkbox" name="showDeveloperCredit" value="1" {if $jmxSettings.showDeveloperCredit}checked{/if} /> {translate key="plugins.generic.journalMetrics.settings.showDeveloperCredit"}</label>
@@ -89,21 +105,6 @@
 			</div>
 		</div>
 
-		{* ---------- Editorial statistics coverage ---------- *}
-		<div class="jmx-section">
-			<div class="jmx-section-header"><h2>{translate key="plugins.generic.journalMetrics.settings.coverage"}</h2></div>
-			<p class="jmx-settings-hint">{translate key="plugins.generic.journalMetrics.settings.coverage.desc"}</p>
-			<div class="jmx-form-field" style="max-width:280px;">
-				<label for="statsCoverageStartYear">{translate key="plugins.generic.journalMetrics.settings.coverage.year"}</label>
-				<input type="number" min="1900" max="{$currentYear|intval}" step="1"
-					name="statsCoverageStartYear" id="statsCoverageStartYear"
-					value="{if $coverageStartYear}{$coverageStartYear|intval}{/if}"
-					class="jmx-num-input" placeholder="{translate key="plugins.generic.journalMetrics.settings.coverage.placeholder"}" />
-			</div>
-			{* One rule for every workflow metric: imported articles (submission
-			   date after first publication, OJS core's rule) are left out. *}
-			<p class="jmx-settings-hint jmx-imported-note" id="jmxImportedNote">{translate key="plugins.generic.journalMetrics.settings.importedNote" num=$importedCount|intval}</p>
-		</div>
 
 		{* ---------- Visibility matrix ---------- *}
 		<div class="jmx-section">
@@ -184,6 +185,9 @@
 									<span class="jmx-locale-chip">{$localeName|escape}</span>
 								</div>
 								{/foreach}
+								{if $manualConflicts.$i}
+								<p class="jmx-row-warn" role="note">{translate key="plugins.generic.journalMetrics.ui.manualConflict"}</p>
+								{/if}
 							</td>
 							<td><input type="text" name="manualMetrics[{$i}][value]" value="{$row.value|escape}" maxlength="20" aria-label="{translate key="plugins.generic.journalMetrics.settings.manual.value"}" /></td>
 							<td><input type="text" name="manualMetrics[{$i}][source]" value="{$row.source|escape}" maxlength="80" aria-label="{translate key="plugins.generic.journalMetrics.settings.manual.source"}" /></td>
@@ -269,6 +273,39 @@
 				<label><input type="checkbox" name="showArticlesTab" value="1" {if $jmxSettings.showArticlesTab}checked{/if} /> {translate key="plugins.generic.journalMetrics.settings.showArticlesTab"}</label>
 			</div>
 		</div>
+
+		{* ---------- Advanced (closed): nothing here is needed for correct
+		   figures; the defaults already follow the counting rules ---------- *}
+		<details class="jmx-section jmx-advanced" id="jmxAdvanced">
+			<summary class="jmx-advanced-summary"><h2>{translate key="plugins.generic.journalMetrics.settings.advanced"}</h2></summary>
+			<p class="jmx-settings-hint">{translate key="plugins.generic.journalMetrics.settings.advanced.desc"}</p>
+
+			<div class="jmx-form-field" style="max-width:280px;">
+				<label for="statsCoverageStartYear">{translate key="plugins.generic.journalMetrics.settings.coverage.year"}</label>
+				<input type="number" min="1900" max="{$currentYear|intval}" step="1"
+					name="statsCoverageStartYear" id="statsCoverageStartYear"
+					value="{if $coverageStartYear}{$coverageStartYear|intval}{/if}"
+					class="jmx-num-input" placeholder="{translate key="plugins.generic.journalMetrics.settings.coverage.placeholder"}" />
+			</div>
+			<p class="jmx-settings-hint">{translate key="plugins.generic.journalMetrics.settings.coverage.desc"}</p>
+
+			{if $journalSections}
+			<fieldset class="jmx-fieldset">
+				<legend>{translate key="plugins.generic.journalMetrics.settings.excludedSections"}</legend>
+				<div class="jmx-check-list jmx-check-grid">
+					{foreach from=$journalSections key=sectionId item=sectionTitle}
+					<label><input type="checkbox" name="excludedSections[]" value="{$sectionId|intval}" {if in_array($sectionId, $excludedSections)}checked{/if} /> {$sectionTitle|escape}</label>
+					{/foreach}
+				</div>
+				<p class="jmx-settings-hint">{translate key="plugins.generic.journalMetrics.settings.excludedSections.desc"}</p>
+			</fieldset>
+			{/if}
+
+			<div class="jmx-check-list">
+				<label><input type="checkbox" name="yearBreakdown" value="1" {if $jmxSettings.yearBreakdown}checked{/if} /> {translate key="plugins.generic.journalMetrics.settings.yearBreakdown"}</label>
+			</div>
+			<p class="jmx-settings-hint">{translate key="plugins.generic.journalMetrics.settings.yearBreakdown.desc"}</p>
+		</details>
 
 		<div class="jmx-form-actions">
 			<button type="submit" class="jmx-btn jmx-btn-primary jmx-btn-lg">{translate key="common.save"}</button>

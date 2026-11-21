@@ -19,7 +19,11 @@
  * duration/rate metric. schemaVersion 2: editorial rates are stored
  * unrounded over the decided cohort. Readers never trust stored rates —
  * they re-derive them from the counts — so version 1 snapshots (core
- * rates) display correctly without a recompute.
+ * rates) display correctly without a recompute. schemaVersion 3: one
+ * definition for every metric (editorial figures need an editor
+ * decision, publications count every published article) and the
+ * classification behind the editorial explanation. Older snapshots are
+ * recomputed on the next dashboard visit or task run (isOutdated).
  */
 
 namespace APP\plugins\generic\journalMetrics\classes;
@@ -30,7 +34,7 @@ use APP\plugins\generic\journalMetrics\JournalMetricsPlugin;
 class JournalMetricsSnapshotManager {
 
 	/** Snapshot schema version (see the file comment) */
-	public const SCHEMA_VERSION = 2;
+	public const SCHEMA_VERSION = 3;
 
 	/** Encoded size above which a write logs a warning: 48 KB */
 	public const SNAPSHOT_WARN_BYTES = 49152;
@@ -57,6 +61,28 @@ class JournalMetricsSnapshotManager {
 	public function getSnapshot($contextId) {
 		$snapshot = $this->_plugin->getSetting((int) $contextId, 'metricsSnapshot');
 		return is_array($snapshot) ? $snapshot : null;
+	}
+
+	/**
+	 * Is the snapshot written by an older version whose editorial,
+	 * duration and publication figures follow different rules? It is then
+	 * recomputed on the next dashboard visit or task run.
+	 */
+	public function isOutdated($snapshot) {
+		return is_array($snapshot)
+			&& (!isset($snapshot['schemaVersion']) || (int) $snapshot['schemaVersion'] < self::SCHEMA_VERSION);
+	}
+
+	/**
+	 * Number of published articles: the sum of the per-year chart, so the
+	 * card and the chart can never disagree (older snapshots included).
+	 */
+	public static function publishedTotal($snapshot) {
+		if (isset($snapshot['output']['publishedTotal'])) return (int) $snapshot['output']['publishedTotal'];
+		if (isset($snapshot['output']['articlesByYear']) && is_array($snapshot['output']['articlesByYear'])) {
+			return (int) array_sum($snapshot['output']['articlesByYear']);
+		}
+		return null;
 	}
 
 	/**
@@ -92,9 +118,16 @@ class JournalMetricsSnapshotManager {
 	 * @return string|int|float|null
 	 */
 	public function lookupMetricValue($snapshot, $key, $year = null) {
+		if ($key === 'submissionsPublished') {
+			// Publications: every published article (= the per-year chart)
+			if ($year !== null) {
+				return isset($snapshot['output']['articlesByYear'][$year]) ? $snapshot['output']['articlesByYear'][$year] : null;
+			}
+			return self::publishedTotal($snapshot);
+		}
 		$editorialKeys = array(
 			'submissionsReceived', 'submissionsAccepted', 'submissionsDeclined',
-			'submissionsPublished', 'acceptanceRate', 'declineRate',
+			'acceptanceRate', 'declineRate',
 		);
 		if (in_array($key, $editorialKeys, true)) {
 			$row = null;

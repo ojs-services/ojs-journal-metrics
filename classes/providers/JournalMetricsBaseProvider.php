@@ -20,6 +20,7 @@
 namespace APP\plugins\generic\journalMetrics\classes\providers;
 
 use Illuminate\Support\Facades\DB;
+use PKP\decision\Decision;
 
 abstract class JournalMetricsBaseProvider {
 
@@ -84,14 +85,89 @@ abstract class JournalMetricsBaseProvider {
 	}
 
 	// ------------------------------------------------------------------
-	//  The one workflow filter
+	//  The one definition: which articles count where
 	// ------------------------------------------------------------------
+	//
+	//  Counts (publications, authors, countries, usage): every published
+	//      article, wherever it came from          -> publishedCondition()
+	//  Editorial counters and rates (received, accepted, declined):
+	//      only submissions that went through the editorial process
+	//                                              -> editorialProcessCondition()
+	//  Durations (decision times, time to publication, review times):
+	//      editorial process AND consistent dates  -> durationCondition()
+	//
+	//  Every metric uses these functions; none repeats the rules.
+
+	/** Decision codes that mark an acceptance (as OJS core counts them). */
+	public static function acceptDecisions() {
+		return array(Decision::ACCEPT, Decision::SKIP_EXTERNAL_REVIEW, Decision::SEND_TO_PRODUCTION);
+	}
+
+	/** Decision code of a rejection before review (desk reject). */
+	public static function deskDeclineDecision() {
+		return Decision::INITIAL_DECLINE;
+	}
+
+	/** Decision code of a rejection after review. */
+	public static function reviewDeclineDecision() {
+		return Decision::DECLINE;
+	}
 
 	/**
-	 * SQL condition: the submission was IMPORTED. OJS core's rule
-	 * (PKPStatsEditorialQueryBuilder): the submission date is later than
-	 * its first publication date — archives loaded into OJS get their
-	 * submission (and decision / review) dates at import time.
+	 * Recommendations are advice from a recommending editor, not decisions;
+	 * they do not make a submission part of the editorial process.
+	 */
+	public static function recommendationDecisions() {
+		return array(
+			Decision::RECOMMEND_ACCEPT, Decision::RECOMMEND_PENDING_REVISIONS,
+			Decision::RECOMMEND_RESUBMIT, Decision::RECOMMEND_DECLINE,
+			Decision::RECOMMEND_EXTERNAL_REVIEW,
+			Decision::RECOMMEND_ACCEPT_INTERNAL, Decision::RECOMMEND_PENDING_REVISIONS_INTERNAL,
+			Decision::RECOMMEND_RESUBMIT_INTERNAL, Decision::RECOMMEND_DECLINE_INTERNAL,
+		);
+	}
+
+	/**
+	 * SQL condition: the submission is complete and was submitted
+	 * (OJS 3.4+: submission_progress is a string, '' = complete).
+	 *
+	 * @param string $s alias of the submissions table
+	 * @return string
+	 */
+	public static function completeCondition($s = 's') {
+		return "{$s}.submission_progress = '' AND {$s}.date_submitted IS NOT NULL";
+	}
+
+	/**
+	 * SQL condition: at least one editor decision exists for the
+	 * submission (recommendations do not count). Articles added straight
+	 * to an issue without any decision do not meet it.
+	 *
+	 * @param string $s alias of the submissions table
+	 * @return string
+	 */
+	public static function editorDecisionCondition($s = 's') {
+		return "EXISTS (SELECT 1 FROM edit_decisions jmx_ed"
+			. " WHERE jmx_ed.submission_id = {$s}.submission_id"
+			. " AND jmx_ed.decision NOT IN (" . implode(',', array_map('intval', self::recommendationDecisions())) . "))";
+	}
+
+	/**
+	 * SQL condition: the submission went through the editorial process —
+	 * complete, submitted, and at least one editor decision.
+	 *
+	 * @param string $s alias of the submissions table
+	 * @return string
+	 */
+	public static function editorialProcessCondition($s = 's') {
+		return self::completeCondition($s) . " AND " . self::editorDecisionCondition($s);
+	}
+
+	/**
+	 * SQL condition: the submission's dates are INCONSISTENT — its first
+	 * publication date lies before its submission date (typical for
+	 * archives loaded into OJS: they get submission dates at import time).
+	 * Such submissions still count in counts and rates, not in durations.
 	 *
 	 * @param string $s alias of the submissions table
 	 * @return string
@@ -104,19 +180,73 @@ abstract class JournalMetricsBaseProvider {
 	}
 
 	/**
-	 * SQL condition shared by EVERY workflow-derived metric (editorial
-	 * durations, review times, completed reviews): a complete, submitted,
-	 * not-imported submission — the same population OJS core counts in
-	 * its editorial statistics. Usage, publication output, authors and
-	 * countries do not use it: imported articles are real content there.
-	 * (OJS 3.4+: submission_progress is a string, '' = complete.)
+	 * SQL condition for every DURATION metric: editorial process and
+	 * consistent dates.
 	 *
 	 * @param string $s alias of the submissions table
 	 * @return string
 	 */
-	public static function workflowCondition($s = 's') {
-		return "{$s}.submission_progress = '' AND {$s}.date_submitted IS NOT NULL"
-			. " AND NOT " . self::importedCondition($s);
+	public static function durationCondition($s = 's') {
+		return self::editorialProcessCondition($s) . " AND NOT " . self::importedCondition($s);
+	}
+
+	/**
+	 * SQL condition: a PUBLISHED article — published status and a
+	 * published publication with a date — optionally outside the
+	 * sections the editor excluded from counts. Every count of published
+	 * articles (card, chart, totals, authors, countries) uses it, so they
+	 * always agree.
+	 *
+	 * @param string $s alias of the submissions table
+	 * @param int[] $excludedSectionIds
+	 * @return string
+	 */
+	public static function publishedCondition($s = 's', $excludedSectionIds = array()) {
+		$sql = "{$s}.status = 3 AND EXISTS (SELECT 1 FROM publications jmx_pp"
+			. " WHERE jmx_pp.submission_id = {$s}.submission_id AND jmx_pp.status = 3"
+			. " AND jmx_pp.date_published IS NOT NULL)";
+		$excluded = array_values(array_filter(array_map('intval', (array) $excludedSectionIds)));
+		if (!empty($excluded)) {
+			$sql .= " AND NOT EXISTS (SELECT 1 FROM publications jmx_ps"
+				. " WHERE jmx_ps.publication_id = {$s}.current_publication_id"
+				. " AND jmx_ps.section_id IN (" . implode(',', $excluded) . "))";
+		}
+		return $sql;
+	}
+
+	/**
+	 * How the journal's articles divide between the rules above, for the
+	 * explanation shown under the editorial section and the editor box.
+	 * One query per number; the same conditions as the metrics, so the
+	 * explanation can never disagree with the cards.
+	 *
+	 * @param int $contextId
+	 * @param int[] $excludedSectionIds sections left out of the counts
+	 * @param int $coverageYear editorial data from this year on (0 = all)
+	 * @return array
+	 */
+	public function classifySubmissions($contextId, $excludedSectionIds = array(), $coverageYear = 0) {
+		$contextId = (int) $contextId;
+		$published = self::publishedCondition('s', $excludedSectionIds);
+		$cov = $coverageYear > 0 ? " AND s.date_submitted >= '" . (int) $coverageYear . "-01-01'" : '';
+		$count = function ($where) use ($contextId) {
+			$row = $this->selectRow("SELECT COUNT(*) AS c FROM submissions s WHERE s.context_id = ? AND {$where}", array($contextId));
+			return $row ? (int) $row['c'] : 0;
+		};
+		return array(
+			// all published articles (= the "Published" card)
+			'published'          => $count($published),
+			// published, went through the editorial process
+			'publishedProcess'   => $count($published . ' AND ' . self::editorialProcessCondition('s')),
+			// published without any editor decision (added straight to an issue)
+			'publishedDirect'    => $count($published . ' AND NOT ' . self::editorDecisionCondition('s')),
+			// submissions behind the editorial figures (any outcome)
+			'process'            => $count(self::editorialProcessCondition('s') . $cov),
+			// editorial process, but dates inconsistent: left out of durations
+			'inconsistentDates'  => $count(self::editorialProcessCondition('s') . ' AND ' . self::importedCondition('s') . $cov),
+			// complete, still waiting for a first decision
+			'awaitingDecision'   => $count(self::completeCondition('s') . ' AND s.status = 1 AND NOT ' . self::editorDecisionCondition('s')),
+		);
 	}
 
 	/**

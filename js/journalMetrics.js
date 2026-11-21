@@ -24,9 +24,11 @@
   ];
   var GROUP_ICONS = {
     editorial: '📥', times: '⏱', usage: '📈',
-    community: '👥', output: '📚', manual: '⭐'
+    community: '👥', review: '🔍', output: '📚', manual: '⭐'
   };
-  var GROUP_ORDER = ['editorial', 'times', 'usage', 'community', 'output', 'manual'];
+  // Page sections (server-side D.sections); this order is only the
+  // fallback for a view model without sections.
+  var GROUP_ORDER = ['output', 'usage', 'community', 'editorial', 'times', 'review', 'manual'];
 
   // ---------------------------------------------------------------------
   //  Utilities
@@ -295,13 +297,14 @@
   function sectionShell(groupKey, bodyHtml) {
     // Coverage declaration chip: workflow-derived groups only
     var chip = '';
-    if (D.coverageYear && (groupKey === 'editorial' || groupKey === 'times')) {
+    if (D.coverageYear && (groupKey === 'editorial' || groupKey === 'times' || groupKey === 'review')) {
       chip = ' <span class="jmx-coverage-chip" title="' + escHtml(coverageText()) + '">' + escHtml(String(D.coverageYear) + '+') + '</span>';
     }
+    // Group headings sit under the page sections (h2), hence h3
     return '<div class="jmx-section" data-group="' + groupKey + '">' +
-      '<div class="jmx-section-header"><h2>' +
+      '<div class="jmx-section-header"><h3>' +
       (GROUP_ICONS[groupKey] || '') + ' ' + escHtml(label('group.' + groupKey)) + chip +
-      '</h2></div>' + bodyHtml + '</div>';
+      '</h3></div>' + bodyHtml + '</div>';
   }
 
   function coverageText() {
@@ -382,11 +385,17 @@
 
   function renderCommunity(group) {
     var html = '<div class="jmx-cards">' + (group.cards || []).map(function (card) { return renderCard(card, 'community'); }).join('') + '</div>';
+    return sectionShell('community', html);
+  }
+
+  // Peer review (editorial process): reviewers and completed reviews
+  function renderReview(group) {
+    var html = '<div class="jmx-cards">' + (group.cards || []).map(function (card) { return renderCard(card, 'review'); }).join('') + '</div>';
     if (group.completedReviewsByYear && Object.keys(group.completedReviewsByYear).length) {
       html += '<div class="jmx-chart-card"><div class="jmx-chart-title">' + escHtml(t('completedReviewsTitle')) + '</div>' +
         chartHost({ type: 'year', data: group.completedReviewsByYear, color: '#7c3aed', label: t('completedReviewsTitle') }) + '</div>';
     }
-    return sectionShell('community', html);
+    return sectionShell('review', html);
   }
 
   function renderOutput(group) {
@@ -401,9 +410,23 @@
         chartHost({ type: 'year', data: group.issuesByYear, color: '#0891b2', label: t('issuesPerYearTitle') }) + '</div>';
     }
     if (charts) html += '<div class="jmx-charts-row">' + charts + '</div>';
+    // Advanced option: each year split into articles that went through the
+    // editorial process and articles added without an editor decision
+    if (group.articlesByYearSplit && Object.keys(group.articlesByYearSplit).length) {
+      var years = Object.keys(group.articlesByYearSplit).sort().reverse();
+      html += '<div class="jmx-table-wrap"><table class="jmx-table jmx-year-table jmx-split-table"><caption>' + escHtml(t('splitTitle')) + '</caption>' +
+        '<thead><tr><th scope="col">' + escHtml(t('year')) + '</th><th scope="col">' + escHtml(t('processArticles')) + '</th><th scope="col">' + escHtml(t('directArticles')) + '</th></tr></thead><tbody>';
+      years.forEach(function (y) {
+        var s = group.articlesByYearSplit[y];
+        html += '<tr><td class="jmx-count-bold">' + escHtml(y) + '</td><td>' + fmt(s.process) + '</td><td>' + fmt(s.direct) + '</td></tr>';
+      });
+      html += '</tbody></table></div>';
+    }
     return sectionShell('output', html);
   }
 
+  // External indicators: values entered by the editor, always marked so.
+  // Rendered straight under the section heading (no group heading).
   function renderManual(group) {
     if (!group.rows || !group.rows.length) return '';
     var html = '<div class="jmx-cards">';
@@ -411,31 +434,47 @@
       html += '<div class="jmx-card jmx-card-manual">' +
         '<div class="jmx-card-top"><span class="jmx-card-label">' + escHtml(row.title) + '</span></div>' +
         '<div class="jmx-card-value">' + escHtml(row.value) + '</div>' +
+        '<div class="jmx-card-sub jmx-entered-by">' + escHtml(t('enteredByEditor')) + '</div>' +
         '<div class="jmx-card-sub">' +
         (row.source ? escHtml(t('source')) + ': ' + escHtml(row.source) + ' · ' : '') +
         (row.lastUpdated ? escHtml(t('lastUpdated')) + ': ' + escHtml(row.lastUpdated) : '') +
         '</div>' +
         (row.description ? '<div class="jmx-card-desc">' + escHtml(row.description) + '</div>' : '') +
+        (C.isAdmin && row.conflict ? '<div class="jmx-card-warn" role="note">' + escHtml(t('manualConflict')) + '</div>' : '') +
         '</div>';
     });
     html += '</div>';
-    return sectionShell('manual', html);
+    return '<div class="jmx-section" data-group="manual">' + html + '</div>';
   }
 
   var RENDERERS = {
     editorial: renderEditorial, times: renderTimes, usage: renderUsage,
-    community: renderCommunity, output: renderOutput, manual: renderManual
+    community: renderCommunity, review: renderReview, output: renderOutput, manual: renderManual
   };
 
   function renderGroups() {
     var el = document.getElementById('jmxGroups');
     if (!el) return;
     CHARTS.length = 0;
+    var sections = D.sections && D.sections.length ? D.sections : [{ key: '', groups: GROUP_ORDER }];
     var html = '';
-    GROUP_ORDER.forEach(function (key) {
-      if (D.groups && D.groups[key] && RENDERERS[key]) {
-        html += RENDERERS[key](D.groups[key]);
+    sections.forEach(function (section) {
+      var body = '';
+      section.groups.forEach(function (key) {
+        if (D.groups && D.groups[key] && RENDERERS[key]) body += RENDERERS[key](D.groups[key]);
+      });
+      if (!body) return;
+      if (!section.key) { html += body; return; }
+      var head = '<h2 class="jmx-page-section-title" id="jmx-sec-' + section.key + '">' + escHtml(L['section.' + section.key] || section.key) + '</h2>';
+      if (section.key === 'editorial') {
+        // Managers: say when the public page leaves this section out
+        if (C.isAdmin && D.editorialHidden) {
+          head += '<p class="jmx-section-note jmx-section-note-admin" role="note">' +
+            escHtml(t(D.editorialHidden === 'auto' ? 'editorialHiddenAuto' : 'editorialHiddenSetting')) + '</p>';
+        }
+        if (D.editorialNote) head += '<p class="jmx-section-note">' + escHtml(D.editorialNote) + '</p>';
       }
+      html += '<section class="jmx-page-section" data-section="' + section.key + '" aria-labelledby="jmx-sec-' + section.key + '">' + head + body + '</section>';
     });
     el.innerHTML = html;
     drawCharts();

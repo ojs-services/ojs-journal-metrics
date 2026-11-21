@@ -15,8 +15,12 @@ namespace APP\plugins\generic\journalMetrics;
 use APP\core\Application;
 use APP\handler\Handler;
 use APP\plugins\generic\journalMetrics\classes\JournalMetricsCompat;
+use APP\plugins\generic\journalMetrics\classes\JournalMetricsSnapshotManager;
 use APP\plugins\generic\journalMetrics\classes\providers\JournalMetricsManualProvider;
+use APP\plugins\generic\journalMetrics\classes\providers\JournalMetricsBaseProvider;
 use APP\template\TemplateManager;
+use Illuminate\Support\Facades\DB;
+use PKP\facades\Locale;
 use PKP\plugins\PluginRegistry;
 use PKP\security\authorization\ContextRequiredPolicy;
 use PKP\security\authorization\PolicySet;
@@ -29,13 +33,16 @@ class JournalMetricsHandler extends Handler {
 	/** @var JournalMetricsPlugin */
 	protected $_plugin;
 
+	/** @var string[] manual rows not saved by the last save (named like a computed metric) */
+	protected $_manualRejected = array();
+
 	public function __construct() {
 		parent::__construct();
 
 		// Admin operations require Manager or Site Admin role
 		$this->addRoleAssignment(
 			array(Role::ROLE_ID_SITE_ADMIN, Role::ROLE_ID_MANAGER),
-			array('dashboard', 'settings', 'saveSettings', 'fetchData', 'recompute')
+			array('dashboard', 'settings', 'saveSettings', 'fetchData', 'recompute', 'articles')
 		);
 
 		// publicpage is NOT assigned to any role — authorize() handles it
@@ -93,9 +100,10 @@ class JournalMetricsHandler extends Handler {
 		$manager = $plugin->getSnapshotManager();
 		$snapshot = $manager->getSnapshot($contextId);
 
-		// First visit on a fresh install: compute the fast groups
+		// First visit on a fresh install — or after an update that changed
+		// how the figures are counted: compute the fast groups
 		// synchronously (seconds) and defer usage to the scheduled task.
-		if ($snapshot === null) {
+		if ($snapshot === null || $manager->isOutdated($snapshot)) {
 			$this->_computeFastGroups($contextId);
 			$snapshot = $manager->getSnapshot($contextId);
 		}
@@ -118,6 +126,8 @@ class JournalMetricsHandler extends Handler {
 			'coverageYear' => $viewModel['coverageYear'],
 			'articleUrlBase' => $request->getDispatcher()->url($request, Application::ROUTE_PAGE, null, 'article', 'view'),
 			'csrfToken'    => JournalMetricsCompat::csrfToken($request),
+			'editorBox'    => $this->_editorBox($snapshot, $contextId, $request),
+			'editorBoxTemplate' => $plugin->getTemplateResource('editorBox.tpl'),
 		));
 
 		$templateMgr->display($plugin->getTemplateResource('dashboard.tpl'));
@@ -209,8 +219,18 @@ class JournalMetricsHandler extends Handler {
 			'metricMatrix'  => $matrix,
 			'manualMaxRows' => 5,
 			'supportedLocales' => $supportedLocales,
-			// imported articles left out of every workflow metric (one rule)
-			'importedCount' => $plugin->countImportedSubmissions($contextId),
+			// why the numbers differ (managers): which articles count where
+			'editorBox'     => $this->_editorBox($plugin->getSnapshotManager()->getSnapshot($contextId), $contextId, $request),
+			'editorBoxTemplate' => $plugin->getTemplateResource('editorBox.tpl'),
+			// advanced: sections left out of the publication counts
+			'journalSections'  => $this->_journalSections($contextId),
+			'excludedSections' => $plugin->getExcludedSectionIds($contextId),
+			// manual rows not saved by the last save, and saved rows named
+			// like a computed metric (kept, not shown publicly)
+			'manualRejected'  => trim(strip_tags((string) $request->getUserVar('rejected'))),
+			'manualConflicts' => array_map(function ($row) use ($plugin) {
+				return $plugin->isComputedMetricTitle(isset($row['title']) ? $row['title'] : '');
+			}, $manualRows),
 			'publicPageTitleByLocale' => $titleByLocale,
 			'coverageStartYear' => $plugin->getCoverageStartYear($contextId),
 			'currentYear'       => (int) date('Y'),
@@ -268,7 +288,12 @@ class JournalMetricsHandler extends Handler {
 		$context = $request->getContext();
 		$this->_persistSettings($request, $context);
 
-		$request->redirect(null, 'journalmetrics', 'settings', null, array('saved' => 1));
+		$params = array('saved' => 1);
+		if (!empty($this->_manualRejected)) {
+			// shown once on the settings page: which rows were not saved and why
+			$params['rejected'] = implode(' | ', array_slice($this->_manualRejected, 0, 5));
+		}
+		$request->redirect(null, 'journalmetrics', 'settings', null, $params);
 	}
 
 	/**
@@ -300,7 +325,11 @@ class JournalMetricsHandler extends Handler {
 			'showAuthorsTab'   => array('type' => 'bool',   'default' => true),
 			'showArticlesTab'  => array('type' => 'bool',   'default' => true),
 			'rateNThreshold'   => array('type' => 'int',    'default' => 10),
+			'editorialSection' => array('type' => 'string', 'default' => 'auto',
+				'allowed' => array('auto', 'show', 'hide')),
+			'yearBreakdown'    => array('type' => 'bool',   'default' => false),
 		);
+		$oldExcluded = $plugin->getExcludedSectionIds($contextId);
 
 		foreach ($settingsToSave as $name => $meta) {
 			$value = $request->getUserVar($name);
@@ -347,6 +376,18 @@ class JournalMetricsHandler extends Handler {
 		if ($coverage !== 0 && ($coverage < 1900 || $coverage > (int) date('Y'))) $coverage = 0;
 		$plugin->updateSetting($contextId, 'statsCoverageStartYear', $coverage, 'int');
 
+		// ---- Sections left out of the publication counts (advanced):
+		//      only sections of this journal
+		$postedSections = $request->getUserVar('excludedSections');
+		$excluded = array();
+		if (is_array($postedSections)) {
+			$journalSections = array_keys($this->_journalSections($contextId));
+			$excluded = array_values(array_intersect($journalSections, array_map('intval', $postedSections)));
+		}
+		$plugin->updateSetting($contextId, 'excludedSections', $excluded, 'object');
+		sort($excluded);
+		sort($oldExcluded);
+
 		// ---- Sidebar block metric selection (whitelist: candidate keys
 		//      only; an empty selection is valid and hides the block)
 		$postedBlock = $request->getUserVar('blockMetrics');
@@ -377,6 +418,7 @@ class JournalMetricsHandler extends Handler {
 		}
 
 		$rows = array();
+		$rejected = array();
 		if (is_array($postedRows)) {
 			foreach (array_values($postedRows) as $raw) {
 				if (count($rows) >= 5) break;
@@ -390,6 +432,14 @@ class JournalMetricsHandler extends Handler {
 				// A row needs a title in at least one journal locale
 				if (trim(implode('', $row['title'])) === '') continue;
 				$fingerprint = $this->_manualRowFingerprint($row);
+				// Rates, durations and counts are computed from the journal's
+				// data: a NEW or CHANGED row named like a computed metric is
+				// not saved. Rows saved before this rule stay as they are
+				// (not shown publicly, marked on this page).
+				if ($plugin->isComputedMetricTitle($row['title']) && !isset($existingByContent[$fingerprint])) {
+					$rejected[] = $plugin->localize($row['title'], $context);
+					continue;
+				}
 				$row['lastUpdated'] = isset($existingByContent[$fingerprint]) && $existingByContent[$fingerprint] !== ''
 					? $existingByContent[$fingerprint]
 					: date('Y-m-d');
@@ -397,6 +447,7 @@ class JournalMetricsHandler extends Handler {
 			}
 		}
 		$plugin->updateSetting($contextId, 'manualMetrics', $rows, 'object');
+		$this->_manualRejected = $rejected;
 
 		// ---- Reflect changes in the snapshot immediately (manual group
 		// copy also refreshes the embedded visibility map) so the public
@@ -410,9 +461,14 @@ class JournalMetricsHandler extends Handler {
 			// stale. Recompute them synchronously so the coverage
 			// declaration and the numbers change together — a half-updated
 			// state must never be visible.
-			if ($coverage !== $oldCoverage) {
+			// Excluded sections changed: the publication counts (and the
+			// explanation's numbers) change with them, in the same step.
+			$groups = array();
+			if ($coverage !== $oldCoverage) $groups = array('editorial', 'times', 'community');
+			if ($excluded !== $oldExcluded) $groups = array_unique(array_merge($groups, array('editorial', 'output', 'community')));
+			if (!empty($groups)) {
 				$registry = $plugin->getProviderRegistry();
-				foreach (array('editorial', 'times', 'community') as $group) {
+				foreach ($groups as $group) {
 					$groupProvider = $registry->getProvider($group);
 					if (!$groupProvider) continue;
 					$t0 = microtime(true);
@@ -620,9 +676,10 @@ class JournalMetricsHandler extends Handler {
 
 		$dao = $plugin->getCountryDAO();
 
-		$authorsByCountry = $dao->getAuthorsByCountry($contextId, $strategy, $fallback, $dateStart, $dateEnd);
-		$articlesByCountry = $dao->getArticlesByCountry($contextId, $dateStart, $dateEnd);
-		$totals = $dao->getTotals($contextId, $strategy, $fallback, $dateStart, $dateEnd);
+		$excluded = $plugin->getExcludedSectionIds($contextId);
+		$authorsByCountry = $dao->getAuthorsByCountry($contextId, $strategy, $fallback, $dateStart, $dateEnd, $excluded);
+		$articlesByCountry = $dao->getArticlesByCountry($contextId, $dateStart, $dateEnd, $excluded);
+		$totals = $dao->getTotals($contextId, $strategy, $fallback, $dateStart, $dateEnd, $excluded);
 
 		if ($threshold > 1) {
 			$authorsByCountry = array_values(array_filter($authorsByCountry, function ($r) use ($threshold) {
@@ -705,7 +762,7 @@ class JournalMetricsHandler extends Handler {
 		if ($forPublic) {
 			$visibilityMap = $plugin->getVisibilityMap($contextId);
 			foreach ($model['labels'] as $key => $labelText) {
-				if (strpos($key, 'ui.') === 0 || strpos($key, 'group.') === 0) continue;
+				if (strpos($key, 'ui.') === 0 || strpos($key, 'group.') === 0 || strpos($key, 'section.') === 0) continue;
 				if (!isset($visibilityMap[$key]) || $visibilityMap[$key] !== 'public') {
 					unset($model['labels'][$key]);
 				}
@@ -751,7 +808,6 @@ class JournalMetricsHandler extends Handler {
 					)),
 				'acceptanceRate'       => array('type' => 'rate', 'value' => $this->_get($allTime, 'acceptanceRate'), 'n' => $decided),
 				'declineRate'          => array('type' => 'rate', 'value' => $this->_get($allTime, 'declineRate'), 'n' => $decided),
-				'submissionsPublished' => array('type' => 'count', 'value' => $this->_get($allTime, 'submissionsPublished')),
 			);
 			foreach ($defs as $key => $def) {
 				if (!$visible($key)) continue;
@@ -763,6 +819,9 @@ class JournalMetricsHandler extends Handler {
 		if (isset($snapshot['editorial']['byYear']) && is_array($snapshot['editorial']['byYear'])) {
 			$snapshotByYear = array();
 			foreach ($snapshot['editorial']['byYear'] as $year => $data) {
+				// Published articles per year live in the publications chart
+				// (older snapshots still carry a core "published" column).
+				unset($data['submissionsPublished']);
 				$rates = JournalMetricsPlugin::decisionRates($data);
 				$data['acceptanceRate'] = $rates['acceptanceRate'];
 				$data['declineRate'] = $rates['declineRate'];
@@ -774,7 +833,7 @@ class JournalMetricsHandler extends Handler {
 			// Public by-year table only includes public editorial columns
 			$byYear = array();
 			$publicCols = array();
-			foreach (array('submissionsReceived', 'submissionsAccepted', 'submissionsDeclined', 'submissionsPublished', 'acceptanceRate', 'declineRate') as $col) {
+			foreach (array('submissionsReceived', 'submissionsAccepted', 'submissionsDeclined', 'acceptanceRate', 'declineRate') as $col) {
 				if ($visible($col)) $publicCols[] = $col;
 			}
 			if (!empty($publicCols)) {
@@ -852,20 +911,30 @@ class JournalMetricsHandler extends Handler {
 			$model['groups']['usage'] = array_merge(array('cards' => $cards), $usageExtras);
 		}
 
-		// ---- Community
+		// ---- Community (publications: authors, members, countries) and
+		//      peer review (editorial process: reviewers, completed reviews)
 		$cards = array();
 		$communityExtras = array();
+		$reviewCards = array();
+		$reviewExtras = array();
 		if (isset($snapshot['community'])) {
 			$community = $snapshot['community'];
 			$defs = array(
 				'uniqueAuthors' => array('type' => 'count', 'value' => $this->_get($community, 'uniqueAuthors')),
-				'reviewerCount' => array('type' => 'count', 'value' => $this->_get($community, 'reviewers')),
 				'memberCount'   => array('type' => 'count', 'value' => $this->_get($community, 'totalActiveUsers'),
 					'detail' => array(
 						'authors' => $this->_get($community, 'authors'),
 						'readers' => $this->_get($community, 'readers'),
 					)),
 				'authorCountries' => array('type' => 'count', 'value' => isset($community['authorCountries']['count']) ? $community['authorCountries']['count'] : null),
+			);
+			foreach ($defs as $key => $def) {
+				if (!$visible($key)) continue;
+				$card = $this->_makeCard($key, $def, $nThreshold, $forPublic, $isPublic($key));
+				if ($card !== null) $cards[] = $card;
+			}
+			$defs = array(
+				'reviewerCount' => array('type' => 'count', 'value' => $this->_get($community, 'reviewers')),
 				'completedReviews' => array('type' => 'count', 'value' => $this->_get($community, 'completedReviewsTotal'),
 					'detail' => array(
 						'avgPerArticle' => $this->_get($community, 'avgReviewsPerArticle'),
@@ -875,10 +944,10 @@ class JournalMetricsHandler extends Handler {
 			foreach ($defs as $key => $def) {
 				if (!$visible($key)) continue;
 				$card = $this->_makeCard($key, $def, $nThreshold, $forPublic, $isPublic($key));
-				if ($card !== null) $cards[] = $card;
+				if ($card !== null) $reviewCards[] = $card;
 			}
 			if ($visible('completedReviews') && !empty($community['completedReviewsByYear'])) {
-				$communityExtras['completedReviewsByYear'] = $community['completedReviewsByYear'];
+				$reviewExtras['completedReviewsByYear'] = $community['completedReviewsByYear'];
 			}
 			// Full geographic distribution section (charts + tables),
 			// governed by the authorCountries visibility key. Rendered
@@ -899,12 +968,23 @@ class JournalMetricsHandler extends Handler {
 		if (!empty($cards) || !empty($communityExtras)) {
 			$model['groups']['community'] = array_merge(array('cards' => $cards), $communityExtras);
 		}
+		if (!empty($reviewCards) || !empty($reviewExtras)) {
+			$model['groups']['review'] = array_merge(array('cards' => $reviewCards), $reviewExtras);
+		}
 
 		// ---- Publication output
 		$cards = array();
 		$outputExtras = array();
 		if (isset($snapshot['output'])) {
 			$output = $snapshot['output'];
+			// Every published article: the same number as the per-year chart
+			if ($visible('submissionsPublished')) {
+				$card = $this->_makeCard('submissionsPublished', array(
+					'type'  => 'count',
+					'value' => JournalMetricsSnapshotManager::publishedTotal($snapshot),
+				), $nThreshold, $forPublic, $isPublic('submissionsPublished'));
+				if ($card !== null) $cards[] = $card;
+			}
 			if ($visible('archiveDepth')) {
 				$card = $this->_makeCard('archiveDepth', array(
 					'type'  => 'count',
@@ -918,6 +998,16 @@ class JournalMetricsHandler extends Handler {
 			}
 			if ($visible('articlesPerYear') && !empty($output['articlesByYear'])) {
 				$outputExtras['articlesByYear'] = $output['articlesByYear'];
+				// Advanced option: each year split into articles that went
+				// through the editorial process and articles added directly
+				if (!empty($settings['yearBreakdown']) && isset($output['articlesByYearProcess'])) {
+					$split = array();
+					foreach ($output['articlesByYear'] as $year => $total) {
+						$process = isset($output['articlesByYearProcess'][$year]) ? (int) $output['articlesByYearProcess'][$year] : 0;
+						$split[$year] = array('process' => $process, 'direct' => (int) $total - $process);
+					}
+					$outputExtras['articlesByYearSplit'] = $split;
+				}
 			}
 			if ($visible('issuesPerYear') && !empty($output['issuesByYear'])) {
 				$outputExtras['issuesByYear'] = $output['issuesByYear'];
@@ -927,20 +1017,244 @@ class JournalMetricsHandler extends Handler {
 			$model['groups']['output'] = array_merge(array('cards' => $cards), $outputExtras);
 		}
 
-		// ---- Manual metrics (title/description resolved for the UI locale)
+		// ---- External indicators: values the editor entered by hand
+		//      (title/description resolved for the UI locale). A row named
+		//      like a computed metric never reaches the public page.
 		if ($visible('manualMetrics') && !empty($snapshot['manual']) && is_array($snapshot['manual'])) {
 			$context = Application::get()->getRequest()->getContext();
 			$rows = array();
 			foreach (array_values($snapshot['manual']) as $row) {
+				$conflict = $plugin->isComputedMetricTitle(isset($row['title']) ? $row['title'] : '');
+				if ($conflict && $forPublic) continue;
 				$row['title'] = $plugin->localize(isset($row['title']) ? $row['title'] : '', $context);
 				$row['description'] = $plugin->localize(isset($row['description']) ? $row['description'] : '', $context);
 				if ($row['title'] === '') continue;
+				$row['conflict'] = $conflict;
 				$rows[] = $row;
 			}
 			if (!empty($rows)) $model['groups']['manual'] = array('rows' => $rows);
 		}
 
+		// ---- Two sections: Publications and Editorial process
+		$model = $this->_applySections($model, $snapshot, $settings, $forPublic);
+
 		return $model;
+	}
+
+	/**
+	 * Arrange the groups into the page's sections and decide whether the
+	 * editorial process section is shown:
+	 *  - Publications: output, usage, community;
+	 *  - Editorial process: editorial, times, review — with a short
+	 *    explanation when articles were added without an editor decision;
+	 *  - External indicators: the editor's own values.
+	 * Setting "editorialSection": auto (shown once enough submissions have
+	 * a final decision), show, hide. Managers always see every group; the
+	 * public page drops a hidden section entirely.
+	 *
+	 * @return array the model with 'sections', 'editorialNote',
+	 *  'editorialHidden' (null | 'auto' | 'setting')
+	 */
+	protected function _applySections($model, $snapshot, $settings, $forPublic) {
+		$allTime = isset($snapshot['editorial']['allTime']) ? $snapshot['editorial']['allTime'] : array();
+		$decided = (isset($allTime['submissionsAccepted']) ? (int) $allTime['submissionsAccepted'] : 0)
+			+ (isset($allTime['submissionsDeclined']) ? (int) $allTime['submissionsDeclined'] : 0);
+		$mode = in_array($settings['editorialSection'], array('auto', 'show', 'hide'), true) ? $settings['editorialSection'] : 'auto';
+
+		$hidden = null;
+		if ($mode === 'hide') {
+			$hidden = 'setting';
+		} elseif ($mode === 'auto' && $decided < JournalMetricsPlugin::EDITORIAL_SECTION_MIN_DECIDED) {
+			$hidden = 'auto';
+		}
+		$model['editorialHidden'] = $hidden;
+		$model['decidedCount'] = $decided;
+
+		$editorialGroups = array('editorial', 'times', 'review');
+		if ($forPublic && $hidden !== null) {
+			foreach ($editorialGroups as $group) unset($model['groups'][$group]);
+		}
+
+		// The explanation: only when articles were added without an editor
+		// decision, from the same snapshot as the figures it explains.
+		$model['editorialNote'] = null;
+		$class = isset($snapshot['editorial']['classification']) ? $snapshot['editorial']['classification'] : null;
+		$hasEditorial = false;
+		foreach ($editorialGroups as $group) {
+			if (!empty($model['groups'][$group])) $hasEditorial = true;
+		}
+		if ($hasEditorial && is_array($class) && !empty($class['publishedDirect'])) {
+			$model['editorialNote'] = __('plugins.generic.journalMetrics.section.editorial.note', array(
+				'process' => JournalMetricsPlugin::formatNumber((int) $class['process']),
+				'direct'  => JournalMetricsPlugin::formatNumber((int) $class['publishedDirect']),
+			));
+		}
+
+		$model['sections'] = array();
+		foreach (array(
+			'publications' => array('output', 'usage', 'community'),
+			'editorial'    => $editorialGroups,
+			'external'     => array('manual'),
+		) as $section => $groups) {
+			$present = array_values(array_filter($groups, function ($g) use ($model) { return !empty($model['groups'][$g]); }));
+			if (!empty($present)) $model['sections'][] = array('key' => $section, 'groups' => $present);
+		}
+		return $model;
+	}
+
+	// ------------------------------------------------------------------
+	//  Editor view: why the numbers differ
+	// ------------------------------------------------------------------
+
+	/**
+	 * The journal's sections, id => title in the interface language.
+	 *
+	 * @param int $contextId
+	 * @return array
+	 */
+	protected function _journalSections($contextId) {
+		$ids = DB::table('sections')->where('journal_id', (int) $contextId)->orderBy('seq')->pluck('section_id')->all();
+		if (empty($ids)) return array();
+		$locale = Locale::getLocale();
+		$titles = array();
+		foreach (DB::table('section_settings')->whereIn('section_id', $ids)->where('setting_name', 'title')->get() as $row) {
+			$id = (int) $row->section_id;
+			if (!isset($titles[$id]) || $row->locale === $locale) $titles[$id] = (string) $row->setting_value;
+		}
+		$sections = array();
+		foreach ($ids as $id) {
+			$sections[(int) $id] = isset($titles[(int) $id]) && $titles[(int) $id] !== '' ? $titles[(int) $id] : '#' . (int) $id;
+		}
+		return $sections;
+	}
+
+	/**
+	 * The editor box: a few lines with numbers that say which articles
+	 * count where, and what the editor can do. Managers only. Null when
+	 * there is nothing to explain (every article went through the
+	 * editorial process and the section is shown).
+	 *
+	 * @return array|null ['lines' => [['text' => string, 'links' => [[label, url]]]], 'actions' => [[label, url]]]
+	 */
+	protected function _editorBox($snapshot, $contextId, $request) {
+		$class = isset($snapshot['editorial']['classification']) ? $snapshot['editorial']['classification'] : null;
+		if (!is_array($class)) return null;
+		$plugin = $this->_getPlugin();
+		$model = $this->_applySections(array('groups' => array()), $snapshot, $plugin->getAllSettings($contextId), false);
+		$hidden = $model['editorialHidden'];
+		if (empty($class['publishedDirect']) && empty($class['inconsistentDates']) && empty($class['awaitingDecision']) && $hidden === null) {
+			return null;
+		}
+
+		$base = 'plugins.generic.journalMetrics.editorBox.';
+		$n = function ($v) { return JournalMetricsPlugin::formatNumber((int) $v); };
+		$dispatcher = $request->getDispatcher();
+		$listUrl = function ($type) use ($dispatcher, $request) {
+			return $dispatcher->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'articles', null, array('type' => $type));
+		};
+		$settingsUrl = $dispatcher->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'settings');
+
+		$lines = array();
+		$lines[] = array('text' => __($base . 'published', array('published' => $n($class['published']))), 'links' => array());
+		$lines[] = array('text' => __($base . 'process', array('count' => $n($class['publishedProcess']))), 'links' => array());
+		if (!empty($class['publishedDirect'])) {
+			$lines[] = array('text' => __($base . 'direct', array('count' => $n($class['publishedDirect']))),
+				'links' => array(array(__($base . 'list'), $listUrl('direct'))));
+		}
+		if (!empty($class['inconsistentDates'])) {
+			$lines[] = array('text' => __($base . 'inconsistent', array('count' => $n($class['inconsistentDates']))),
+				'links' => array(array(__($base . 'list'), $listUrl('inconsistent'))));
+		}
+		if (!empty($class['awaitingDecision'])) {
+			$lines[] = array('text' => __($base . 'awaiting', array('count' => $n($class['awaitingDecision']))), 'links' => array());
+		}
+		if ($hidden === 'auto') {
+			$lines[] = array('text' => __($base . 'hiddenAuto', array(
+				'count' => $n($model['decidedCount']),
+				'min'   => $n(JournalMetricsPlugin::EDITORIAL_SECTION_MIN_DECIDED),
+			)), 'links' => array());
+		} elseif ($hidden === 'setting') {
+			$lines[] = array('text' => __($base . 'hiddenSetting'), 'links' => array());
+		}
+
+		return array(
+			'lines'   => $lines,
+			'actions' => array(
+				array(__($base . 'actionSection'), $settingsUrl . '#jmxEditorialSection'),
+				array(__($base . 'actionStartYear'), $settingsUrl . '#jmxAdvanced'),
+			),
+		);
+	}
+
+	/**
+	 * Manager-only list: articles added without an editor decision
+	 * (type=direct) or with inconsistent dates (type=inconsistent),
+	 * newest first, with a count per year.
+	 */
+	public function articles($args, $request) {
+		$this->_setupTemplate($request, true);
+		$plugin = $this->_getPlugin();
+		$context = $request->getContext();
+		$contextId = (int) $context->getId();
+		$type = $request->getUserVar('type') === 'inconsistent' ? 'inconsistent' : 'direct';
+
+		$where = $type === 'direct'
+			? JournalMetricsBaseProvider::publishedCondition('s', $plugin->getExcludedSectionIds($contextId))
+				. ' AND NOT ' . JournalMetricsBaseProvider::editorDecisionCondition('s')
+			: JournalMetricsBaseProvider::editorialProcessCondition('s') . ' AND ' . JournalMetricsBaseProvider::importedCondition('s');
+		$limit = 2000;
+		$rows = DB::select(
+			"SELECT s.submission_id, s.current_publication_id, s.locale, s.date_submitted,
+				(SELECT MIN(p.date_published) FROM publications p WHERE p.submission_id = s.submission_id AND p.status = 3) AS first_pub
+			FROM submissions s
+			WHERE s.context_id = ? AND {$where}
+			ORDER BY first_pub DESC, s.submission_id DESC
+			LIMIT " . ($limit + 1),
+			array($contextId)
+		);
+		$truncated = count($rows) > $limit;
+		$rows = array_slice($rows, 0, $limit);
+
+		// Titles of the current publications, in the interface language when present
+		$pubIds = array_map(function ($r) { return (int) $r->current_publication_id; }, $rows);
+		$titles = array();
+		$uiLocale = Locale::getLocale();
+		foreach (array_chunk($pubIds, 500) as $chunk) {
+			foreach (DB::table('publication_settings')->whereIn('publication_id', $chunk)->where('setting_name', 'title')->get() as $t) {
+				$id = (int) $t->publication_id;
+				if (!isset($titles[$id]) || $t->locale === $uiLocale) $titles[$id] = (string) $t->setting_value;
+			}
+		}
+
+		$articles = array();
+		$byYear = array();
+		foreach ($rows as $r) {
+			$year = $r->first_pub ? substr((string) $r->first_pub, 0, 4) : '—';
+			$byYear[$year] = isset($byYear[$year]) ? $byYear[$year] + 1 : 1;
+			$articles[] = array(
+				'id'        => (int) $r->submission_id,
+				'title'     => isset($titles[(int) $r->current_publication_id]) ? strip_tags($titles[(int) $r->current_publication_id]) : '#' . (int) $r->submission_id,
+				'published' => $r->first_pub ? substr((string) $r->first_pub, 0, 10) : '',
+				'submitted' => $r->date_submitted ? substr((string) $r->date_submitted, 0, 10) : '',
+			);
+		}
+		krsort($byYear);
+
+		$dispatcher = $request->getDispatcher();
+		$templateMgr = TemplateManager::getManager($request);
+		$templateMgr->assign(array(
+			'pageWidth'    => 'full',
+			'pluginPath'   => $request->getBaseUrl() . '/' . $plugin->getPluginPath(),
+			'assetVersion' => $this->_assetVersion(),
+			'listType'     => $type,
+			'articles'     => $articles,
+			'byYear'       => $byYear,
+			'truncated'    => $truncated,
+			'listLimit'    => $limit,
+			'articleUrlBase' => $dispatcher->url($request, Application::ROUTE_PAGE, null, 'article', 'view'),
+			'dashboardUrl' => $dispatcher->url($request, Application::ROUTE_PAGE, null, 'journalmetrics', 'dashboard'),
+		));
+		$templateMgr->display($plugin->getTemplateResource('articles.tpl'));
 	}
 
 	/**
@@ -989,8 +1303,11 @@ class JournalMetricsHandler extends Handler {
 		foreach ($plugin->getMetricCatalog() as $key => $meta) {
 			$labels[$key] = __('plugins.generic.journalMetrics.metric.' . $key);
 		}
-		foreach (array('editorial', 'times', 'usage', 'community', 'output', 'manual') as $group) {
+		foreach (array('editorial', 'times', 'usage', 'community', 'review', 'output', 'manual') as $group) {
 			$labels['group.' . $group] = __('plugins.generic.journalMetrics.group.' . $group);
+		}
+		foreach (array('publications', 'editorial', 'external') as $section) {
+			$labels['section.' . $section] = __('plugins.generic.journalMetrics.section.' . $section);
 		}
 		$uiKeys = array(
 			'days', 'median', 'p80', 'n', 'views', 'downloads', 'articles', 'issues',
@@ -1002,7 +1319,7 @@ class JournalMetricsHandler extends Handler {
 			'countrySectionTitle', 'searchCountry', 'country', 'authors', 'share',
 			'distribution', 'authorsByCountry', 'articlesByCountry', 'topCountries',
 			'authorDistribution', 'countriesWord', 'other', 'rank', 'yearTableNote',
-			'coverageNote',
+			'coverageNote', 'enteredByEditor', 'splitTitle', 'processArticles', 'directArticles', 'editorialHiddenAuto', 'editorialHiddenSetting', 'manualConflict',
 		);
 		foreach ($uiKeys as $key) {
 			$labels['ui.' . $key] = __('plugins.generic.journalMetrics.ui.' . $key);

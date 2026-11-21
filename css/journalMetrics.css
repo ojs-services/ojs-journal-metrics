@@ -117,11 +117,48 @@
 	flex-wrap: wrap;
 	margin-bottom: 12px;
 }
-.jmx-section-header h2 {
+.jmx-section-header h2,
+.jmx-section-header h3 {
 	font-size: 16px;
 	font-weight: 700;
 	margin: 0;
 }
+
+/* Page sections: Publications / Editorial process / External indicators */
+.jmx-page-section { margin: 0 0 8px; }
+.jmx-page-section-title {
+	font-size: 20px;
+	font-weight: 800;
+	line-height: 1.3;
+	letter-spacing: normal;
+	text-transform: none;
+	margin: 22px 0 10px;
+	padding-bottom: 6px;
+	border-bottom: 2px solid var(--jmx-border);
+}
+.jmx-page-section:first-child .jmx-page-section-title { margin-top: 4px; }
+.jmx-section-note { font-size: 14px; color: var(--jmx-text-muted); margin: 0 0 12px; max-width: 72ch; }
+.jmx-section-note-admin { color: #92400e; background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 6px 10px; }
+
+/* Editor box (managers only): why the numbers differ */
+.jmx-editor-box { background: #f0f9ff; border-color: #bae6fd; }
+.jmx-editor-box-title { font-size: 16px; font-weight: 700; margin: 0 0 8px; }
+.jmx-editor-box-list { margin: 0 0 10px; padding-left: 20px; }
+.jmx-editor-box-list li { margin: 0 0 6px; font-size: 14px; line-height: 1.5; }
+.jmx-editor-box-list a, .jmx-editor-box-actions a { display: inline-block; min-height: 24px; min-width: 24px; line-height: 24px; padding: 0 2px; }
+.jmx-editor-box-actions { font-size: 14px; margin: 0; }
+
+/* External indicators: the editor's own values are always marked */
+.jmx-entered-by { font-style: italic; }
+.jmx-card-warn, .jmx-row-warn { font-size: 12px; color: #92400e; background: #fffbeb; border-radius: 4px; padding: 4px 6px; margin: 6px 0 0; }
+
+/* Settings: Advanced (closed by default) */
+.jmx-advanced > summary { cursor: pointer; list-style: revert; }
+.jmx-advanced-summary h2 { display: inline; font-size: 16px; font-weight: 700; margin: 0; }
+.jmx-advanced[open] > summary { margin-bottom: 10px; }
+.jmx-fieldset { border: 1px solid var(--jmx-border); border-radius: 6px; padding: 8px 12px; margin: 12px 0; }
+.jmx-fieldset legend { font-weight: 600; padding: 0 4px; }
+.jmx-split-table caption { text-align: left; font-weight: 600; padding: 8px 0 6px; caption-side: top; }
 
 .jmx-cards {
 	display: grid;
