@@ -16,7 +16,8 @@
  *
  * The snapshot holds one section per metric group plus
  * usage.monthlySeries (last 24 months) and mandatory `n` on every
- * duration/rate metric. schemaVersion 3: one definition for every metric
+ * duration/rate metric. schemaVersion 4: an article or issue dated in
+ * the future is not counted as published yet. schemaVersion 3: one definition for every metric
  * (editorial figures need an editor decision, publications count every
  * published article) and the classification behind the editorial
  * explanation; older snapshots are recomputed on the next dashboard
@@ -26,7 +27,7 @@
  * rates) display correctly without a recompute.
  */
 
-define('JOURNAL_METRICS_SCHEMA_VERSION', 3);
+define('JOURNAL_METRICS_SCHEMA_VERSION', 4);
 define('JOURNAL_METRICS_SNAPSHOT_WARN_BYTES', 49152); // 48 KB
 
 class JournalMetricsSnapshotManager {
