@@ -170,7 +170,7 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 					(SELECT MIN(p.date_published) FROM publications p
 						WHERE p.submission_id = s.submission_id AND p.status = 3) AS date_published
 				FROM submissions s
-				WHERE s.context_id = ? AND s.status = 3 AND " . self::durationCondition('s') . "{$cov}
+				WHERE s.context_id = ? AND " . self::publishedCondition('s') . " AND " . self::durationCondition('s') . "{$cov}
 			) t
 			WHERE t.date_accepted IS NOT NULL AND t.date_published IS NOT NULL
 		";
@@ -189,7 +189,7 @@ class JournalMetricsTimesProvider extends JournalMetricsBaseProvider {
 					(SELECT MIN(p.date_published) FROM publications p
 						WHERE p.submission_id = s.submission_id AND p.status = 3) AS date_published
 				FROM submissions s
-				WHERE s.context_id = ? AND s.status = 3 AND " . self::durationCondition('s') . "{$cov}
+				WHERE s.context_id = ? AND " . self::publishedCondition('s') . " AND " . self::durationCondition('s') . "{$cov}
 			) t
 			WHERE t.date_published IS NOT NULL
 		";

@@ -191,11 +191,27 @@ abstract class JournalMetricsBaseProvider {
 	}
 
 	/**
+	 * SQL condition: the publication date is today or earlier. A date in
+	 * the future means "not published yet", even with a published status
+	 * (an editor can publish with a later date). Compared with tomorrow
+	 * in the journal's time zone, so DATE and DATETIME columns both work;
+	 * the value is generated here (digits and dashes only).
+	 *
+	 * @param string $column e.g. "p.date_published"
+	 * @return string
+	 */
+	public static function datePublishedReachedCondition($column) {
+		return "{$column} < '" . date('Y-m-d', strtotime('tomorrow')) . "'";
+	}
+
+	/**
 	 * SQL condition: a PUBLISHED article — published status and a
-	 * published publication with a date — optionally outside the
-	 * sections the editor excluded from counts. Every count of published
-	 * articles (card, chart, totals, authors, countries) uses it, so they
-	 * always agree.
+	 * published publication dated today or earlier — optionally outside
+	 * the sections the editor excluded from counts. Every count of
+	 * published articles (card, chart, totals, authors, countries) and
+	 * every figure based on the publication date uses it, so they always
+	 * agree. A future-dated article starts counting on its date (the
+	 * nightly snapshot picks it up).
 	 *
 	 * @param string $s alias of the submissions table
 	 * @param int[] $excludedSectionIds
@@ -204,7 +220,8 @@ abstract class JournalMetricsBaseProvider {
 	public static function publishedCondition($s = 's', $excludedSectionIds = array()) {
 		$sql = "{$s}.status = 3 AND EXISTS (SELECT 1 FROM publications jmx_pp"
 			. " WHERE jmx_pp.submission_id = {$s}.submission_id AND jmx_pp.status = 3"
-			. " AND jmx_pp.date_published IS NOT NULL)";
+			. " AND jmx_pp.date_published IS NOT NULL"
+			. " AND " . self::datePublishedReachedCondition('jmx_pp.date_published') . ")";
 		$excluded = array_values(array_filter(array_map('intval', (array) $excludedSectionIds)));
 		if (!empty($excluded)) {
 			$sql .= " AND NOT EXISTS (SELECT 1 FROM publications jmx_ps"

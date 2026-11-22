@@ -22,7 +22,9 @@
  * rates) display correctly without a recompute. schemaVersion 3: one
  * definition for every metric (editorial figures need an editor
  * decision, publications count every published article) and the
- * classification behind the editorial explanation. Older snapshots are
+ * classification behind the editorial explanation. schemaVersion 4: an
+ * article or issue dated in the future is not counted as published yet.
+ * Older snapshots are
  * recomputed on the next dashboard visit or task run (isOutdated).
  */
 
@@ -34,7 +36,7 @@ use APP\plugins\generic\journalMetrics\JournalMetricsPlugin;
 class JournalMetricsSnapshotManager {
 
 	/** Snapshot schema version (see the file comment) */
-	public const SCHEMA_VERSION = 3;
+	public const SCHEMA_VERSION = 4;
 
 	/** Encoded size above which a write logs a warning: 48 KB */
 	public const SNAPSHOT_WARN_BYTES = 49152;

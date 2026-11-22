@@ -67,6 +67,7 @@ class JournalMetricsOutputProvider extends JournalMetricsBaseProvider {
 			"SELECT YEAR(date_published) AS yr, COUNT(*) AS issues
 			FROM issues
 			WHERE journal_id = ? AND published = 1 AND date_published IS NOT NULL
+			  AND " . self::datePublishedReachedCondition('date_published') . "
 			GROUP BY YEAR(date_published) ORDER BY yr",
 			array($contextId)
 		);
