@@ -108,7 +108,7 @@ stamped with its last update date.
 ## Installation
 
 1. Website Settings → Plugins → **Upload A New Plugin** and select
-   `journalMetrics-ojs3.4-3.5-2.0.0.8.tar.gz`.
+   `journalMetrics-ojs3.4-3.5-2.0.0.9.tar.gz`.
 2. Enable **Journal Metrics** under Generic Plugins.
 3. Open **Journal Metrics** from the left management menu; the fast metric
    groups are computed on first visit.
@@ -163,6 +163,8 @@ Every figure follows the same few rules.
    article, wherever it came from: submitted through OJS, added straight to
    an issue, or imported. The "Published articles" card always equals the
    total of the articles-per-year chart.
+   An article or issue whose publication date is still in the future is
+   not counted yet; it counts from that date on.
 2. **Editorial figures** — received, accepted and declined submissions,
    acceptance and rejection rates — count only submissions that went
    through the editorial process: a completed submission with at least one
@@ -208,7 +210,7 @@ the journal's own data.
 | Database | MySQL / MariaDB (standard OJS setups) |
 | Journals | single- and multi-journal installations |
 | Themes | works on any OJS 3.4 / 3.5 theme — default or custom; see our themes: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Plugin version | 2.0.0.8 |
+| Plugin version | 2.0.0.9 |
 
 **Upgrading from OJS 3.3.** Settings, visibility choices and editor-declared
 metrics carry over; install the 2.x package after the OJS upgrade. One core

@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.0.0.9 — 2026-11-22 · OJS 3.4–3.5
+
+### Fixed
+- An article or issue with a published status but a publication date in
+  the future is no longer counted as published (card, per-year charts,
+  times to publication, the editor box). It counts from its date on; the
+  nightly refresh picks it up, nothing to do by hand.
+
+### Düzeltildi
+- Durumu "yayımlandı" olup yayın tarihi ileride olan makale ya da sayı
+  artık yayımlanmış sayılmaz (kart, yıllara göre grafikler, yayına geçen
+  süreler, editör kutusu). Tarihinden itibaren sayılır; gece yenilemesi
+  bunu kendiliğinden yapar, elle bir şey gerekmez.
+
 ## 2.0.0.8 — 2026-11-21 · OJS 3.4–3.5
 
 ### Changed — Publications and Editorial process
