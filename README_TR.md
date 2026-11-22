@@ -111,7 +111,7 @@ metriklerden ayrı gösterilir ve her biri son güncelleme tarihiyle damgalanır
 ## Kurulum
 
 1. Web Sitesi Ayarları → Eklentiler → **Yeni Eklenti Yükle** ile
-   `journalMetrics-ojs3.3-1.0.3.9.tar.gz` dosyasını seçin.
+   `journalMetrics-ojs3.3-1.0.3.10.tar.gz` dosyasını seçin.
 2. Generic Eklentiler altında **Journal Metrics**'i etkinleştirin.
 3. Sol yönetim menüsünden **Dergi Metrikleri**'ni açın; hızlı metrik grupları
    ilk ziyarette hesaplanır.
@@ -156,6 +156,8 @@ Bütün göstergeler aynı birkaç kurala uyar.
    sayar; makalenin nereden geldiğine bakılmaz: OJS üzerinden gönderilmiş,
    doğrudan sayıya eklenmiş ya da içe aktarılmış olabilir. "Yayımlanan
    makale" kartı her zaman yıllara göre makale grafiğinin toplamına eşittir.
+   Yayın tarihi henüz gelmemiş makale ya da sayı sayılmaz; o tarihten
+   itibaren sayılır.
 2. **Editoryal göstergeler** — alınan, kabul edilen ve reddedilen gönderi,
    kabul ve ret oranı — yalnız editoryal süreçten geçen gönderileri sayar:
    tamamlanmış ve en az bir editör kararı almış gönderi (öneriler karar
@@ -201,7 +203,7 @@ verisinden gelir.
 | Veritabanı | MySQL / MariaDB (standart OJS kurulumları) |
 | Dergiler | tek ve çok dergili kurulumlar |
 | Temalar | her OJS 3.3 temasıyla çalışır — varsayılan veya özel; temalarımız: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Eklenti sürümü | 1.0.3.9 |
+| Eklenti sürümü | 1.0.3.10 |
 
 ## Lisans ve destek
 
