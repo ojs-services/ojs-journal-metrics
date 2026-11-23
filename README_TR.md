@@ -111,7 +111,7 @@ metriklerden ayrı gösterilir ve her biri son güncelleme tarihiyle damgalanır
 ## Kurulum
 
 1. Web Sitesi Ayarları → Eklentiler → **Yeni Eklenti Yükle** ile
-   `journalMetrics-ojs3.3-1.0.3.10.tar.gz` dosyasını seçin.
+   `journalMetrics-ojs3.3-1.0.3.11.tar.gz` dosyasını seçin.
 2. Generic Eklentiler altında **Journal Metrics**'i etkinleştirin.
 3. Sol yönetim menüsünden **Dergi Metrikleri**'ni açın; hızlı metrik grupları
    ilk ziyarette hesaplanır.
@@ -124,7 +124,9 @@ metriklerden ayrı gösterilir ve her biri son güncelleme tarihiyle damgalanır
    ```
 
 Eklenti kendini Acron eklentisine kaydeder ve snapshot'ını otomatik yeniler
-(saatlik koşular, günde bir tam yeniden hesaplama). Büyük kurulumlarda
+(saatlik koşular, günde bir tam yeniden hesaplama). Görev Acron listesinden
+düşerse eklenti onu kendisi geri ekler; gece hesaplaması iki gündür
+çalışmadıysa ayar sayfası yöneticiye bunu söyler. Büyük kurulumlarda
 yukarıdaki komutun gerçek bir cron görevi olarak eklenmesini öneririz.
 `config.inc.php` düzenlemesi ve FTP erişimi gerekmez.
 
@@ -203,7 +205,7 @@ verisinden gelir.
 | Veritabanı | MySQL / MariaDB (standart OJS kurulumları) |
 | Dergiler | tek ve çok dergili kurulumlar |
 | Temalar | her OJS 3.3 temasıyla çalışır — varsayılan veya özel; temalarımız: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Eklenti sürümü | 1.0.3.10 |
+| Eklenti sürümü | 1.0.3.11 |
 
 ## Lisans ve destek
 
