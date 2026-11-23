@@ -213,6 +213,8 @@ class JournalMetricsHandler extends Handler {
 			// why the numbers differ (managers): which articles count where
 			'editorBox'     => $this->_editorBox($plugin->getSnapshotManager()->getSnapshot($contextId), $contextId, $request),
 			'editorBoxTemplate' => $plugin->getTemplateResource('editorBox.tpl'),
+			// managers' notice when the nightly calculation has stopped
+			'nightlyStale'  => $plugin->nightlyRunStatus($plugin->getSnapshotManager()->getSnapshot($contextId)),
 			// advanced: sections left out of the publication counts
 			'journalSections'  => $this->_journalSections($contextId),
 			'excludedSections' => $plugin->getExcludedSectionIds($contextId),

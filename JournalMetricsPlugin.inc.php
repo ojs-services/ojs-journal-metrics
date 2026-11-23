@@ -133,12 +133,104 @@ class JournalMetricsPlugin extends GenericPlugin {
 	public function callbackLoadHandler($hookName, $args) {
 		$page =& $args[0];
 
+		// Keep the nightly task in Acron's task list
+		$this->ensureAcronTask();
+
 		if ($page === 'journalmetrics') {
 			require_once($this->getPluginPath() . '/JournalMetricsHandler.inc.php');
 			define('HANDLER_CLASS', 'JournalMetricsHandler');
 			return true;
 		}
 		return false;
+	}
+
+	/** Checked Acron's task list in this request already */
+	private static $_acronTaskChecked = false;
+
+	/** Hours without a completed nightly cycle before managers are warned */
+	const NIGHTLY_STALE_HOURS = 48;
+
+	/**
+	 * Self-repair of Acron's task list.
+	 *
+	 * Acron builds its list only when a plugin is installed, upgraded,
+	 * enabled or disabled. Once our task is missing from it (a rebuild by
+	 * an older version of this plugin that answered for the request's
+	 * journal only, a copy-and-command-line update that never rebuilds,
+	 * a hand-edited list), nothing ever puts it back and the figures stop
+	 * updating. So on page requests in a journal where the plugin is on,
+	 * check the list and add the task when it is missing.
+	 *
+	 * Cheap: the list is read from the plugin settings cache that Acron
+	 * itself reads on every request; it is written only when the task is
+	 * missing (or listed twice). Running twice is impossible: Acron and the
+	 * server cron share the task's last-run time, and the task holds its
+	 * own run lock.
+	 */
+	public function ensureAcronTask() {
+		if (self::$_acronTaskChecked) return;
+		self::$_acronTaskChecked = true;
+		if (!Config::getVar('general', 'installed')) return;
+		try {
+			$dao = DAORegistry::getDAO('PluginSettingsDAO');
+			if (!$dao->getSetting(0, 'acronplugin', 'enabled')) return; // tasks run another way
+			$crontab = $dao->getSetting(0, 'acronplugin', 'crontab');
+			if (!is_array($crontab)) return; // Acron builds its list on its next request
+
+			$ours = array(
+				// as in scheduledTasks.xml: plugins.generic.journalMetrics.classes.JournalMetricsSnapshotTask
+				'className' => str_replace(array('/', '\\'), '.', $this->getPluginPath()) . '.classes.JournalMetricsSnapshotTask',
+				'frequency' => array('minute' => '0'),
+				'args'      => array(),
+			);
+			$kept = array();
+			$found = false;
+			$changed = false;
+			foreach ($crontab as $task) {
+				$class = is_array($task) && isset($task['className']) ? (string) $task['className'] : '';
+				if ($class === $ours['className']) {
+					if ($found) { $changed = true; continue; } // listed twice
+					$found = true;
+				}
+				$kept[] = $task;
+			}
+			if (!$found) {
+				$kept[] = $ours;
+				$changed = true;
+			}
+			if ($changed) {
+				// through the DAO, so the settings cache is updated as well
+				$dao->updateSetting(0, 'acronplugin', 'crontab', $kept, 'object');
+			}
+		} catch (Throwable $e) {
+			error_log('Journal Metrics: could not check the Acron task list: ' . $e->getMessage());
+		}
+	}
+
+	/**
+	 * Has the nightly calculation stopped? For the managers' notice on the
+	 * settings page. Measured by the last COMPLETED full cycle, which only
+	 * the scheduled task writes (a dashboard recompute does not hide it).
+	 *
+	 * @param array|null $snapshot this journal's snapshot
+	 * @return array|null null = fine; else ['days' => int, 'date' => 'Y-m-d'|null]
+	 *  (date null = no full cycle has ever completed)
+	 */
+	public function nightlyRunStatus($snapshot) {
+		$limit = time() - self::NIGHTLY_STALE_HOURS * 3600;
+		$last = $this->getSetting(0, 'snapshotCycleCompletedAt');
+		$lastTs = $last ? strtotime((string) $last) : false;
+		if ($lastTs) {
+			if ($lastTs >= $limit) return null;
+			return array('days' => (int) floor((time() - $lastTs) / 86400), 'date' => date('Y-m-d', $lastTs));
+		}
+		// never completed: warn only once the figures themselves are old
+		// (a fresh install computes on the first dashboard visit)
+		$generated = is_array($snapshot) && !empty($snapshot['generatedAt']) ? strtotime((string) $snapshot['generatedAt']) : false;
+		if ($generated && $generated < $limit) {
+			return array('days' => (int) floor((time() - $generated) / 86400), 'date' => null);
+		}
+		return null;
 	}
 
 	/**
