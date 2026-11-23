@@ -745,3 +745,9 @@ msgstr "Gönderim tarihi"
 
 msgid "plugins.generic.journalMetrics.articles.truncated"
 msgstr "Yalnız en yeni {$limit} makale listelendi."
+
+msgid "plugins.generic.journalMetrics.settings.nightlyStale"
+msgstr "Gece hesaplaması {$days} gündür çalışmadı; sayılar {$date} tarihli. Eklenti bunu kendisi düzeltmeye çalışır. Bu uyarı yarın da duruyorsa site yöneticinize haber verin."
+
+msgid "plugins.generic.journalMetrics.settings.nightlyNever"
+msgstr "Gece hesaplaması henüz hiç çalışmadı. Eklenti bunu kendisi düzeltmeye çalışır. Bu uyarı yarın da duruyorsa site yöneticinize haber verin."

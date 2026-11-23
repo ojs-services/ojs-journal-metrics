@@ -745,3 +745,9 @@ msgstr "Submitted"
 
 msgid "plugins.generic.journalMetrics.articles.truncated"
 msgstr "Only the newest {$limit} are listed."
+
+msgid "plugins.generic.journalMetrics.settings.nightlyStale"
+msgstr "The nightly calculation has not run for {$days} days; the figures are from {$date}. The plugin tries to fix this by itself. If this notice is still here tomorrow, tell your site administrator."
+
+msgid "plugins.generic.journalMetrics.settings.nightlyNever"
+msgstr "The nightly calculation has not run yet. The plugin tries to fix this by itself. If this notice is still here tomorrow, tell your site administrator."

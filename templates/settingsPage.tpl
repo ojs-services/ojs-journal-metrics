@@ -33,6 +33,12 @@
 	</div>
 	{/if}
 
+	{if $nightlyStale}
+	<div class="jmx-section jmx-manager-note" role="alert" id="jmxNightlyStale">
+		<p>{if $nightlyStale.date}{translate key="plugins.generic.journalMetrics.settings.nightlyStale" days=$nightlyStale.days date=$nightlyStale.date}{else}{translate key="plugins.generic.journalMetrics.settings.nightlyNever"}{/if}</p>
+	</div>
+	{/if}
+
 	{include file=$editorBoxTemplate}
 
 	<form method="post" action="{$saveUrl|escape}" id="jmxSettingsForm">

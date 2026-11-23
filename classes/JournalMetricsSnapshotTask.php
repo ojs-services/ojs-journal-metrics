@@ -93,6 +93,11 @@ class JournalMetricsSnapshotTask extends ScheduledTask {
 		$manager = $plugin->getSnapshotManager();
 		$registry = $plugin->getProviderRegistry();
 
+		// When this task last started: OJS 3.5 starts it from the built-in
+		// runner as soon as an hour has passed (JournalMetricsPlugin::
+		// registerSchedules), not only in the first minute of the hour.
+		$plugin->updateSetting(Application::CONTEXT_ID_NONE, 'snapshotTaskStartedAt', time(), 'int');
+
 		// Run lock (L2): the web runner may fire from two overlapping
 		// requests (3.5 also adds withoutOverlapping());
 		// only one runner may drain the queue at a time. plugin_settings

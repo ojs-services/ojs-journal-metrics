@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\DB;
 use PKP\config\Config;
 use PKP\core\PKPComponentRouter;
 use PKP\core\PKPPageRouter;
+use PKP\db\DAORegistry;
 use PKP\facades\Locale;
 use PKP\linkAction\LinkAction;
 use PKP\linkAction\request\RedirectAction;
@@ -94,11 +95,26 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 	 * @copydoc \PKP\plugins\interfaces\HasTaskScheduler::registerSchedules()
 	 */
 	public function registerSchedules(PKPScheduler $scheduler): void {
+		// Hourly by the task's own clock, checked every minute. A plain
+		// ->hourly() is due only in the first minute of each hour; without a
+		// server cron, OJS's built-in runner starts tasks from page requests,
+		// so on a quiet site no request may fall into that minute for days.
+		// The check reads one cached setting; skipped minutes cost nothing.
 		$scheduler
 			->addSchedule(new JournalMetricsSnapshotTask())
-			->hourly()
+			->everyMinute()
+			->when(fn () => $this->isSnapshotTaskDue())
 			->name(JournalMetricsSnapshotTask::class)
 			->withoutOverlapping();
+	}
+
+	/**
+	 * OJS 3.5: has an hour passed since the nightly task last started?
+	 * (The task itself decides whether a new full cycle is needed.)
+	 */
+	public function isSnapshotTaskDue(): bool {
+		$last = (int) $this->getSetting(Application::CONTEXT_ID_NONE, 'snapshotTaskStartedAt');
+		return $last <= 0 || (time() - $last) >= 55 * 60;
 	}
 
 	/**
@@ -178,11 +194,106 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 		$page = $args[0];
 		$handler =& $args[3];
 
+		// Keep the nightly task in Acron's task list (OJS 3.4)
+		$this->ensureAcronTask();
+
 		if ($page === 'journalmetrics') {
 			$handler = new JournalMetricsHandler();
 			return true;
 		}
 		return false;
+	}
+
+	/** Checked Acron's task list in this request already */
+	private static $_acronTaskChecked = false;
+
+	/** Hours without a completed nightly cycle before managers are warned */
+	const NIGHTLY_STALE_HOURS = 48;
+
+	/**
+	 * Self-repair of Acron's task list (OJS 3.4; 3.5 has a core scheduler).
+	 *
+	 * Acron builds its list only when a plugin is installed, upgraded,
+	 * enabled or disabled. Once our task is missing from it (a rebuild by
+	 * an older version of this plugin that answered for the request's
+	 * journal only, a copy-and-command-line update that never rebuilds,
+	 * a hand-edited list), nothing ever puts it back and the figures stop
+	 * updating. So on page requests in a journal where the plugin is on,
+	 * check the list and add the task when it is missing.
+	 *
+	 * Cheap: the list is read from the plugin settings cache that Acron
+	 * itself reads on every request; it is written only when the task is
+	 * missing (or listed twice / under an old class name). Running twice
+	 * is impossible: Acron and the server cron share the task's last-run
+	 * time, and the task holds its own run lock.
+	 */
+	public function ensureAcronTask() {
+		if (self::$_acronTaskChecked) return;
+		self::$_acronTaskChecked = true;
+		if (JournalMetricsCompat::hasCoreScheduler() || !Config::getVar('general', 'installed')) return;
+		try {
+			$dao = DAORegistry::getDAO('PluginSettingsDAO');
+			$siteId = Application::CONTEXT_ID_NONE;
+			if (!$dao->getSetting($siteId, 'acronplugin', 'enabled')) return; // tasks run another way
+			$crontab = $dao->getSetting($siteId, 'acronplugin', 'crontab');
+			if (!is_array($crontab)) return; // Acron builds its list on its next request
+
+			$ours = array(
+				'className' => JournalMetricsSnapshotTask::class,
+				'frequency' => array('minute' => '0'), // as in scheduledTasks.xml
+				'args'      => array(),
+			);
+			$kept = array();
+			$found = false;
+			$changed = false;
+			foreach ($crontab as $task) {
+				$class = is_array($task) && isset($task['className']) ? ltrim((string) $task['className'], '\\') : '';
+				if ($class === $ours['className']) {
+					if ($found) { $changed = true; continue; } // listed twice
+					$found = true;
+				} elseif (stripos($class, 'journalMetrics') !== false && substr($class, -26) === 'JournalMetricsSnapshotTask') {
+					$changed = true; // old class name (a site upgraded from OJS 3.3)
+					continue;
+				}
+				$kept[] = $task;
+			}
+			if (!$found) {
+				$kept[] = $ours;
+				$changed = true;
+			}
+			if ($changed) {
+				// through the DAO, so the settings cache is updated as well
+				$dao->updateSetting($siteId, 'acronplugin', 'crontab', $kept, 'object');
+			}
+		} catch (\Throwable $e) {
+			error_log('Journal Metrics: could not check the Acron task list: ' . $e->getMessage());
+		}
+	}
+
+	/**
+	 * Has the nightly calculation stopped? For the managers' notice on the
+	 * settings page. Measured by the last COMPLETED full cycle, which only
+	 * the scheduled task writes (a dashboard recompute does not hide it).
+	 *
+	 * @param array|null $snapshot this journal's snapshot
+	 * @return array|null null = fine; else ['days' => int, 'date' => 'Y-m-d'|null]
+	 *  (date null = no full cycle has ever completed)
+	 */
+	public function nightlyRunStatus($snapshot) {
+		$limit = time() - self::NIGHTLY_STALE_HOURS * 3600;
+		$last = $this->getSetting(Application::CONTEXT_ID_NONE, 'snapshotCycleCompletedAt');
+		$lastTs = $last ? strtotime((string) $last) : false;
+		if ($lastTs) {
+			if ($lastTs >= $limit) return null;
+			return array('days' => (int) floor((time() - $lastTs) / 86400), 'date' => date('Y-m-d', $lastTs));
+		}
+		// never completed: warn only once the figures themselves are old
+		// (a fresh install computes on the first dashboard visit)
+		$generated = is_array($snapshot) && !empty($snapshot['generatedAt']) ? strtotime((string) $snapshot['generatedAt']) : false;
+		if ($generated && $generated < $limit) {
+			return array('days' => (int) floor((time() - $generated) / 86400), 'date' => null);
+		}
+		return null;
 	}
 
 	/**
