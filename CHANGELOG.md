@@ -1,16 +1,16 @@
 # Changelog
 
-## 2.0.0.10 — 2026-11-23 · OJS 3.4–3.5
+## 2.0.0.11 — 2026-11-23 · OJS 3.4–3.5
 
 ### Fixed
-- The nightly calculation keeps running. On OJS 3.3 and 3.4 the plugin
+- The nightly calculation keeps running. On OJS 3.4 the plugin
   puts its task back into Acron's task list when it is missing (sites
   where the figures had stopped updating); on OJS 3.5 the task starts
   from page requests at any minute, not only on the hour. The settings
   page tells managers when it has not run for two days.
 
 ### Düzeltildi
-- Gece hesaplaması kesilmeden çalışır. OJS 3.3 ve 3.4'te eklenti, görevi
+- Gece hesaplaması kesilmeden çalışır. OJS 3.4'te eklenti, görevi
   Acron görev listesinde yoksa kendisi geri ekler (sayıları güncellenmeyen
   siteler); OJS 3.5'te görev yalnız saat başında değil, herhangi bir
   dakikadaki sayfa isteğinden başlar. Ayar sayfası, iki gündür
