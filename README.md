@@ -108,7 +108,7 @@ stamped with its last update date.
 ## Installation
 
 1. Website Settings → Plugins → **Upload A New Plugin** and select
-   `journalMetrics-ojs3.4-3.5-2.0.0.9.tar.gz`.
+   `journalMetrics-ojs3.4-3.5-2.0.0.10.tar.gz`.
 2. Enable **Journal Metrics** under Generic Plugins.
 3. Open **Journal Metrics** from the left management menu; the fast metric
    groups are computed on first visit.
@@ -128,7 +128,9 @@ stamped with its last update date.
 
 The plugin refreshes its snapshot automatically (hourly runs, one full
 recomputation per day): on OJS 3.4 through the Acron plugin, on OJS 3.5
-through the built-in task scheduler. On large installations we recommend a
+through the built-in task scheduler. If the task drops out of
+Acron's list, the plugin puts it back by itself; the settings page tells
+managers when the nightly calculation has not run for two days. On large installations we recommend a
 real cron job — on OJS 3.4 the first command above, on OJS 3.5
 `php lib/pkp/tools/scheduler.php run` every minute.
 No `config.inc.php` changes and no FTP access are required.
@@ -210,7 +212,7 @@ the journal's own data.
 | Database | MySQL / MariaDB (standard OJS setups) |
 | Journals | single- and multi-journal installations |
 | Themes | works on any OJS 3.4 / 3.5 theme — default or custom; see our themes: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Plugin version | 2.0.0.9 |
+| Plugin version | 2.0.0.10 |
 
 **Upgrading from OJS 3.3.** Settings, visibility choices and editor-declared
 metrics carry over; install the 2.x package after the OJS upgrade. One core
