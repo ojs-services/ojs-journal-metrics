@@ -1,0 +1,753 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Journal Metrics Plugin 1.0.0.0\n"
+"POT-Creation-Date: 2026-07-17\n"
+"PO-Revision-Date: 2026-11-26\n"
+"Last-Translator: ojs-services.com\n"
+"Language-Team: pt\n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# ---------------------------------------------------------------- General
+
+msgid "plugins.generic.journalMetrics.displayName"
+msgstr "Métricas da revista"
+
+msgid "plugins.generic.journalMetrics.description"
+msgstr "Um conjunto completo de métricas da revista: estatísticas editoriais, tempos de processamento, utilização, comunidade e volume de publicação — com um instantâneo noturno em cache, controlo da visibilidade de cada métrica, métricas manuais (declaradas pelo editor), um painel de administração, uma página pública, um bloco da barra lateral e uma função de modelo {journal_metric}."
+
+msgid "plugins.generic.journalMetrics.menuTitle"
+msgstr "Métricas da revista"
+
+msgid "plugins.generic.journalMetrics.dashboard"
+msgstr "Ver métricas"
+
+msgid "plugins.generic.journalMetrics.navMenuItem.title"
+msgstr "Métricas da revista"
+
+msgid "plugins.generic.journalMetrics.navMenuItem.description"
+msgstr "Ligação para a página pública de métricas da revista (apresentada apenas quando a página pública está ativada)."
+
+msgid "plugins.generic.journalMetrics.task.name"
+msgstr "Cálculo do instantâneo das Métricas da revista"
+
+# ---------------------------------------------------------------- Groups
+
+msgid "plugins.generic.journalMetrics.group.editorial"
+msgstr "Atividade editorial"
+
+msgid "plugins.generic.journalMetrics.group.times"
+msgstr "Tempos de processamento"
+
+msgid "plugins.generic.journalMetrics.group.usage"
+msgstr "Utilização"
+
+msgid "plugins.generic.journalMetrics.group.community"
+msgstr "Comunidade"
+
+msgid "plugins.generic.journalMetrics.group.output"
+msgstr "Volume de publicação"
+
+msgid "plugins.generic.journalMetrics.group.manual"
+msgstr "Indicadores externos"
+
+# ---------------------------------------------------------------- Metrics
+
+msgid "plugins.generic.journalMetrics.metric.submissionsReceived"
+msgstr "Recebidas"
+
+msgid "plugins.generic.journalMetrics.metric.submissionsAccepted"
+msgstr "Aceites"
+
+msgid "plugins.generic.journalMetrics.metric.submissionsDeclined"
+msgstr "Recusadas"
+
+msgid "plugins.generic.journalMetrics.metric.acceptanceRate"
+msgstr "Taxa de aceitação"
+
+msgid "plugins.generic.journalMetrics.metric.declineRate"
+msgstr "Taxa de rejeição"
+
+msgid "plugins.generic.journalMetrics.metric.submissionsPublished"
+msgstr "Artigos publicados"
+
+msgid "plugins.generic.journalMetrics.metric.firstDecisionDays"
+msgstr "Dias até à primeira decisão"
+
+msgid "plugins.generic.journalMetrics.metric.submissionToAcceptDays"
+msgstr "Dias até à aceitação"
+
+msgid "plugins.generic.journalMetrics.metric.submissionToRejectDays"
+msgstr "Dias até à rejeição"
+
+msgid "plugins.generic.journalMetrics.metric.reviewReportDays"
+msgstr "Tempo médio de revisão"
+
+msgid "plugins.generic.journalMetrics.metric.acceptToPublishDays"
+msgstr "Da aceitação à publicação"
+
+msgid "plugins.generic.journalMetrics.metric.submissionToPublishDays"
+msgstr "Da submissão à publicação"
+
+msgid "plugins.generic.journalMetrics.metric.totalAbstractViews"
+msgstr "Total de visualizações do resumo"
+
+msgid "plugins.generic.journalMetrics.metric.totalGalleyDownloads"
+msgstr "Total de downloads"
+
+msgid "plugins.generic.journalMetrics.metric.currentYearUsage"
+msgstr "Visualizações / downloads deste ano"
+
+msgid "plugins.generic.journalMetrics.metric.avgDownloadsPerArticle"
+msgstr "Média de downloads por artigo"
+
+msgid "plugins.generic.journalMetrics.metric.topArticles"
+msgstr "Artigos mais lidos"
+
+msgid "plugins.generic.journalMetrics.metric.usageTrend"
+msgstr "Evolução da utilização (24 meses)"
+
+msgid "plugins.generic.journalMetrics.metric.accessCountryCount"
+msgstr "Países alcançados (acessos)"
+
+msgid "plugins.generic.journalMetrics.metric.uniqueAuthors"
+msgstr "Autores únicos"
+
+msgid "plugins.generic.journalMetrics.metric.reviewerCount"
+msgstr "Revisores"
+
+msgid "plugins.generic.journalMetrics.metric.memberCount"
+msgstr "Utilizadores registados"
+
+msgid "plugins.generic.journalMetrics.metric.authorCountries"
+msgstr "Distribuição geográfica (países dos autores)"
+
+msgid "plugins.generic.journalMetrics.metric.completedReviews"
+msgstr "Revisões concluídas"
+
+msgid "plugins.generic.journalMetrics.metric.articlesPerYear"
+msgstr "Artigos por ano"
+
+msgid "plugins.generic.journalMetrics.metric.issuesPerYear"
+msgstr "Edições por ano"
+
+msgid "plugins.generic.journalMetrics.metric.archiveDepth"
+msgstr "Extensão do arquivo (anos)"
+
+msgid "plugins.generic.journalMetrics.metric.manualMetrics"
+msgstr "Métricas declaradas pelo editor"
+
+# ---------------------------------------------------------------- Tooltips (methodology)
+
+msgid "plugins.generic.journalMetrics.tooltip.acceptanceRate"
+msgstr "Submissões aceites divididas pelo total de submissões com decisão (aceites + recusadas). Só contam as submissões com decisão editorial; não contam os artigos adicionados diretamente às edições nem as submissões ainda em revisão."
+
+msgid "plugins.generic.journalMetrics.tooltip.declineRate"
+msgstr "Submissões recusadas (pelo secretariado + após revisão) divididas pelo total de submissões com decisão (aceites + recusadas). Só contam as submissões com decisão editorial; não contam os artigos adicionados diretamente às edições nem as submissões ainda em revisão."
+
+msgid "plugins.generic.journalMetrics.tooltip.firstDecisionDays"
+msgstr "Média de dias desde a submissão até à primeira decisão editorial, seja de que tipo for. Só são medidas as submissões com decisão editorial e datas coerentes."
+
+msgid "plugins.generic.journalMetrics.tooltip.submissionToAcceptDays"
+msgstr "Média de dias desde a submissão até à primeira decisão de aceitação. São também apresentados a mediana e o percentil 80 (o valor abaixo do qual ficam 80% dos artigos); n é o número de artigos medidos."
+
+msgid "plugins.generic.journalMetrics.tooltip.submissionToRejectDays"
+msgstr "Média de dias desde a submissão até à primeira decisão de rejeição, considerando apenas as submissões recusadas."
+
+msgid "plugins.generic.journalMetrics.tooltip.reviewReportDays"
+msgstr "Média de dias entre o convite para revisão e a entrega do relatório de revisão. As atribuições de revisão recusadas e canceladas são excluídas."
+
+msgid "plugins.generic.journalMetrics.tooltip.acceptToPublishDays"
+msgstr "Média de dias desde a decisão de aceitação até à primeira data de publicação do artigo."
+
+msgid "plugins.generic.journalMetrics.tooltip.submissionToPublishDays"
+msgstr "Média de dias desde a submissão até à primeira data de publicação do artigo (tempo total editorial + de produção)."
+
+# ---------------------------------------------------------------- UI strings
+
+msgid "plugins.generic.journalMetrics.ui.days"
+msgstr "dias"
+
+msgid "plugins.generic.journalMetrics.ui.median"
+msgstr "mediana"
+
+msgid "plugins.generic.journalMetrics.ui.p80"
+msgstr "perc. 80"
+
+msgid "plugins.generic.journalMetrics.ui.n"
+msgstr "n"
+
+msgid "plugins.generic.journalMetrics.ui.views"
+msgstr "visualizações"
+
+msgid "plugins.generic.journalMetrics.ui.downloads"
+msgstr "downloads"
+
+msgid "plugins.generic.journalMetrics.ui.articles"
+msgstr "artigos"
+
+msgid "plugins.generic.journalMetrics.ui.issues"
+msgstr "edições"
+
+msgid "plugins.generic.journalMetrics.ui.year"
+msgstr "Ano"
+
+msgid "plugins.generic.journalMetrics.ui.allTime"
+msgstr "Todo o período"
+
+msgid "plugins.generic.journalMetrics.ui.insufficient"
+msgstr "Dados insuficientes"
+
+msgid "plugins.generic.journalMetrics.ui.publicBadge"
+msgstr "Pública"
+
+msgid "plugins.generic.journalMetrics.ui.topArticlesTitle"
+msgstr "Os 10 artigos mais lidos"
+
+msgid "plugins.generic.journalMetrics.ui.trendTitle"
+msgstr "Visualizações e downloads mensais (últimos 24 meses)"
+
+msgid "plugins.generic.journalMetrics.ui.completedReviewsTitle"
+msgstr "Revisões concluídas por ano"
+
+msgid "plugins.generic.journalMetrics.ui.byYearTitle"
+msgstr "Por ano"
+
+msgid "plugins.generic.journalMetrics.ui.articlesPerYearTitle"
+msgstr "Artigos publicados por ano"
+
+msgid "plugins.generic.journalMetrics.ui.issuesPerYearTitle"
+msgstr "Edições publicadas por ano"
+
+msgid "plugins.generic.journalMetrics.ui.since"
+msgstr "desde"
+
+msgid "plugins.generic.journalMetrics.ui.totalIssues"
+msgstr "edições"
+
+msgid "plugins.generic.journalMetrics.ui.avgPerArticle"
+msgstr "média por artigo"
+
+msgid "plugins.generic.journalMetrics.ui.deskReject"
+msgstr "secretariado"
+
+msgid "plugins.generic.journalMetrics.ui.postReview"
+msgstr "após revisão"
+
+msgid "plugins.generic.journalMetrics.ui.authorsDetail"
+msgstr "autores"
+
+msgid "plugins.generic.journalMetrics.ui.readersDetail"
+msgstr "leitores"
+
+msgid "plugins.generic.journalMetrics.ui.noResults"
+msgstr "Sem resultados"
+
+msgid "plugins.generic.journalMetrics.ui.source"
+msgstr "Fonte"
+
+msgid "plugins.generic.journalMetrics.ui.lastUpdated"
+msgstr "Atualizado"
+
+msgid "plugins.generic.journalMetrics.ui.metricsUpdated"
+msgstr "Última atualização das métricas"
+
+msgid "plugins.generic.journalMetrics.ui.droppedSpans"
+msgstr "excluídos (datas impossíveis)"
+
+msgid "plugins.generic.journalMetrics.ui.usagePending"
+msgstr "As estatísticas de utilização estão a ser calculadas — serão apresentadas após a próxima execução agendada."
+
+msgid "plugins.generic.journalMetrics.ui.countrySectionTitle"
+msgstr "Distribuição geográfica"
+
+msgid "plugins.generic.journalMetrics.ui.searchCountry"
+msgstr "Pesquisar país…"
+
+msgid "plugins.generic.journalMetrics.ui.country"
+msgstr "País"
+
+msgid "plugins.generic.journalMetrics.ui.authors"
+msgstr "Autores"
+
+msgid "plugins.generic.journalMetrics.ui.share"
+msgstr "Percentagem"
+
+msgid "plugins.generic.journalMetrics.ui.distribution"
+msgstr "Distribuição"
+
+msgid "plugins.generic.journalMetrics.ui.authorsByCountry"
+msgstr "Autores por país"
+
+msgid "plugins.generic.journalMetrics.ui.articlesByCountry"
+msgstr "Artigos por país"
+
+msgid "plugins.generic.journalMetrics.ui.topCountries"
+msgstr "Principais países"
+
+msgid "plugins.generic.journalMetrics.ui.authorDistribution"
+msgstr "Distribuição dos autores"
+
+msgid "plugins.generic.journalMetrics.ui.countriesWord"
+msgstr "países"
+
+msgid "plugins.generic.journalMetrics.ui.other"
+msgstr "Outros"
+
+msgid "plugins.generic.journalMetrics.ui.rank"
+msgstr "#"
+
+msgid "plugins.generic.journalMetrics.ui.yearTableNote"
+msgstr "Nota: «Recebidas» conta as submissões pela data de submissão; «Aceites», «Recusadas» e as taxas seguem a data da decisão. Por isso, uma submissão recebida num ano pode ser decidida noutro."
+
+# ---------------------------------------------------------------- Dashboard
+
+msgid "plugins.generic.journalMetrics.dashboard.title"
+msgstr "Métricas da revista"
+
+msgid "plugins.generic.journalMetrics.dashboard.neverComputed"
+msgstr "O instantâneo das métricas ainda não foi calculado."
+
+msgid "plugins.generic.journalMetrics.dashboard.recompute"
+msgstr "Recalcular agora"
+
+msgid "plugins.generic.journalMetrics.dashboard.settings"
+msgstr "Configurações"
+
+msgid "plugins.generic.journalMetrics.settings.pageTitle"
+msgstr "Métricas da revista — Configurações"
+
+msgid "plugins.generic.journalMetrics.settings.pageSubtitle"
+msgstr "Visibilidade, indicadores externos, eliminação de duplicados, limiares e página pública — todas as configurações do plugin estão nesta página."
+
+msgid "plugins.generic.journalMetrics.settings.saved"
+msgstr "Configurações guardadas."
+
+# ---------------------------------------------------------------- Filters
+
+msgid "plugins.generic.journalMetrics.filter.allTime"
+msgstr "Todo o período"
+
+msgid "plugins.generic.journalMetrics.filter.last12"
+msgstr "Últimos 12 meses"
+
+msgid "plugins.generic.journalMetrics.filter.last24"
+msgstr "Últimos 24 meses"
+
+msgid "plugins.generic.journalMetrics.filter.uniqueBy"
+msgstr "Únicos por"
+
+msgid "plugins.generic.journalMetrics.filter.orcid"
+msgstr "ORCID"
+
+msgid "plugins.generic.journalMetrics.filter.email"
+msgstr "E-mail"
+
+msgid "plugins.generic.journalMetrics.filter.fullName"
+msgstr "Nome completo"
+
+# ---------------------------------------------------------------- Notes
+
+msgid "plugins.generic.journalMetrics.note.snapshot"
+msgstr "Os valores provêm de um instantâneo noturno; use «Recalcular agora» para obter números atualizados."
+
+msgid "plugins.generic.journalMetrics.note.coreConsistency"
+msgstr "Os números editoriais contam apenas as submissões com decisão editorial; os números de publicação contam todos os artigos publicados. As taxas são calculadas apenas sobre as submissões com decisão."
+
+msgid "plugins.generic.journalMetrics.note.uniqueBy"
+msgstr "Autores sem duplicados, identificados por {$strategy}."
+
+# ---------------------------------------------------------------- Public page
+
+msgid "plugins.generic.journalMetrics.public.subtitle"
+msgstr "Indicadores transparentes e atualizados do desempenho editorial e do alcance desta revista."
+
+msgid "plugins.generic.journalMetrics.public.noMetrics"
+msgstr "As métricas estão a ser preparadas. Volte a consultar esta página em breve."
+
+msgid "plugins.generic.journalMetrics.public.noPublicMetrics"
+msgstr "Ainda não foi tornada pública nenhuma métrica."
+
+msgid "plugins.generic.journalMetrics.public.openSettings"
+msgstr "Abrir as configurações das Métricas da revista"
+
+msgid "plugins.generic.journalMetrics.public.closedNotice"
+msgstr "A página pública de métricas está desativada, pelo que os visitantes recebem um erro «página não encontrada» neste endereço. Só os editores-gestores veem esta nota. Ative a página em Configurações → Página pública."
+
+msgid "plugins.generic.journalMetrics.public.autoNote"
+msgstr "Os valores das métricas automáticas são calculados diretamente a partir dos dados da revista e não podem ser editados."
+
+msgid "plugins.generic.journalMetrics.public.manualNote"
+msgstr "As métricas declaradas pelo editor são fornecidas pela equipa editorial, com a respetiva fonte e data."
+
+# ---------------------------------------------------------------- Block
+
+msgid "plugins.generic.journalMetrics.block.displayName"
+msgstr "Bloco de Métricas da revista"
+
+msgid "plugins.generic.journalMetrics.block.description"
+msgstr "Apresenta na barra lateral métricas públicas selecionadas da revista."
+
+msgid "plugins.generic.journalMetrics.block.title"
+msgstr "Métricas da revista"
+
+msgid "plugins.generic.journalMetrics.block.more"
+msgstr "Todas as métricas"
+
+# ---------------------------------------------------------------- Settings
+
+msgid "plugins.generic.journalMetrics.settings.visibility"
+msgstr "Visibilidade das métricas"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.desc"
+msgstr "Escolha onde aparece cada métrica. «Oculta» remove-a de todo o lado; «Painel» mostra-a apenas aos editores-gestores; «Pública» mostra-a também na página pública, no bloco da barra lateral e através da função de modelo {journal_metric}. Por omissão, todas ficam em «Painel» — torne as métricas públicas de forma deliberada."
+
+msgid "plugins.generic.journalMetrics.settings.visibility.group"
+msgstr "Grupo"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.metric"
+msgstr "Métrica"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.level"
+msgstr "Visibilidade"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.hidden"
+msgstr "Oculta"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.admin"
+msgstr "Painel"
+
+msgid "plugins.generic.journalMetrics.settings.visibility.public"
+msgstr "Pública"
+
+msgid "plugins.generic.journalMetrics.settings.manual"
+msgstr "Indicadores externos"
+
+msgid "plugins.generic.journalMetrics.settings.manual.desc"
+msgstr "Até 5 valores que o OJS não consegue calcular, como a cobertura de indexação ou um índice de impacto externo (CiteScore, SJR). Cada cartão é assinalado com «Introduzido pelo editor». As taxas, os tempos e as contagens de artigos são calculados a partir dos dados da revista e não podem ser introduzidos aqui."
+
+msgid "plugins.generic.journalMetrics.settings.manual.title"
+msgstr "Título"
+
+msgid "plugins.generic.journalMetrics.settings.manual.value"
+msgstr "Valor"
+
+msgid "plugins.generic.journalMetrics.settings.manual.source"
+msgstr "Fonte"
+
+msgid "plugins.generic.journalMetrics.settings.manual.description"
+msgstr "Descrição"
+
+msgid "plugins.generic.journalMetrics.settings.manual.lastUpdated"
+msgstr "Atualizado"
+
+msgid "plugins.generic.journalMetrics.settings.manual.addRow"
+msgstr "Adicionar métrica"
+
+msgid "plugins.generic.journalMetrics.settings.scope"
+msgstr "Eliminação de autores duplicados"
+
+msgid "plugins.generic.journalMetrics.settings.uniqueStrategy"
+msgstr "Identificação de autores únicos"
+
+msgid "plugins.generic.journalMetrics.settings.uniqueStrategy.desc"
+msgstr "Como são identificados os autores únicos ao contar os autores e os respetivos países."
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback"
+msgstr "Alternativa ao ORCID"
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.desc"
+msgstr "Usada quando um autor não tem ORCID."
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.emailName"
+msgstr "E-mail e, em seguida, nome completo"
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.email"
+msgstr "Apenas e-mail"
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.name"
+msgstr "Apenas nome completo"
+
+msgid "plugins.generic.journalMetrics.settings.orcidFallback.none"
+msgstr "Sem alternativa (apenas ORCID)"
+
+msgid "plugins.generic.journalMetrics.settings.appearance"
+msgstr "Aparência e limiares"
+
+msgid "plugins.generic.journalMetrics.settings.countryDisplay"
+msgstr "Apresentação do país"
+
+msgid "plugins.generic.journalMetrics.settings.countryDisplay.both"
+msgstr "Código — Nome"
+
+msgid "plugins.generic.journalMetrics.settings.countryDisplay.code"
+msgstr "Apenas código"
+
+msgid "plugins.generic.journalMetrics.settings.countryDisplay.name"
+msgstr "Apenas nome"
+
+msgid "plugins.generic.journalMetrics.settings.sortOrder"
+msgstr "Ordenação da tabela"
+
+msgid "plugins.generic.journalMetrics.settings.sortOrder.countDesc"
+msgstr "Contagem (decrescente)"
+
+msgid "plugins.generic.journalMetrics.settings.sortOrder.nameAsc"
+msgstr "Nome do país (A–Z)"
+
+msgid "plugins.generic.journalMetrics.settings.minThreshold"
+msgstr "Contagem mínima por país"
+
+msgid "plugins.generic.journalMetrics.settings.minThreshold.desc"
+msgstr "Os países com menos autores/artigos do que este valor são ocultados nas tabelas de países."
+
+msgid "plugins.generic.journalMetrics.settings.rateNThreshold"
+msgstr "Supressão de amostras pequenas (n)"
+
+msgid "plugins.generic.journalMetrics.settings.rateNThreshold.desc"
+msgstr "As métricas de taxas e de tempos calculadas a partir de menos registos do que este valor são suprimidas nas páginas públicas e atenuadas no painel (por omissão: 10)."
+
+msgid "plugins.generic.journalMetrics.settings.includeUnknown"
+msgstr "Incluir entradas sem país"
+
+msgid "plugins.generic.journalMetrics.settings.showAuthorsTab"
+msgstr "Mostrar a tabela «Autores por país»"
+
+msgid "plugins.generic.journalMetrics.settings.showArticlesTab"
+msgstr "Mostrar a tabela «Artigos por país»"
+
+msgid "plugins.generic.journalMetrics.settings.block"
+msgstr "Bloco da barra lateral"
+
+msgid "plugins.generic.journalMetrics.settings.block.statusActive"
+msgstr "Bloco da barra lateral: atualmente ativo"
+
+msgid "plugins.generic.journalMetrics.settings.block.statusPassive"
+msgstr "Bloco da barra lateral: não está na barra lateral"
+
+msgid "plugins.generic.journalMetrics.settings.block.manage"
+msgstr "Gerir a barra lateral"
+
+msgid "plugins.generic.journalMetrics.settings.block.themeNote"
+msgstr "O bloco é colocado em Configurações → Website → Aparência → Barra lateral; a gestão da barra lateral do próprio OJS é a única referência. Se o seu tema não tiver uma área de barra lateral, o bloco não será apresentado."
+
+msgid "plugins.generic.journalMetrics.settings.block.metrics"
+msgstr "Métricas apresentadas no bloco"
+
+msgid "plugins.generic.journalMetrics.settings.block.metricsDesc"
+msgstr "As métricas selecionadas continuam sujeitas aos filtros de visibilidade e de amostras pequenas: uma métrica que não esteja em «Pública» nunca aparece no bloco. Enquanto a secção «Processo editorial» estiver oculta na página pública, os respetivos números também ficam fora do bloco. Sem nenhuma seleção, o bloco não apresenta nada."
+
+msgid "plugins.generic.journalMetrics.settings.publicPage"
+msgstr "Página pública"
+
+msgid "plugins.generic.journalMetrics.settings.enablePublicPage"
+msgstr "Ativar a página pública de métricas"
+
+msgid "plugins.generic.journalMetrics.settings.enablePublicPage.desc"
+msgstr "Quando ativada, a página abaixo fica acessível a todos os visitantes e o tipo de item de menu de navegação fica disponível. Só são apresentadas as métricas definidas como «Pública»."
+
+msgid "plugins.generic.journalMetrics.settings.publicPageTitle"
+msgstr "Título da página pública"
+
+msgid "plugins.generic.journalMetrics.settings.publicPageUrl"
+msgstr "Endereço da página pública"
+
+msgid "plugins.generic.journalMetrics.settings.publicPageUrl.desc"
+msgstr "Adicione este endereço a um menu de navegação ou use o tipo de item de menu «Métricas da revista»."
+
+msgid "plugins.generic.journalMetrics.settings.recompute"
+msgstr "Recalcular"
+
+msgid "plugins.generic.journalMetrics.settings.recompute.desc"
+msgstr "Recalcula de imediato os grupos de métricas rápidos. As estatísticas de utilização (uma análise pesada) ficam em fila e são atualizadas na próxima execução agendada."
+
+msgid "plugins.generic.journalMetrics.settings.recompute.done"
+msgstr "Concluído — estatísticas de utilização em fila para a próxima execução agendada."
+
+msgid "plugins.generic.journalMetrics.settings.recompute.failed"
+msgstr "O recálculo falhou. Tente novamente."
+
+msgid "plugins.generic.journalMetrics.settings.coverage"
+msgstr "Cobertura das estatísticas editoriais"
+
+msgid "plugins.generic.journalMetrics.settings.importedNote"
+msgstr "{$num} artigos importados (data de submissão posterior à primeira data de publicação, a regra das próprias estatísticas do OJS) ficam excluídos das métricas editoriais, de tempos de processamento e de revisão. Os números de leitura, de volume de publicação e de autores incluem-nos."
+
+msgid "plugins.generic.journalMetrics.settings.coverage.desc"
+msgstr "Opcional. Os números do processo editorial (submissões, decisões, tempos, revisões concluídas) são contados a partir deste ano, e a página indica-o. O sistema nunca adivinha uma data de início. Deixe em branco para incluir todos os anos."
+
+msgid "plugins.generic.journalMetrics.settings.coverage.year"
+msgstr "Ano de início"
+
+msgid "plugins.generic.journalMetrics.settings.coverage.placeholder"
+msgstr "p. ex. 2024"
+
+msgid "plugins.generic.journalMetrics.ui.coverageLine"
+msgstr "As estatísticas editoriais abrangem o período de {$year} até ao presente."
+
+msgid "plugins.generic.journalMetrics.ui.coverageNote"
+msgstr "Abrange o período de {$year} até ao presente."
+
+msgid "plugins.generic.journalMetrics.settings.showDeveloperCredit"
+msgstr "Mostrar a ligação «Desenvolvido por ojs-services.com» na página pública"
+
+msgid "plugins.generic.journalMetrics.settings.showDeveloperCredit.desc"
+msgstr "Apoia o desenvolvimento deste plugin gratuito; pode desativá-la, se preferir."
+
+msgid "plugins.generic.journalMetrics.settings.bulk.hidden"
+msgstr "Definir todas como «Oculta»"
+
+msgid "plugins.generic.journalMetrics.settings.bulk.admin"
+msgstr "Definir todas como «Painel»"
+
+msgid "plugins.generic.journalMetrics.settings.bulk.public"
+msgstr "Definir todas como «Pública»"
+
+msgid "plugins.generic.journalMetrics.section.publications"
+msgstr "Publicações"
+
+msgid "plugins.generic.journalMetrics.section.editorial"
+msgstr "Processo editorial"
+
+msgid "plugins.generic.journalMetrics.section.external"
+msgstr "Indicadores externos"
+
+msgid "plugins.generic.journalMetrics.section.editorial.note"
+msgstr "Os números do processo editorial baseiam-se em {$process} submissões recebidas através do sistema da revista que obtiveram uma decisão editorial. Os {$direct} artigos adicionados diretamente às edições estão incluídos nos números de publicação, mas não nestas taxas e tempos."
+
+msgid "plugins.generic.journalMetrics.group.review"
+msgstr "Revisão por pares"
+
+msgid "plugins.generic.journalMetrics.settings.manual.rejected"
+msgstr "Não guardado: «{$titles}». Este nome pertence a um valor calculado a partir dos dados da revista, pelo que não pode ser introduzido manualmente."
+
+msgid "plugins.generic.journalMetrics.ui.manualConflict"
+msgstr "Não apresentado na página pública: existe um valor com este nome que é calculado a partir dos dados da revista. Altere o nome ou elimine a linha."
+
+msgid "plugins.generic.journalMetrics.ui.enteredByEditor"
+msgstr "Introduzido pelo editor"
+
+msgid "plugins.generic.journalMetrics.ui.splitTitle"
+msgstr "Artigos por ano: pelo processo editorial / adicionados diretamente"
+
+msgid "plugins.generic.journalMetrics.ui.processArticles"
+msgstr "Pelo processo editorial"
+
+msgid "plugins.generic.journalMetrics.ui.directArticles"
+msgstr "Adicionados diretamente"
+
+msgid "plugins.generic.journalMetrics.ui.editorialHiddenAuto"
+msgstr "Ainda não apresentado na página pública: menos de 20 submissões têm uma decisão editorial final."
+
+msgid "plugins.generic.journalMetrics.ui.editorialHiddenSetting"
+msgstr "Oculto na página pública (configuração)."
+
+msgid "plugins.generic.journalMetrics.editorBox.title"
+msgstr "Porque é que os números desta página diferem?"
+
+msgid "plugins.generic.journalMetrics.editorBox.published"
+msgstr "A sua revista tem {$published} artigos publicados."
+
+msgid "plugins.generic.journalMetrics.editorBox.process"
+msgstr "{$count} deles foram submetidos através do sistema da revista e obtiveram uma decisão editorial. As taxas de aceitação e os tempos são calculados a partir de submissões como estas."
+
+msgid "plugins.generic.journalMetrics.editorBox.direct"
+msgstr "{$count} artigos foram adicionados diretamente às edições sem decisão editorial. Contam nos números de publicação; sem decisão e sem datas próprias, não podem contar nas taxas nem nos tempos."
+
+msgid "plugins.generic.journalMetrics.editorBox.inconsistent"
+msgstr "{$count} artigos foram excluídos dos tempos porque as respetivas datas não são coerentes (submetidos após a publicação)."
+
+msgid "plugins.generic.journalMetrics.editorBox.awaiting"
+msgstr "{$count} submissões aguardam ainda uma primeira decisão; serão contabilizadas quando forem decididas."
+
+msgid "plugins.generic.journalMetrics.editorBox.hiddenAuto"
+msgstr "A secção «Processo editorial» ainda não é apresentada na página pública: {$count} submissões têm decisão final; a secção aparece a partir de {$min}."
+
+msgid "plugins.generic.journalMetrics.editorBox.hiddenSetting"
+msgstr "A secção «Processo editorial» está oculta na página pública (configuração)."
+
+msgid "plugins.generic.journalMetrics.editorBox.list"
+msgstr "Lista"
+
+msgid "plugins.generic.journalMetrics.editorBox.actions"
+msgstr "O que pode fazer:"
+
+msgid "plugins.generic.journalMetrics.editorBox.actionSection"
+msgstr "mostrar ou ocultar a secção editorial"
+
+msgid "plugins.generic.journalMetrics.editorBox.actionStartYear"
+msgstr "indicar um ano de início"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection"
+msgstr "Secção «Processo editorial» na página pública"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection.auto"
+msgstr "Automático (recomendado)"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection.show"
+msgstr "Mostrar sempre"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection.hide"
+msgstr "Ocultar"
+
+msgid "plugins.generic.journalMetrics.settings.editorialSection.desc"
+msgstr "A opção Automático mostra a secção quando 20 submissões tiverem uma decisão editorial final, com uma breve nota quando houver artigos adicionados sem decisão."
+
+msgid "plugins.generic.journalMetrics.settings.advanced"
+msgstr "Avançado"
+
+msgid "plugins.generic.journalMetrics.settings.advanced.desc"
+msgstr "Não é necessário para obter números corretos; altere apenas se a sua revista precisar."
+
+msgid "plugins.generic.journalMetrics.settings.excludedSections"
+msgstr "Excluir estas secções das contagens de publicação"
+
+msgid "plugins.generic.journalMetrics.settings.excludedSections.desc"
+msgstr "Por exemplo, Editorial ou Errata. Aplica-se aos artigos publicados, autores e países; o processo editorial não é afetado."
+
+msgid "plugins.generic.journalMetrics.settings.yearBreakdown"
+msgstr "Dividir o gráfico de artigos por ano: pelo processo editorial / adicionados diretamente"
+
+msgid "plugins.generic.journalMetrics.settings.yearBreakdown.desc"
+msgstr "Acrescenta uma pequena tabela por baixo do gráfico."
+
+msgid "plugins.generic.journalMetrics.articles.directTitle"
+msgstr "Artigos adicionados sem decisão editorial"
+
+msgid "plugins.generic.journalMetrics.articles.directDesc"
+msgstr "Contam nos números de publicação, mas não nas taxas nem nos tempos."
+
+msgid "plugins.generic.journalMetrics.articles.inconsistentTitle"
+msgstr "Artigos excluídos dos tempos"
+
+msgid "plugins.generic.journalMetrics.articles.inconsistentDesc"
+msgstr "A data de submissão é posterior à data de publicação, pelo que não é possível calcular nenhum tempo."
+
+msgid "plugins.generic.journalMetrics.articles.none"
+msgstr "Não existem artigos nestas condições."
+
+msgid "plugins.generic.journalMetrics.articles.byYear"
+msgstr "Por ano"
+
+msgid "plugins.generic.journalMetrics.articles.list"
+msgstr "Artigos"
+
+msgid "plugins.generic.journalMetrics.articles.titleCol"
+msgstr "Título"
+
+msgid "plugins.generic.journalMetrics.articles.publishedCol"
+msgstr "Publicado"
+
+msgid "plugins.generic.journalMetrics.articles.submittedCol"
+msgstr "Submetido"
+
+msgid "plugins.generic.journalMetrics.articles.truncated"
+msgstr "Apenas são listados os {$limit} mais recentes."
+
+msgid "plugins.generic.journalMetrics.settings.nightlyStale"
+msgstr "O cálculo noturno não é executado há {$days} dias; os números são de {$date}. O plugin tenta resolver isto automaticamente. Se este aviso ainda aqui estiver amanhã, informe o administrador do portal."
+
+msgid "plugins.generic.journalMetrics.settings.nightlyNever"
+msgstr "O cálculo noturno ainda não foi executado. O plugin tenta resolver isto automaticamente. Se este aviso ainda aqui estiver amanhã, informe o administrador do portal."

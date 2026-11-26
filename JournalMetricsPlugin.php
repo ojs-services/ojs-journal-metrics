@@ -558,25 +558,43 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 	}
 
 	/**
-	 * Number formatting follows the INTERFACE language, never the browser's:
-	 * Turkish gets Turkish conventions, every other UI locale falls back to
-	 * English ones (the plugin's labels fall back to English there too).
-	 * The JS renderer receives the same choice via numberLocaleTag(), so
-	 * server- and client-rendered numbers on one page always agree.
+	 * Number formatting follows the INTERFACE language, never the browser's.
+	 * The languages the plugin ships get their own conventions; every other
+	 * UI locale falls back to English ones (the plugin's labels fall back to
+	 * English there too). The JS renderer receives the same choice via
+	 * numberLocaleTag() and formats with toLocaleString(), so server- and
+	 * client-rendered numbers on one page always agree — these rules mirror
+	 * what browsers do for those tags (es-ES and pt-PT group thousands only
+	 * from five digits: 2825 but 12.825 / 12 825).
 	 *
 	 * @param string|null $locale OJS locale code; null = current UI locale
-	 * @return bool
+	 * @return array tag, dec, thou, minGroup (digits), pct (prefix|suffix|suffixSpace)
 	 */
-	private static function _isTurkishNumbers($locale) {
+	private static function _numberStyle($locale) {
 		if ($locale === null) $locale = Locale::getLocale();
-		return strpos((string) $locale, 'tr') === 0;
+		$l = strtolower(str_replace('-', '_', (string) $locale));
+		if (strpos($l, 'tr') === 0) return array('tag' => 'tr-TR', 'dec' => ',', 'thou' => '.', 'minGroup' => 1, 'pct' => 'prefix');
+		if ($l === 'es' || $l === 'es_es') return array('tag' => 'es-ES', 'dec' => ',', 'thou' => '.', 'minGroup' => 2, 'pct' => 'suffixSpace');
+		if ($l === 'pt_br') return array('tag' => 'pt-BR', 'dec' => ',', 'thou' => '.', 'minGroup' => 1, 'pct' => 'suffix');
+		if ($l === 'pt' || $l === 'pt_pt') return array('tag' => 'pt-PT', 'dec' => ',', 'thou' => "\u{00A0}", 'minGroup' => 2, 'pct' => 'suffix');
+		return array('tag' => 'en-US', 'dec' => '.', 'thou' => ',', 'minGroup' => 1, 'pct' => 'suffix');
 	}
 
 	/**
-	 * BCP 47 tag the JS renderer formats numbers with ('tr-TR' / 'en-US').
+	 * number_format() with the language's grouping rule.
+	 */
+	private static function _formatWithStyle($value, $decimals, $style) {
+		$group = $style['minGroup'] < 2 || abs($value) >= 10000;
+		return number_format($value, $decimals, $style['dec'], $group ? $style['thou'] : '');
+	}
+
+	/**
+	 * BCP 47 tag the JS renderer formats numbers with ('tr-TR', 'es-ES',
+	 * 'pt-PT', 'pt-BR', otherwise 'en-US').
 	 */
 	public static function numberLocaleTag($locale = null) {
-		return self::_isTurkishNumbers($locale) ? 'tr-TR' : 'en-US';
+		$style = self::_numberStyle($locale);
+		return $style['tag'];
 	}
 
 	/**
@@ -589,21 +607,20 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 		$plain = rtrim(rtrim(sprintf('%.3F', $value), '0'), '.');
 		$dot = strpos($plain, '.');
 		$decimals = ($dot === false) ? 0 : strlen($plain) - $dot - 1;
-		return self::_isTurkishNumbers($locale)
-			? number_format($value, $decimals, ',', '.')
-			: number_format($value, $decimals, '.', ',');
+		return self::_formatWithStyle($value, $decimals, self::_numberStyle($locale));
 	}
 
 	/**
 	 * Display form of a rate: percent with exactly one decimal, in the
-	 * interface language ("%66,7" / "66.7%"). Rounding happens here only —
-	 * stored values stay unrounded.
+	 * interface language ("%66,7" / "66.7%" / "66,7 %"). Rounding happens
+	 * here only — stored values stay unrounded.
 	 */
 	public static function formatRate($rate, $locale = null) {
 		$percent = round(((float) $rate) * 100, 1);
-		return self::_isTurkishNumbers($locale)
-			? '%' . number_format($percent, 1, ',', '.')
-			: number_format($percent, 1, '.', ',') . '%';
+		$style = self::_numberStyle($locale);
+		$s = self::_formatWithStyle($percent, 1, $style);
+		if ($style['pct'] === 'prefix') return '%' . $s;
+		return $style['pct'] === 'suffixSpace' ? $s . "\u{00A0}%" : $s . '%';
 	}
 
 	// ------------------------------------------------------------------

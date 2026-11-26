@@ -16,6 +16,7 @@
   // (JournalMetricsPlugin::numberLocaleTag), never the browser's.
   var NL = D.numberLocale || 'en-US';
   var PCT_FIRST = NL.indexOf('tr') === 0; // Turkish: %66,7
+  var PCT_SPACE = NL.indexOf('es') === 0; // Spanish: 66,7 % (no-break space)
 
   var COLORS = [
     '#0d9488', '#0891b2', '#2563eb', '#7c3aed', '#c026d3',
@@ -58,7 +59,7 @@
   // A percentage (already x100) with one decimal, sign placed per language.
   function pctStr(pct) {
     var s = Number(pct).toLocaleString(NL, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-    return PCT_FIRST ? '%' + s : s + '%';
+    return PCT_FIRST ? '%' + s : s + (PCT_SPACE ? ' %' : '%');
   }
 
   // Same display rule as JournalMetricsPlugin::formatRate().
