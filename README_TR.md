@@ -28,7 +28,7 @@ editoryal şeffaflık göstermek için kullanır.
   `{journal_metric key="submissionsPublished"}`.
 - **Gezinme menüsü entegrasyonu** — yerleşik "Dergi Metrikleri" menü öğesi
   türüyle kamu sayfasını istediğiniz menüye ekleyin.
-- **Çok dilli** — TR/EN arayüz; kamu sayfası başlığı ve editör beyanı
+- **Çok dilli** — İngilizce, Türkçe, İspanyolca ve Portekizce (Portekiz ve Brezilya) arayüz, sayılar her dilin kendi yazımıyla; kamu sayfası başlığı ve editör beyanı
   metrikler derginin her aktif dili için ayrı değer kabul eder.
 
 ## Ekran görüntüleri
@@ -111,7 +111,7 @@ metriklerden ayrı gösterilir ve her biri son güncelleme tarihiyle damgalanır
 ## Kurulum
 
 1. Web Sitesi Ayarları → Eklentiler → **Yeni Eklenti Yükle** ile
-   `journalMetrics-ojs3.3-1.0.3.11.tar.gz` dosyasını seçin.
+   `journalMetrics-ojs3.3-1.0.3.12.tar.gz` dosyasını seçin.
 2. Generic Eklentiler altında **Journal Metrics**'i etkinleştirin.
 3. Sol yönetim menüsünden **Dergi Metrikleri**'ni açın; hızlı metrik grupları
    ilk ziyarette hesaplanır.
@@ -205,7 +205,7 @@ verisinden gelir.
 | Veritabanı | MySQL / MariaDB (standart OJS kurulumları) |
 | Dergiler | tek ve çok dergili kurulumlar |
 | Temalar | her OJS 3.3 temasıyla çalışır — varsayılan veya özel; temalarımız: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Eklenti sürümü | 1.0.3.11 |
+| Eklenti sürümü | 1.0.3.12 |
 
 ## Lisans ve destek
 

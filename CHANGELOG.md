@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.3.12 — 2026-11-26 · OJS 3.3
+
+### Added
+- Spanish and Portuguese (Portugal and Brazil) interface; numbers are
+  written the way each language writes them (for example "71,6 %",
+  "192,6 días").
+
+### Eklendi
+- İspanyolca ve Portekizce (Portekiz ve Brezilya) arayüz; sayılar her
+  dilin kendi yazımıyla gösterilir (örneğin "71,6 %", "192,6 días").
+
 ## 1.0.3.11 — 2026-11-23 · OJS 3.3
 
 ### Fixed
