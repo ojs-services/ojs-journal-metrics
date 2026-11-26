@@ -56,6 +56,10 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 	public function register($category, $path, $mainContextId = null) {
 		$success = parent::register($category, $path, $mainContextId);
 
+		// English for languages this plugin does not ship and for keys a
+		// shipped translation does not have yet (OJS 3.4/3.5 would show ##key##)
+		$this->_registerEnglishFallback();
+
 		// OJS 3.4: the nightly task goes through Acron. Registered
 		// regardless of the enabled state so Acron can (re)parse the
 		// crontab at site level and during installation; the callback
@@ -202,6 +206,44 @@ class JournalMetricsPlugin extends GenericPlugin implements HasTaskScheduler {
 			return true;
 		}
 		return false;
+	}
+
+	/** Locale keys of this plugin (and its sidebar block) start with this */
+	const LOCALE_PREFIX = 'plugins.generic.journalMetrics.';
+
+	/** Registered the English fallback in this request already */
+	private static $_englishFallbackRegistered = false;
+
+	/**
+	 * English fallback for this plugin's own texts (OJS 3.4/3.5).
+	 *
+	 * OJS does not fall back to English: a language without the plugin's
+	 * locale folder shows ##plugins.generic.journalMetrics.x## everywhere,
+	 * and so does a key a shipped translation does not have yet. OJS calls
+	 * the Locale::translate hook only for a key it cannot find; for keys with
+	 * this plugin's prefix the English text is returned. A language that has
+	 * the key always wins (the hook is not called then); OJS's and other
+	 * plugins' keys are not touched.
+	 * (Locale::registerLoader() would add the English file per language, but
+	 * it is broken in OJS 3.4.0–3.5.0: the stored loaders are called as one
+	 * array, which throws on every page. Not used.)
+	 */
+	private function _registerEnglishFallback(): void {
+		if (self::$_englishFallbackRegistered) return;
+		self::$_englishFallbackRegistered = true;
+
+		Hook::add('Locale::translate', function (string $hookName, array $args): bool {
+			$value = &$args[0];
+			$key = (string) $args[1];
+			$locale = (string) $args[4];
+			if ($locale === 'en' || strpos($key, self::LOCALE_PREFIX) !== 0) return Hook::CONTINUE;
+			$english = $args[3] === null
+				? Locale::get($key, (array) $args[2], 'en')
+				: Locale::choice($key, (int) $args[3], (array) $args[2], 'en');
+			if (strpos($english, '##') === 0) return Hook::CONTINUE; // not in English either
+			$value = $english;
+			return Hook::ABORT;
+		});
 	}
 
 	/** Checked Acron's task list in this request already */
