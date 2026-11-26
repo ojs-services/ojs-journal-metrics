@@ -24,6 +24,28 @@ class JournalMetricsPlugin extends GenericPlugin {
 	private $_smartyFunctionRegistered = false;
 
 	/**
+	 * English fallback for this plugin's own texts (OJS 3.3).
+	 *
+	 * OJS does not fall back to English: a language without the plugin's
+	 * locale file shows ##plugins.generic.journalMetrics.x## everywhere.
+	 * addLocaleData() registers the files listed here for the interface
+	 * language, and OJS searches the registered files from the last one
+	 * back — so the English file goes FIRST: the language's own file wins,
+	 * and any key it does not have (or the whole language, when there is
+	 * no file) comes from English. Only this plugin's keys are in it.
+	 *
+	 * @copydoc Plugin::getLocaleFilename()
+	 */
+	public function getLocaleFilename($locale) {
+		$files = (array) parent::getLocaleFilename($locale);
+		$english = $this->getPluginPath() . '/locale/en_US/locale.po';
+		if ($locale !== 'en_US' && file_exists($english)) {
+			array_unshift($files, $english);
+		}
+		return $files;
+	}
+
+	/**
 	 * @copydoc Plugin::register()
 	 */
 	public function register($category, $path, $mainContextId = null) {
