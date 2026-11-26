@@ -26,7 +26,7 @@ times, and to demonstrate editorial transparency to readers and institutions.
   public metric anywhere: `{journal_metric key="submissionsPublished"}`.
 - **Navigation menu integration** — add the public page to any menu with the
   built-in "Journal Metrics" menu item type.
-- **Multilingual** — interface in English, Turkish, Spanish and Portuguese (Portugal and Brazil), with numbers written the way each language writes them; the public page title and
+- **Multilingual** — interface in English, Turkish, Spanish and Portuguese (Portugal and Brazil), with numbers written the way each language writes them; in any other language the plugin appears in English; the public page title and
   editor-declared metrics accept a value per active journal language.
 
 ## Screenshots
@@ -108,7 +108,7 @@ stamped with its last update date.
 ## Installation
 
 1. Website Settings → Plugins → **Upload A New Plugin** and select
-   `journalMetrics-ojs3.3-1.0.3.12.tar.gz`.
+   `journalMetrics-ojs3.3-1.0.3.13.tar.gz`.
 2. Enable **Journal Metrics** under Generic Plugins.
 3. Open **Journal Metrics** from the left management menu; the fast metric
    groups are computed on first visit.
@@ -204,7 +204,7 @@ the journal's own data.
 | Database | MySQL / MariaDB (standard OJS setups) |
 | Journals | single- and multi-journal installations |
 | Themes | works on any OJS 3.3 theme — default or custom; see our themes: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Plugin version | 1.0.3.12 |
+| Plugin version | 1.0.3.13 |
 
 ## License & support
 

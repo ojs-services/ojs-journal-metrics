@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.3.13 — 2026-11-26 · OJS 3.3
+
+### Fixed
+- In an interface language the plugin does not ship (for example Italian),
+  its texts now appear in English instead of raw keys such as
+  "##plugins.generic.journalMetrics…##". A text missing from a shipped
+  translation also appears in English.
+
+### Düzeltildi
+- Eklentinin dil dosyası olmayan bir arayüz dilinde (ör. İtalyanca)
+  metinler artık "##plugins.generic.journalMetrics…##" gibi ham anahtar
+  yerine İngilizce görünür. Bir çeviride eksik kalan metin de İngilizce
+  görünür.
+
 ## 1.0.3.12 — 2026-11-26 · OJS 3.3
 
 ### Added
