@@ -16,7 +16,7 @@ msgid "plugins.generic.journalMetrics.displayName"
 msgstr "Métricas da revista"
 
 msgid "plugins.generic.journalMetrics.description"
-msgstr "Um conjunto completo de métricas da revista: estatísticas editoriais, tempos de processamento, utilização, comunidade e volume de publicação — com um instantâneo noturno em cache, controlo da visibilidade de cada métrica, métricas manuais (declaradas pelo editor), um painel de administração, uma página pública, um bloco da barra lateral e uma função de modelo {journal_metric}."
+msgstr "Um conjunto completo de métricas da revista: estatísticas editoriais, tempos de processamento, utilização, comunidade e volume de publicação — com um instantâneo noturno em cache, controlo da visibilidade de cada métrica, indicadores externos, um painel de administração, uma página pública, um bloco da barra lateral e uma função de modelo {journal_metric}."
 
 msgid "plugins.generic.journalMetrics.menuTitle"
 msgstr "Métricas da revista"
@@ -137,7 +137,7 @@ msgid "plugins.generic.journalMetrics.metric.archiveDepth"
 msgstr "Extensão do arquivo (anos)"
 
 msgid "plugins.generic.journalMetrics.metric.manualMetrics"
-msgstr "Métricas declaradas pelo editor"
+msgstr "Indicadores externos"
 
 # ---------------------------------------------------------------- Tooltips (methodology)
 
@@ -380,7 +380,7 @@ msgid "plugins.generic.journalMetrics.public.autoNote"
 msgstr "Os valores das métricas automáticas são calculados diretamente a partir dos dados da revista e não podem ser editados."
 
 msgid "plugins.generic.journalMetrics.public.manualNote"
-msgstr "As métricas declaradas pelo editor são fornecidas pela equipa editorial, com a respetiva fonte e data."
+msgstr "Os indicadores externos são introduzidos pela equipa editorial, com a respetiva fonte e data."
 
 # ---------------------------------------------------------------- Block
 

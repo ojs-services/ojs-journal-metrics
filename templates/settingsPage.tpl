@@ -331,7 +331,7 @@
 	{* Developer credit *}
 	<div class="jmx-developer-credit">
 		<a href="https://ojs-services.com" target="_blank" rel="noopener noreferrer">
-			<span class="jmx-dev-icon">&#x2666;</span>
+			<span class="jmx-dev-icon" aria-hidden="true">&#x2666;</span>
 			Developed by <strong>ojs-services.com</strong>
 		</a>
 	</div>

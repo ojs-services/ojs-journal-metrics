@@ -12,6 +12,10 @@
 
   var L = D.labels || {};
   var TIPS = D.tooltips || {};
+  // Heading levels: page sections one level below the page title (h2, or h3
+  // where the theme makes the title an h2 — the public page passes it), groups below
+  var HS = D.headingBase === 3 ? 3 : 2;
+  var HG = HS + 1;
   // Numbers follow the interface language chosen server-side
   // (JournalMetricsPlugin::numberLocaleTag), never the browser's.
   var NL = D.numberLocale || 'en-US';
@@ -301,11 +305,11 @@
     if (D.coverageYear && (groupKey === 'editorial' || groupKey === 'times' || groupKey === 'review')) {
       chip = ' <span class="jmx-coverage-chip" title="' + escHtml(coverageText()) + '">' + escHtml(String(D.coverageYear) + '+') + '</span>';
     }
-    // Group headings sit under the page sections (h2), hence h3
+    // Group headings sit one level under the page sections
     return '<div class="jmx-section" data-group="' + groupKey + '">' +
-      '<div class="jmx-section-header"><h3>' +
+      '<div class="jmx-section-header"><h' + HG + '>' +
       (GROUP_ICONS[groupKey] || '') + ' ' + escHtml(label('group.' + groupKey)) + chip +
-      '</h3></div>' + bodyHtml + '</div>';
+      '</h' + HG + '></div>' + bodyHtml + '</div>';
   }
 
   function coverageText() {
@@ -466,7 +470,7 @@
       });
       if (!body) return;
       if (!section.key) { html += body; return; }
-      var head = '<h2 class="jmx-page-section-title" id="jmx-sec-' + section.key + '">' + escHtml(L['section.' + section.key] || section.key) + '</h2>';
+      var head = '<h' + HS + ' class="jmx-page-section-title" id="jmx-sec-' + section.key + '">' + escHtml(L['section.' + section.key] || section.key) + '</h' + HS + '>';
       if (section.key === 'editorial') {
         // Managers: say when the public page leaves this section out
         if (C.isAdmin && D.editorialHidden) {

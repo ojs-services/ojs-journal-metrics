@@ -13,6 +13,8 @@
 {capture assign="jmxThemeHeader"}{include file="frontend/components/header.tpl" pageTitleTranslated=$pageTitle}{/capture}
 {$jmxThemeHeader}
 {assign var="jmxTitleHeading" value=$jmxThemeHeader|jmx_title_heading:$pageTitle}
+{* Section headings sit one level below the page title: h2 normally, h3 where the title itself is an h2 (Classic) *}
+{if $jmxTitleHeading === 2}{assign var="jmxSectionLevel" value=3}{else}{assign var="jmxSectionLevel" value=2}{/if}
 {capture assign="jmxTitleHtml"}{if $jmxTitleHeading === 0}{elseif $jmxTitleHeading === 2}<h2 class="jmx-public-title">{$pageTitle|escape}</h2>{else}<h1 class="jmx-public-title">{$pageTitle|escape}</h1>{/if}{/capture}
 
 {if $jmxClosedNotice}
@@ -64,7 +66,7 @@
 		{if $showCountrySection}
 		<div class="jmx-section" id="jmxCountrySection" style="display:none;">
 			<div class="jmx-section-header">
-				<h2>{translate key="plugins.generic.journalMetrics.ui.countrySectionTitle"}</h2>
+				<h{$jmxSectionLevel}>{translate key="plugins.generic.journalMetrics.ui.countrySectionTitle"}</h{$jmxSectionLevel}>
 			</div>
 
 			<div class="jmx-charts-row">
@@ -157,7 +159,7 @@
 		{if $showDeveloperCredit}
 		<div class="jmx-developer-credit">
 			<a href="https://ojs-services.com" target="_blank" rel="noopener noreferrer">
-				<span class="jmx-dev-icon">&#x2666;</span>
+				<span class="jmx-dev-icon" aria-hidden="true">&#x2666;</span>
 				Developed by <strong>ojs-services.com</strong>
 			</a>
 		</div>
@@ -167,6 +169,7 @@
 
 <script>
 	window.journalMetricsData = {$jmxData};
+	window.journalMetricsData.headingBase = {$jmxSectionLevel|intval};
 	window.journalMetricsConfig = {ldelim}
 		isAdmin: false,
 		fetchUrl: null,

@@ -16,7 +16,7 @@ msgid "plugins.generic.journalMetrics.displayName"
 msgstr "Dergi Metrikleri"
 
 msgid "plugins.generic.journalMetrics.description"
-msgstr "Eksiksiz dergi metrikleri paketi: editoryal istatistikler, süreç süreleri, kullanım, topluluk ve yayın çıktısı — gece hesaplanan snapshot önbelleği, metrik bazlı görünürlük kontrolü, manuel (editör beyanı) metrikler, yönetici panosu, kamu sayfası, kenar çubuğu bloğu ve {journal_metric} şablon fonksiyonu ile."
+msgstr "Eksiksiz dergi metrikleri paketi: editoryal istatistikler, süreç süreleri, kullanım, topluluk ve yayın çıktısı — gece hesaplanan snapshot önbelleği, metrik bazlı görünürlük kontrolü, dış göstergeler, yönetici panosu, kamu sayfası, kenar çubuğu bloğu ve {journal_metric} şablon fonksiyonu ile."
 
 msgid "plugins.generic.journalMetrics.menuTitle"
 msgstr "Dergi Metrikleri"
@@ -137,7 +137,7 @@ msgid "plugins.generic.journalMetrics.metric.archiveDepth"
 msgstr "Arşiv derinliği (yıl)"
 
 msgid "plugins.generic.journalMetrics.metric.manualMetrics"
-msgstr "Editör beyanı metrikler"
+msgstr "Dış göstergeler"
 
 # ---------------------------------------------------------------- Metodoloji ipuçları
 
@@ -380,7 +380,7 @@ msgid "plugins.generic.journalMetrics.public.autoNote"
 msgstr "Otomatik metrik değerleri doğrudan dergi verisinden hesaplanır ve elle değiştirilemez."
 
 msgid "plugins.generic.journalMetrics.public.manualNote"
-msgstr "Editör beyanı metrikler, kaynağı ve tarihiyle birlikte editör ekibi tarafından girilir."
+msgstr "Dış göstergeler, kaynağı ve tarihiyle birlikte editör ekibi tarafından girilir."
 
 # ---------------------------------------------------------------- Blok
 
