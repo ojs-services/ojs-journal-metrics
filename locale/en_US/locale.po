@@ -16,7 +16,7 @@ msgid "plugins.generic.journalMetrics.displayName"
 msgstr "Journal Metrics"
 
 msgid "plugins.generic.journalMetrics.description"
-msgstr "A complete journal metrics suite: editorial statistics, turnaround times, usage, community and publication output — with a nightly snapshot cache, per-metric visibility control, manual (editor-declared) metrics, an admin dashboard, a public page, a sidebar block and a {journal_metric} template function."
+msgstr "A complete journal metrics suite: editorial statistics, turnaround times, usage, community and publication output — with a nightly snapshot cache, per-metric visibility control, external indicators, an admin dashboard, a public page, a sidebar block and a {journal_metric} template function."
 
 msgid "plugins.generic.journalMetrics.menuTitle"
 msgstr "Journal Metrics"
@@ -137,7 +137,7 @@ msgid "plugins.generic.journalMetrics.metric.archiveDepth"
 msgstr "Archive depth (years)"
 
 msgid "plugins.generic.journalMetrics.metric.manualMetrics"
-msgstr "Editor-declared metrics"
+msgstr "External indicators"
 
 # ---------------------------------------------------------------- Tooltips (methodology)
 
@@ -380,7 +380,7 @@ msgid "plugins.generic.journalMetrics.public.autoNote"
 msgstr "Automatic metric values are computed directly from journal data and cannot be edited."
 
 msgid "plugins.generic.journalMetrics.public.manualNote"
-msgstr "Editor-declared metrics are provided by the editorial team with their source and date."
+msgstr "External indicators are entered by the editorial team with their source and date."
 
 # ---------------------------------------------------------------- Block
 

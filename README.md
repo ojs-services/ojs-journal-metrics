@@ -27,7 +27,7 @@ times, and to demonstrate editorial transparency to readers and institutions.
 - **Navigation menu integration** — add the public page to any menu with the
   built-in "Journal Metrics" menu item type.
 - **Multilingual** — interface in English, Turkish, Spanish and Portuguese (Portugal and Brazil), with numbers written the way each language writes them; in any other language the plugin appears in English; the public page title and
-  editor-declared metrics accept a value per active journal language.
+  external indicators accept a value per active journal language.
 
 ## Screenshots
 
@@ -73,10 +73,11 @@ the geographic distribution of your authors.
 
 **Publication output** — articles per year, issues per year and archive depth.
 
-**Editor-declared metrics** — up to five values that do not live in OJS
+**External indicators** — up to five values that do not live in OJS
 (CiteScore, index coverage, and similar). They are entered by the editorial
-team with a source and are shown separately from the automatic metrics, each
-stamped with its last update date.
+team with a source, shown separately from the computed figures and marked
+"Entered by the editor", each with its last update date. A name that belongs
+to a computed figure (for example "Acceptance rate") is not accepted.
 
 ## Built on trust
 
@@ -108,7 +109,7 @@ stamped with its last update date.
 ## Installation
 
 1. Website Settings → Plugins → **Upload A New Plugin** and select
-   `journalMetrics-ojs3.3-1.0.3.13.tar.gz`.
+   `journalMetrics-ojs3.3-1.0.3.14.tar.gz`.
 2. Enable **Journal Metrics** under Generic Plugins.
 3. Open **Journal Metrics** from the left management menu; the fast metric
    groups are computed on first visit.
@@ -204,7 +205,7 @@ the journal's own data.
 | Database | MySQL / MariaDB (standard OJS setups) |
 | Journals | single- and multi-journal installations |
 | Themes | works on any OJS 3.3 theme — default or custom; see our themes: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Plugin version | 1.0.3.13 |
+| Plugin version | 1.0.3.14 |
 
 ## License & support
 

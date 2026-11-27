@@ -118,7 +118,8 @@
 	margin-bottom: 12px;
 }
 .jmx-section-header h2,
-.jmx-section-header h3 {
+.jmx-section-header h3,
+.jmx-section-header h4 {
 	font-size: 16px;
 	font-weight: 700;
 	margin: 0;
@@ -462,7 +463,8 @@
 	text-decoration: none;
 }
 .jmx-developer-credit a:hover { color: var(--jmx-primary-dark); }
-.jmx-dev-icon { color: var(--jmx-primary-dark); margin-right: 3px; }
+/* decorative (aria-hidden); the darker tone keeps 4.5:1 on light theme backgrounds too */
+.jmx-dev-icon { color: var(--jmx-primary-darker); margin-right: 3px; }
 
 /* ------------------------------------------------------------------ */
 /*  Public page                                                        */

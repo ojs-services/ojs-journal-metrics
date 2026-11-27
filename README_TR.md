@@ -28,8 +28,8 @@ editoryal şeffaflık göstermek için kullanır.
   `{journal_metric key="submissionsPublished"}`.
 - **Gezinme menüsü entegrasyonu** — yerleşik "Dergi Metrikleri" menü öğesi
   türüyle kamu sayfasını istediğiniz menüye ekleyin.
-- **Çok dilli** — İngilizce, Türkçe, İspanyolca ve Portekizce (Portekiz ve Brezilya) arayüz, sayılar her dilin kendi yazımıyla; başka bir dilde eklenti İngilizce görünür; kamu sayfası başlığı ve editör beyanı
-  metrikler derginin her aktif dili için ayrı değer kabul eder.
+- **Çok dilli** — İngilizce, Türkçe, İspanyolca ve Portekizce (Portekiz ve Brezilya) arayüz, sayılar her dilin kendi yazımıyla; başka bir dilde eklenti İngilizce görünür; kamu sayfası başlığı ve dış
+  göstergeler derginin her aktif dili için ayrı değer kabul eder.
 
 ## Ekran görüntüleri
 
@@ -76,9 +76,11 @@ tamamlanan hakemlikler ve yazarlarınızın coğrafi dağılımı.
 
 **Yayın çıktısı** — yıllık makale sayısı, yıllık sayı adedi ve arşiv derinliği.
 
-**Editör beyanı metrikler** — OJS'de bulunmayan en fazla beş değer (CiteScore,
-dizin kapsamı vb.). Editör ekibi tarafından kaynağıyla girilir, otomatik
-metriklerden ayrı gösterilir ve her biri son güncelleme tarihiyle damgalanır.
+**Dış göstergeler** — OJS'de bulunmayan en fazla beş değer (CiteScore,
+dizin kapsamı vb.). Editör ekibi tarafından kaynağıyla girilir, hesaplanan
+sayılardan ayrı gösterilir, "Editör tarafından girildi" diye işaretlenir ve her
+biri son güncelleme tarihini taşır. Hesaplanan bir göstergenin adı (ör. "Kabul
+oranı") kabul edilmez.
 
 ## Güven üzerine kurulu
 
@@ -111,7 +113,7 @@ metriklerden ayrı gösterilir ve her biri son güncelleme tarihiyle damgalanır
 ## Kurulum
 
 1. Web Sitesi Ayarları → Eklentiler → **Yeni Eklenti Yükle** ile
-   `journalMetrics-ojs3.3-1.0.3.13.tar.gz` dosyasını seçin.
+   `journalMetrics-ojs3.3-1.0.3.14.tar.gz` dosyasını seçin.
 2. Generic Eklentiler altında **Journal Metrics**'i etkinleştirin.
 3. Sol yönetim menüsünden **Dergi Metrikleri**'ni açın; hızlı metrik grupları
    ilk ziyarette hesaplanır.
@@ -205,7 +207,7 @@ verisinden gelir.
 | Veritabanı | MySQL / MariaDB (standart OJS kurulumları) |
 | Dergiler | tek ve çok dergili kurulumlar |
 | Temalar | her OJS 3.3 temasıyla çalışır — varsayılan veya özel; temalarımız: [ojs-services.com/ojs-themes](https://ojs-services.com/ojs-themes) |
-| Eklenti sürümü | 1.0.3.13 |
+| Eklenti sürümü | 1.0.3.14 |
 
 ## Lisans ve destek
 
