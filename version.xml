@@ -12,8 +12,8 @@
 <version>
 	<application>journalMetrics</application>
 	<type>plugins.generic</type>
-	<release>2.0.0.13</release>
-	<date>2026-11-26</date>
+	<release>2.0.0.14</release>
+	<date>2026-11-27</date>
 	<lazy-load>1</lazy-load>
 	<class>JournalMetricsPlugin</class>
 	<compatibility application="ojs2">

@@ -1,5 +1,28 @@
 # Changelog
 
+## 2.0.0.14 — 2026-11-27 · OJS 3.4–3.5
+
+### Fixed
+- On themes that make the page title a second-level heading (Classic), the
+  public page's section and group headings now sit one level below it, so
+  screen readers get a correct outline.
+- The decorative mark before the "developed by" link is hidden from screen
+  readers and has enough contrast on light theme backgrounds.
+- The last places that still said "Editor-declared metrics" (the public page
+  note, the metric name in the visibility list, the plugin description and
+  the README) now say "External indicators" in every language, as the rest of
+  the plugin does.
+
+### Düzeltildi
+- Sayfa başlığını ikinci düzey başlık yapan temalarda (Classic) kamu
+  sayfasının bölüm ve grup başlıkları artık bir alt düzeyde; ekran okuyucular
+  doğru bir başlık yapısı görür.
+- "Geliştiren" bağlantısının önündeki süs işareti ekran okuyuculardan
+  gizlendi ve açık renkli tema zeminlerinde yeterli kontrasta sahip.
+- Hâlâ "Editör beyanı metrikler" diyen son yerler (kamu sayfası notu,
+  görünürlük listesindeki metrik adı, eklenti açıklaması ve README) eklentinin
+  geri kalanı gibi her dilde "Dış göstergeler" oldu.
+
 ## 2.0.0.13 — 2026-11-26 · OJS 3.4–3.5
 
 ### Fixed
